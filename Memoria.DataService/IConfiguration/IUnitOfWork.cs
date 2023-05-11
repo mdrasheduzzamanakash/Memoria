@@ -10,6 +10,11 @@ namespace Memoria.DataService.IConfiguration
     public interface IUnitOfWork
     {
         IUserRepository Users { get; }
+        INotificationRepository Notifications { get; }
+        ILabelRepository Labels { get; }
+        IAttachmentRepository Attachments { get; }
+        IAuthorizationRepository Authorizations { get; }
+        ICommentRepository Comments { get; }
 
         Task CompleteAsync();
 
