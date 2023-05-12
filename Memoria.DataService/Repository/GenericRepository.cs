@@ -27,29 +27,69 @@ namespace Memoria.DataService.Repository
         }
 
 
-        public Task<bool> Add(T entity)
+        public virtual async Task<bool> Add(T entity)
         {
-            throw new NotImplementedException();
+            await _dbSet.AddAsync(entity);
+            return true;
         }
 
-        public Task<bool> Delete(string id)
+        public virtual async Task<bool> Delete(string id)
         {
-            throw new NotImplementedException();
+            var entityToDelete = await _dbSet.FindAsync(id);
+            if(entityToDelete != null)
+            {
+                _dbSet.Remove(entityToDelete);
+                return true;
+            }
+            return false;
+        }
+       
+
+        public virtual async Task<IEnumerable<T>> All()
+        {
+            return await _dbSet.ToListAsync(); 
         }
 
-        public Task<IEnumerable<T>> GetAll()
+        public virtual async Task<T?> GetById(string id)
         {
-            throw new NotImplementedException();
+            var result = await _dbSet.FindAsync(id);
+            if(result != null)
+            {
+                return result;
+            }
+            _logger.LogError("NotFound in _dbSet");
+            return null;
         }
 
-        public Task<T> GetById(string id)
+        public virtual async Task<bool> Upsert(T entity)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                // get the primary key property name of type T
+                var keyName = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
+                .Select(x => x.Name).Single();
+                
+                // get the Primary key
+                var keyValue = entity.GetType().GetProperty(keyName).GetValue(entity, null);
 
-        public Task<bool> Upsert(T entity)
-        {
-            throw new NotImplementedException();
+                // Find the existing entry 
+                var existingEntry = await _dbSet.FindAsync(keyValue);
+
+                if(existingEntry != null)
+                {
+                    _dbSet.Entry(existingEntry).CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    await _dbSet.AddAsync(entity);
+                }
+                return true;
+            }
+            catch
+            {
+                _logger.LogError("Error in Upsert method _dbSet");
+                return false;
+            }
         }
     }
 }

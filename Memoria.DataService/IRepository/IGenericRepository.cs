@@ -9,7 +9,7 @@ namespace Memoria.DataService.IRepository
     public interface IGenericRepository<T> where T : class
     {
         // GET all entities 
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> All();
 
         // GET by id 
         Task<T> GetById(string id);
