@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface INoteLabelRepository : IGenericRepository<NoteLabel>
+    public interface INoteLabelRepository
     {
     }
 }

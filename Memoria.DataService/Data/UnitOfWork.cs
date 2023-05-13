@@ -1,7 +1,11 @@
-﻿using Memoria.DataService.IConfiguration;
+﻿using AutoMapper;
+using Elfie.Serialization;
+using Memoria.DataService.IConfiguration;
 using Memoria.DataService.IRepository;
+using Memoria.DataService.Mapper;
 using Memoria.DataService.Repository;
 using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,6 +21,7 @@ namespace Memoria.DataService.Data
         
         private readonly ILogger _logger;
 
+
         public IUserRepository Users { get; private set; }
         public INotificationRepository Notifications { get; private set; }
         public ILabelRepository Labels { get; private set; }
@@ -30,15 +35,17 @@ namespace Memoria.DataService.Data
         {
             _context = context;
             _logger = loggerFactory.CreateLogger("db_logs");
-            Users = new UserRepository(context, _logger);
-            Notifications = new NotificationRepository(context, _logger);
-            Labels = new LabelRepository(context, _logger);
-            Attachments = new AttachmentRepository(context, _logger);
-            Authorizations = new AuthorizationRepository(context, _logger);
-            Comments = new CommentRepository(context, _logger);
-            Notes = new NoteRepository(context, _logger);
-            NoteLabels = new NoteLabelRepository(context, _logger);
-            Trashes = new TrashRepository(context, _logger);
+            IMapper mapper = AutoMapperConfig.Configure();
+
+            Users = new UserRepository(context, _logger, mapper);
+            Notifications = new NotificationRepository(context, _logger, mapper);
+            Labels = new LabelRepository(context, _logger, mapper);
+            Attachments = new AttachmentRepository(context, _logger, mapper);
+            Authorizations = new AuthorizationRepository(context, _logger, mapper);
+            Comments = new CommentRepository(context, _logger, mapper);
+            Notes = new NoteRepository(context, _logger, mapper);
+            NoteLabels = new NoteLabelRepository(context, _logger, mapper);
+            Trashes = new TrashRepository(context, _logger, mapper);
         }
 
         public async Task CompleteAsync()

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface IAttachmentRepository : IGenericRepository<Attachment>
+    public interface IAttachmentRepository
     {
     }
 }

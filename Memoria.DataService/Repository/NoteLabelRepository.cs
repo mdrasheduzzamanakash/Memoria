@@ -1,4 +1,5 @@
-﻿using Memoria.DataService.Data;
+﻿using AutoMapper;
+using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace Memoria.DataService.Repository
 {
     public class NoteLabelRepository : GenericRepository<NoteLabel>, INoteLabelRepository
     {
-        public NoteLabelRepository(AppDbContext context, ILogger logger) : base(context, logger)
+        public NoteLabelRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
         {
         }
     }

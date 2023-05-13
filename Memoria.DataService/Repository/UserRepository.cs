@@ -1,4 +1,5 @@
-﻿using Memoria.DataService.Data;
+﻿using AutoMapper;
+using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
@@ -15,10 +16,10 @@ namespace Memoria.DataService.Repository
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(AppDbContext context, ILogger logger) : base(context, logger)
+        public UserRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
         {
-
         }
+
 
         // GET all the users
         public override async Task<IEnumerable<User>> All()
@@ -37,6 +38,12 @@ namespace Memoria.DataService.Repository
         }
 
         // Add a user
+        public Task<bool> Add(UserCreationDTO entityDto)
+        {
+            // mapping entityDto to native entity
+            var user = _mapper.Map<User>(entityDto);
+            return base.Add(user);
+        }
 
     }
 }

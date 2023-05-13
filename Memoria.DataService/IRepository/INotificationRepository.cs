@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface INotificationRepository : IGenericRepository<Notification>
+    public interface INotificationRepository 
     {
     }
 }

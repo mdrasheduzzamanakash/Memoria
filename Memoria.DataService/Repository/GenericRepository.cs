@@ -1,4 +1,5 @@
-﻿using Memoria.DataService.Data;
+﻿using AutoMapper;
+using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,13 +17,16 @@ namespace Memoria.DataService.Repository
 
         protected readonly ILogger _logger;
 
+        protected readonly IMapper _mapper;
+
         internal DbSet<T> _dbSet;
 
 
-        public GenericRepository(AppDbContext context, ILogger logger)
+        public GenericRepository(AppDbContext context, ILogger logger, IMapper mapper)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
             _dbSet = context.Set<T>();
         }
 

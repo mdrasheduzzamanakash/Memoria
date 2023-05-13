@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface ILabelRepository : IGenericRepository<Label>
+    public interface ILabelRepository
     {
     }
 }

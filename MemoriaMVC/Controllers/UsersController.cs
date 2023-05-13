@@ -20,44 +20,44 @@ namespace MemoriaMVC.Controllers
         public UsersController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UsersController> logger) : base(unitOfWork, mapper, logger)
         {
         }
-        
+
 
         // GET: Users
-        public async Task<IActionResult> Index()
-        {
-            if(_unitOfWork.Users == null)
-            {
-                _logger.LogError("User entity does not Exists.");
-                return BadRequest();
-            }
-            var users = await _unitOfWork.Users.All();
-            return View(users);
-        }
-        
+        //public async Task<IActionResult> Index()
+        //{
+        //    if (_unitOfWork.Users == null)
+        //    {
+        //        _logger.LogError("User entity does not Exists.");
+        //        return BadRequest();
+        //    }
+        //    var users = await _unitOfWork.Users.All();
+        //    return View(users);
+        //}
+
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
+        //public async Task<IActionResult> Details(string id)
+        //{
 
-            if(id == null)
-            {
-                return NotFound();
-            }
+        //    if(id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if(_unitOfWork.Users == null)
-            {
-                _logger.LogError("User entity does not Exists.");
-                return NotFound();
-            }
+        //    if(_unitOfWork.Users == null)
+        //    {
+        //        _logger.LogError("User entity does not Exists.");
+        //        return NotFound();
+        //    }
 
-            var user = await _unitOfWork.Users.GetById(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+        //    var user = await _unitOfWork.Users.GetById(id);
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(user); 
-        }
+        //    return View(user); 
+        //}
 
         // GET: Users/Create
         public IActionResult Create()
@@ -70,14 +70,12 @@ namespace MemoriaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserCreationViewModel userCreationViewModel)
         {
-            await Console.Out.WriteLineAsync("Hi i am here");
             if (ModelState.IsValid)
             {
                 // mapping to the DTO
                 var userCreationDTO = _mapper.Map<UserCreationDTO>(userCreationViewModel);
-                
-                //_unitOfWork.Users.Add(userCreationDTO);
-                //await _unitOfWork.CompleteAsync();
+                var result = await _unitOfWork.Users.Add(userCreationDTO);
+                await _unitOfWork.CompleteAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(userCreationViewModel);
