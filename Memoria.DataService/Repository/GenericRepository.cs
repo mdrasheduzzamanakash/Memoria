@@ -1,4 +1,5 @@
-﻿using Memoria.DataService.Data;
+﻿using AutoMapper;
+using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,40 +17,53 @@ namespace Memoria.DataService.Repository
 
         protected readonly ILogger _logger;
 
+        protected readonly IMapper _mapper;
+
         internal DbSet<T> _dbSet;
 
 
-        public GenericRepository(AppDbContext context, ILogger logger)
+        public GenericRepository(AppDbContext context, ILogger logger, IMapper mapper)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
             _dbSet = context.Set<T>();
         }
 
 
-        public Task<bool> Add(T entity)
+        public virtual async Task<bool> Add(T entity)
         {
-            throw new NotImplementedException();
+            await _dbSet.AddAsync(entity);
+            return true;
         }
 
-        public Task<bool> Delete(string id)
+        public virtual async Task<bool> Delete(string id)
         {
-            throw new NotImplementedException();
+            var entityToDelete = await _dbSet.FindAsync(id);
+            if(entityToDelete != null)
+            {
+                _dbSet.Remove(entityToDelete);
+                return true;
+            }
+            return false;
+        }
+       
+
+        public virtual async Task<IEnumerable<T>> All()
+        {
+            return await _dbSet.ToListAsync(); 
         }
 
-        public Task<IEnumerable<T>> GetAll()
+        public virtual async Task<T?> GetById(string id)
         {
-            throw new NotImplementedException();
+            var result = await _dbSet.FindAsync(id);
+            if(result != null)
+            {
+                return result;
+            }
+            _logger.LogError("NotFound in _dbSet");
+            return null;
         }
 
-        public Task<T> GetById(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Upsert(T entity)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

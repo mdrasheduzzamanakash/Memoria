@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface ICommentRepository : IGenericRepository<Comment>
+    public interface ICommentRepository
     {
     }
 }

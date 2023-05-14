@@ -28,6 +28,9 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -42,12 +45,18 @@ namespace Memoria.DataService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NoteId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -69,6 +78,9 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -78,6 +90,9 @@ namespace Memoria.DataService.Migrations
                     b.Property<string>("AuthorizerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsValid")
                         .HasColumnType("bit");
@@ -92,6 +107,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -111,6 +129,9 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -125,12 +146,18 @@ namespace Memoria.DataService.Migrations
                     b.Property<DateTime>("EditedDateAndTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NoteId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -148,11 +175,17 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileFormat")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LabelerId")
@@ -161,6 +194,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -178,6 +214,9 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -187,6 +226,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileFormat")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsArchived")
@@ -216,6 +258,9 @@ namespace Memoria.DataService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -236,11 +281,17 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AssignerId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LabelId")
                         .IsRequired()
@@ -251,6 +302,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -272,11 +326,17 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileFormat")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsSent")
@@ -297,6 +357,9 @@ namespace Memoria.DataService.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
 
@@ -315,8 +378,14 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NoteId")
                         .IsRequired()
@@ -327,6 +396,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<string>("TrasherId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
@@ -346,11 +418,17 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileFormat")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -371,6 +449,9 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");

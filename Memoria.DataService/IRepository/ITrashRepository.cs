@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.IRepository
 {
-    public interface ITrashRepository : IGenericRepository<Trash>
+    public interface ITrashRepository 
     {
     }
 }

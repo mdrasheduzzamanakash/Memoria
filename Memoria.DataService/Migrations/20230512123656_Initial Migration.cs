@@ -63,7 +63,9 @@ namespace Memoria.DataService.Migrations
                     IsSent = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,7 +84,9 @@ namespace Memoria.DataService.Migrations
                     Image = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -207,7 +211,9 @@ namespace Memoria.DataService.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -232,7 +238,9 @@ namespace Memoria.DataService.Migrations
                     AuthorizedUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -261,7 +269,9 @@ namespace Memoria.DataService.Migrations
                     CommenterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -283,7 +293,9 @@ namespace Memoria.DataService.Migrations
                     LabelerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,7 +325,9 @@ namespace Memoria.DataService.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -336,7 +350,9 @@ namespace Memoria.DataService.Migrations
                     LabelId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,7 +384,9 @@ namespace Memoria.DataService.Migrations
                     TrasherId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
