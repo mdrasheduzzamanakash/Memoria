@@ -3,6 +3,7 @@ using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
+using Memoria.Entities.DTOs.Outgoing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,30 +21,71 @@ namespace Memoria.DataService.Repository
         {
         }
 
-
-        // GET all the users
-        public override async Task<IEnumerable<User>> All()
-        {
-            try
-            {
-                return await _dbSet.Where(x => x.Status == 1)
-                    .AsNoTracking()
-                    .ToListAsync();
-            } 
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "{Repo} All", typeof(UserRepository));
-                return new List<User>();
-            }
-        }
-
         // Add a user
-        public Task<bool> Add(UserCreationDTO entityDto)
+        public async Task<bool> Add(UserSingleInDTO entityDto)
         {
             // mapping entityDto to native entity
             var user = _mapper.Map<User>(entityDto);
-            return base.Add(user);
+            return await base.Add(user);
         }
 
+        public async Task<UserSingleOutDTO> GetById(string id)
+        {
+            var user = await base.GetById(id);
+            var resultDto = _mapper.Map<UserSingleOutDTO>(user);
+            return resultDto;
+        }
+
+        public async Task<IEnumerable<UserSingleOutDTO>> All()
+        {
+            List<User> users = (List<User>) await base.All();
+            if (users == null)
+            {
+                return Enumerable.Empty<UserSingleOutDTO>();
+            }
+
+            List<UserSingleOutDTO> resultDtos = new List<UserSingleOutDTO>();
+            
+            foreach (var user in users)
+            {
+                var resultDto = _mapper.Map<UserSingleOutDTO>(user);
+                resultDtos.Add(resultDto);
+            }
+            return resultDtos;
+        }
+        
+        public async Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId)
+        {
+            if(userId == null || userCreationDTO == null)
+            {
+                return false;
+            }
+            var user = _mapper.Map<User>(userCreationDTO);
+            var existingUser = await _dbSet.FindAsync(user.Id);
+
+            if (existingUser == null)
+            {
+                // User does not exist in the database, create one
+                user.AddedBy = userId;
+                await base.Add(user);
+            }
+            else
+            {
+                // User already exists in the database, so update the record
+                user.AddedBy = existingUser.AddedBy;
+                user.AddedDateAndTime = existingUser.AddedDateAndTime;
+                user.UpdatedBy = userId;
+                user.UpdatedDateAndTime = DateTime.UtcNow;
+                _dbSet.Entry(existingUser).CurrentValues.SetValues(user);
+            }
+            return true;
+        }
+
+        public async Task<bool> Delete(string id)
+        {
+            return await base.Delete(id);
+        }
     }
 }
+
+

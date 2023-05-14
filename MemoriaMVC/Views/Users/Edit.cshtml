@@ -1,4 +1,4 @@
-﻿@model Memoria.Entities.DbSet.User
+﻿@model MemoriaMVC.ViewModel.UserPageViewModel.UserEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,6 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Image" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -32,37 +33,18 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
+                <label asp-for="UpdatedImage" class="control-label"></label>
+                <input id="fileInput" onchange="PreviewFile()" asp-for="UpdatedImage" class="form-control" accept="image/*" />
+                <span asp-validation-for="UpdatedImage" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
+
+            <div class="form-group mt-1 mt-1">
+                @*preview file*@
+                <img id="preview" src="#" alt="Preview" style="max-width: 100%; max-height: 100%; display: none">
             </div>
-            <div class="form-group">
-                <label asp-for="AddedDateAndTime" class="control-label"></label>
-                <input asp-for="AddedDateAndTime" class="form-control" />
-                <span asp-validation-for="AddedDateAndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedDateAndTime" class="control-label"></label>
-                <input asp-for="UpdatedDateAndTime" class="form-control" />
-                <span asp-validation-for="UpdatedDateAndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AddedBy" class="control-label"></label>
-                <input asp-for="AddedBy" class="form-control" />
-                <span asp-validation-for="AddedBy" class="text-danger"></span>
-            </div>
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -73,6 +55,8 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script src="~/js/photoPreview.js"></script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

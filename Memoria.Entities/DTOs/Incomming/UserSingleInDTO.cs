@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.Entities.DTOs.Incomming
 {
-    public class UserCreationDTO : BaseDTO
+    public class UserSingleInDTO : BaseDTO
     {
         public string FirstName { get; set; }
 

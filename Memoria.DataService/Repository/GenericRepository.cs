@@ -65,35 +65,5 @@ namespace Memoria.DataService.Repository
             return null;
         }
 
-        public virtual async Task<bool> Upsert(T entity)
-        {
-            try
-            {
-                // get the primary key property name of type T
-                var keyName = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
-                .Select(x => x.Name).Single();
-                
-                // get the Primary key
-                var keyValue = entity.GetType().GetProperty(keyName).GetValue(entity, null);
-
-                // Find the existing entry 
-                var existingEntry = await _dbSet.FindAsync(keyValue);
-
-                if(existingEntry != null)
-                {
-                    _dbSet.Entry(existingEntry).CurrentValues.SetValues(entity);
-                }
-                else
-                {
-                    await _dbSet.AddAsync(entity);
-                }
-                return true;
-            }
-            catch
-            {
-                _logger.LogError("Error in Upsert method _dbSet");
-                return false;
-            }
-        }
     }
 }

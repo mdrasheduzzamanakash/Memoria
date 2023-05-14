@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Memoria.Entities.DbSet.User>
+﻿@model IEnumerable<MemoriaMVC.ViewModel.UserPageViewModel.UserDetailsViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -47,7 +47,7 @@
                 @Html.DisplayFor(modelItem => item.Password)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Image)
+                    <img src="data:@item.FileFormat;base64,@item.Image" width="80" height="100" />
             </td>
         
 

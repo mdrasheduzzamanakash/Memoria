@@ -23,41 +23,46 @@ namespace MemoriaMVC.Controllers
 
 
         // GET: Users
-        //public async Task<IActionResult> Index()
-        //{
-        //    if (_unitOfWork.Users == null)
-        //    {
-        //        _logger.LogError("User entity does not Exists.");
-        //        return BadRequest();
-        //    }
-        //    var users = await _unitOfWork.Users.All();
-        //    return View(users);
-        //}
+        public async Task<IActionResult> Index()
+        {
+            if (_unitOfWork.Users == null)
+            {
+                _logger.LogError("User entity does not Exists.");
+                return BadRequest();
+            }
+            var users = await _unitOfWork.Users.All();
+            List<UserDetailsViewModel> usersViewModel = new List<UserDetailsViewModel>();
+            foreach (var user in users)
+            {
+                usersViewModel.Add(_mapper.Map<UserDetailsViewModel>(user));
+            }
+            return View(usersViewModel);
+        }
 
 
-        // GET: Users/Details/5
-        //public async Task<IActionResult> Details(string id)
-        //{
+        //GET: Users/Details/5
+        public async Task<IActionResult> Details(string id)
+        {
 
-        //    if(id == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    if(_unitOfWork.Users == null)
-        //    {
-        //        _logger.LogError("User entity does not Exists.");
-        //        return NotFound();
-        //    }
+            if (_unitOfWork.Users == null)
+            {
+                _logger.LogError("User entity does not Exists.");
+                return NotFound();
+            }
 
-        //    var user = await _unitOfWork.Users.GetById(id);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(user); 
-        //}
+            var user = await _unitOfWork.Users.GetById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userViewModel = _mapper.Map<UserDetailsViewModel>(user);
+            return View(userViewModel);
+        }
 
         // GET: Users/Create
         public IActionResult Create()
@@ -73,7 +78,7 @@ namespace MemoriaMVC.Controllers
             if (ModelState.IsValid)
             {
                 // mapping to the DTO
-                var userCreationDTO = _mapper.Map<UserCreationDTO>(userCreationViewModel);
+                var userCreationDTO = _mapper.Map<UserSingleInDTO>(userCreationViewModel);
                 var result = await _unitOfWork.Users.Add(userCreationDTO);
                 await _unitOfWork.CompleteAsync();
                 return RedirectToAction(nameof(Index));
@@ -81,7 +86,6 @@ namespace MemoriaMVC.Controllers
             return View(userCreationViewModel);
         }
 
-        /*
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
@@ -90,22 +94,22 @@ namespace MemoriaMVC.Controllers
                 return NotFound();
             }
 
-            var user = await _unitOfWork.Users.FindAsync(id);
+            var user = await _unitOfWork.Users.GetById(id);
             if (user == null)
             {
                 return NotFound();
             }
-            return View(user);
+
+            var userViewModel = _mapper.Map<UserEditViewModel>(user);
+            return View(userViewModel);
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Email,Password,Image,Id,Status,AddedDateAndTime,UpdatedDateAndTime,UpdatedBy,AddedBy")] User user)
+        public async Task<IActionResult> Edit(string id, UserEditViewModel userEditViewModel)
         {
-            if (id != user.Id)
+            if (id != userEditViewModel.Id)
             {
                 return NotFound();
             }
@@ -114,23 +118,17 @@ namespace MemoriaMVC.Controllers
             {
                 try
                 {
-                    _unitOfWork.Update(user);
-                    await _unitOfWork.SaveChangesAsync();
+                    var userDTO = _mapper.Map<UserSingleInDTO>(userEditViewModel);
+                    await _unitOfWork.Users.Upsert(userDTO, id);
+                    await _unitOfWork.CompleteAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(ex.Message, ex);
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(userEditViewModel);
         }
 
         // GET: Users/Delete/5
@@ -141,14 +139,14 @@ namespace MemoriaMVC.Controllers
                 return NotFound();
             }
 
-            var user = await _unitOfWork.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _unitOfWork.Users.GetById(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            var userDto = _mapper.Map<UserDeletetionViewMode>(user);
+            return View(userDto);
         }
 
         // POST: Users/Delete/5
@@ -160,19 +158,14 @@ namespace MemoriaMVC.Controllers
             {
                 return Problem("Entity set 'AppDbContext.Users'  is null.");
             }
-            var user = await _unitOfWork.Users.FindAsync(id);
+            var user = await _unitOfWork.Users.GetById(id);
             if (user != null)
             {
-                _unitOfWork.Users.Remove(user);
+                await _unitOfWork.Users.Delete(id);
             }
-            
-            await _unitOfWork.SaveChangesAsync();
+
+            await _unitOfWork.CompleteAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        private bool UserExists(string id)
-        {
-          return (_unitOfWork.Users?.Any(e => e.Id == id)).GetValueOrDefault();
-        } */
     }
 }

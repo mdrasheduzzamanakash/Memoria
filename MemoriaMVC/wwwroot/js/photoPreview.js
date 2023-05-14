@@ -13,4 +13,5 @@ function PreviewFile() {
     } else {
         preview.src = "";
     }
+    console.log("-preview-done-");
 }

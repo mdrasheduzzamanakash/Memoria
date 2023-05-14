@@ -19,8 +19,5 @@ namespace Memoria.DataService.IRepository
 
         // Delete an entity
         Task<bool> Delete(string id);
-
-        // Update an entity or add if doesn't exist
-        Task<bool> Upsert(T entity);
     }
 }

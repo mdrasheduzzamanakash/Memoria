@@ -1,5 +1,6 @@
 ﻿using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
+using Memoria.Entities.DTOs.Outgoing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace Memoria.DataService.IRepository
     {
 
         // Add an entity
-        Task<bool> Add(UserCreationDTO userCreationDTO);
+        Task<bool> Add(UserSingleInDTO userCreationDTO);
+        Task<UserSingleOutDTO> GetById(string id);
+        Task<IEnumerable<UserSingleOutDTO>> All();
+        Task<bool> Delete(string id);
+        Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId);
+
     }
 }

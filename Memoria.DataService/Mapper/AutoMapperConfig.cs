@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
+using Memoria.Entities.DTOs.Outgoing;
 
 namespace Memoria.DataService.Mapper
 {
@@ -9,7 +10,8 @@ namespace Memoria.DataService.Mapper
         public static IMapper Configure()
         {
             var mapperConfiguration = new MapperConfiguration(cfg => {
-                cfg.CreateMap<UserCreationDTO, User>();
+                cfg.CreateMap<UserSingleInDTO, User>();
+                cfg.CreateMap<User, UserSingleOutDTO>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();

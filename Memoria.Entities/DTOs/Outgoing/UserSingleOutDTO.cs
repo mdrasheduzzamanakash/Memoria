@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.Entities.DTOs.Outgoing
 {
-    public class UserDTO : BaseDTO
+    public class UserSingleOutDTO : BaseDTO
     {
         public string FirstName { get; set; }
 
