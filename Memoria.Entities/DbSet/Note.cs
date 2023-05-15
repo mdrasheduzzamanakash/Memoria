@@ -31,7 +31,6 @@ namespace Memoria.Entities.DbSet
         [Required]
         public bool IsArchived { get; set; }
 
-        [Required]
         public bool IsRemainderAdded { get; set; }
 
         [Required]
