@@ -1,0 +1,58 @@
+﻿<link rel="stylesheet" href="~/css/navbar.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css'>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+        <!-- Navbar brand -->
+        <a class="navbar-brand text-primary" href="#">Memoria</a>
+
+        <!-- Navbar toggle button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar content -->
+        <div class="collapse navbar-collapse" id="navbarContent" style="left: 0;">
+            <!-- Search form -->
+            <div class="container-search-create mx-auto">
+                <form class="d-flex mx-auto my-2 my-lg-0 container-search-create-item">
+                    <div class="input-group search-box">
+                        <input class="form-control" type="search" placeholder="Search by title" aria-label="Search" id="searchBar">
+                    </div>
+                </form>
+                <button type="button" class="btn btn-outline-primary container-search-create-item mx-auto" id="btnAddNewNote">New Note</button>
+            </div>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-sticky-note fa-lg"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-bell fa-lg"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fi fi-ss-alarm-plus fa-lg"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-trash fa-lg"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cog fa-lg"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script src="~/js//navbar.js"></script>

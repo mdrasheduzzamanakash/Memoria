@@ -25,6 +25,7 @@ namespace MemoriaMVC.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
+            ViewBag.UserId = "db950582-5212-4077-9769-3299325acae6"; 
             if (_unitOfWork.Users == null)
             {
                 _logger.LogError("User entity does not Exists.");

@@ -1,0 +1,119 @@
+﻿<style>
+    .modal-dialog {
+        max-width: 800px;
+    }
+
+    .modal-body {
+        max-height: 500px; /* Change this value to adjust the maximum height of the modal body */
+        overflow-y: auto;
+        scrollbar-width: none; /* Hide the scrollbar */
+        -ms-overflow-style: none; /* Hide the scrollbar in IE10+ */
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none; /* Hide the scrollbar in webkit-based browsers */
+    }
+    
+    .options-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 40px;
+        margin-top: 3px;
+        height: 100%;
+        border-radius: 5px;
+        gap: 10px;
+    }
+
+    .options-container-item {
+        margin: 0; /* remove any default margin on the checkbox input element */
+    }   
+
+    .labels-container {
+        align-items: center;
+        justify-content: center;
+        justify-items: center;
+        height 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .labels-container-item {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .form-select {
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+    }
+
+    .model-footer {
+        padding : 5px 5px;
+    }
+
+</style>
+<div class="modal-header">
+    <h4 class="modal-title">Create Note</h4>
+    <div class="options-container">
+        <div class="options-container-item">
+            <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
+            <label class="form-check-label" for="myCheckbox">Todo</label>
+        </div>
+        <div class="options-container-item">
+            <select class="form-select">
+                <option selected>Labels</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="labels-container">
+        <p class="labels-container-item">Hello</p>
+        <p class="labels-container-item">Hello</p>
+        <p class="labels-container-item">Hello</p>
+    </div>
+    <hr />
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="note-title">Title</label>
+            <input type="text" class="form-control" id="note-title" placeholder="Enter note title">
+        </div>
+        <div class="form-group">
+            <label for="note-description">Description</label>
+            <textarea class="form-control" id="note-description" rows="10" placeholder="Enter note description"></textarea>
+        </div>
+    </div>
+
+</div>
+<!-- Font Awesome CDN link for icons -->
+<div class="modal-footer">
+    
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-user-plus"></i>
+    </button>
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-clock"></i>
+    </button>
+    
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-paperclip"></i>
+    </button>
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-image"></i>
+    </button>
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-save"></i> Save
+    </button>
+
+</div>

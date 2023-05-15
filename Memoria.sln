@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Memoria.Entities", "Memoria
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Memoria.DataService", "Memoria.DataService\Memoria.DataService.csproj", "{21BB2115-F74A-458B-B42D-CD8017F9FB6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoriaMVC", "MemoriaMVC\MemoriaMVC.csproj", "{DF648401-E67A-4965-AACF-4BCD18F09989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoriaMVC", "MemoriaMVC\MemoriaMVC.csproj", "{DF648401-E67A-4965-AACF-4BCD18F09989}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
