@@ -30,11 +30,17 @@ namespace Memoria.DataService.Repository
             _dbSet = context.Set<T>();
         }
 
-
         public virtual async Task<bool> Add(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            return true;
+            try
+            {
+                await _dbSet.AddAsync(entity);
+                return true;
+            } catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return false;
+            }
         }
 
         public virtual async Task<bool> Delete(string id)

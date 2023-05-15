@@ -2,6 +2,8 @@
 using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
+using Memoria.Entities.DTOs.Outgoing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,39 @@ namespace Memoria.DataService.Repository
     {
         public NoteRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
         {
+        }
+
+        public async Task<NoteSingleOutDTO?> AddDraftNote(UserSingleOutDTO userDto)
+        {
+            var user = _mapper.Map<User>(userDto);
+
+            var note = new Note();
+            note.User = user;
+            note.IsRemainderAdded = false;
+            var status = await base.Add(note);
+            if(status)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                return noteDto;
+            } else
+            {
+                return null;
+            }
+        }
+
+        public async Task<NoteSingleOutDTO?> AddDraftNote(NoteSingleInDTO noteDto)
+        {
+            var note = _mapper.Map<Note>(noteDto);
+            await base.Add(note);
+            var noteOutDto = _mapper.Map<NoteSingleOutDTO>(note);
+            return noteOutDto;
+        }
+
+        public async Task<bool> Add(NoteSingleInDTO noteDto)
+        {
+            var note = _mapper.Map<Note>(noteDto);
+            await base.Add(note);
+            return true;
         }
     }
 }

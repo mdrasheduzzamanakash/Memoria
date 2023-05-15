@@ -9,12 +9,14 @@ using Memoria.DataService.Data;
 using Memoria.Entities.DbSet;
 using Memoria.DataService.IConfiguration;
 using AutoMapper;
+using Memoria.Entities.DTOs.Outgoing;
+using Memoria.Entities.DTOs.Incomming;
 
 namespace MemoriaMVC.Controllers
 {
     public class NotesController : BaseController<NotesController>
     {
-        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
+        public NotesController(IUnitOfWork unitOfWork ,IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
         {
         }
 
@@ -25,7 +27,6 @@ namespace MemoriaMVC.Controllers
             // add labels to the viewbag
             var labels = await _unitOfWork.Labels.AllUserLabels(id);
             ViewBag.Labels = labels;
-            await Console.Out.WriteLineAsync("----------");
 
             foreach (var label in labels)
             {
@@ -34,8 +35,21 @@ namespace MemoriaMVC.Controllers
             return PartialView("_NoteCreationModal");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CreateDraftNote(NoteSingleInDTO note)
+        {
+            var draftNote = await _unitOfWork.Notes.AddDraftNote(note);
+            await _unitOfWork.CompleteAsync();
+            return Json(draftNote);
+        }
 
-
+        [HttpGet]
+        public async Task<IActionResult> SaveNote(NoteSingleInDTO note)
+        {
+            await _unitOfWork.Notes.Add(note);
+            await _unitOfWork.CompleteAsync();
+            return Ok();
+        }
         /*
         // GET: Notes/Details/5
         public async Task<IActionResult> Details(string id)

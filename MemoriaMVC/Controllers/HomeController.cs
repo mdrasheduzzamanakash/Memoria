@@ -15,7 +15,6 @@ namespace MemoriaMVC.Controllers
         }
 
         
-
         // GET: HomeController
         public async Task<IActionResult> Index()
         {

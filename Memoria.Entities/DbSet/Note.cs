@@ -35,13 +35,11 @@ namespace Memoria.Entities.DbSet
         public bool IsDraft { get; set; } = true;
 
         public bool IsArchieved { get; set; } = false;
-        
+
         public bool IsRemainderAdded { get; set; }
 
-        
         public System.DateTime? RemainderDateTime { get; set; }
 
-        
         public User User { get; set; }
 
         public ICollection<NoteLabel>? Labels { get; set; }

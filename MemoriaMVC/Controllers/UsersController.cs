@@ -65,6 +65,12 @@ namespace MemoriaMVC.Controllers
             return View(userViewModel);
         }
 
+        public async Task<IActionResult> GetById(string id)
+        {
+            var user = await _unitOfWork.Users.GetById(id);
+            return Json(user);
+        }
+
         // GET: Users/Create
         public IActionResult Create()
         {
