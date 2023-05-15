@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 
 namespace MemoriaMVC.Mapper
@@ -19,6 +20,10 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<UserSingleOutDTO, UserDetailsViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+
+            CreateMap<UserSingleOutDTO, HomeIndexViewModel>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+
 
             CreateMap<UserSingleOutDTO, UserDeletetionViewMode>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));

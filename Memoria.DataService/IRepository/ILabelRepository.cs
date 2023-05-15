@@ -1,4 +1,5 @@
 ﻿using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Outgoing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,9 @@ namespace Memoria.DataService.IRepository
 {
     public interface ILabelRepository
     {
+        Task<IEnumerable<LabelSingleOutDTO>> All();
+
+        Task<IEnumerable<LabelSingleOutDTO>> AllUserLabels(string id);
+
     }
 }

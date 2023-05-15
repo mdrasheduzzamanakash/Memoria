@@ -14,8 +14,8 @@ namespace Memoria.Entities.DbSet
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         public int Status { get; set; } = 1;
-        public DateTime AddedDateAndTime { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedDateAndTime { get; set; } = DateTime.UtcNow;
+        public DateTime? AddedDateAndTime { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedDateAndTime { get; set; } = DateTime.UtcNow;
         public string? UpdatedBy { get; set; }
         public string? AddedBy { get; set; }
         public string? FileFormat { get; set; }

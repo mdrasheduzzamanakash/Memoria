@@ -2,6 +2,8 @@
 using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Outgoing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,34 @@ namespace Memoria.DataService.Repository
     {
         public LabelRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
         {
+        }
+
+        public async Task<IEnumerable<LabelSingleOutDTO>> All()
+        {
+            var labels = (List<Label>) await base.All();
+
+            var labelsDto = new List<LabelSingleOutDTO>();
+            
+            foreach (var label in labels)
+            {
+                labelsDto.Add(_mapper.Map<LabelSingleOutDTO>(label));
+            }
+
+            return labelsDto;
+
+        }
+
+        public async Task<IEnumerable<LabelSingleOutDTO>> AllUserLabels(string id)
+        {
+            var labels = (List<Label>) await _dbSet.Where(x => x.LabelerId == id).ToListAsync();
+
+            var labelsDto = new List<LabelSingleOutDTO>();
+
+            foreach (var label in labels)
+            {
+                labelsDto.Add(_mapper.Map<LabelSingleOutDTO>(label));
+            }
+            return labelsDto;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,19 +14,16 @@ namespace MemoriaMVC.Controllers
         {
         }
 
+        
+
         // GET: HomeController
         public async Task<IActionResult> Index()
         {
-            ViewBag.Id = "db950582-5212-4077-9769-3299325acae6";
-            return View();
+            ViewBag.Title = "Home Page";
+            var user = await _unitOfWork.Users.GetById("8c5ab811-8636-4812-9439-05210cbb9585");
+            var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+            return View(userViewModel);
         }
-
-        // GET: Partial View for New Note Creation
-        public IActionResult GetPartialView()
-        {
-            return PartialView("_NoteCreationModal");
-        }
-
 
         // GET: HomeController/Details/5
         public ActionResult Details(int id)
