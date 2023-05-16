@@ -1,3 +1,12 @@
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --body-bg-color: #ffffff;
+    --body-text-color: #212529;
+    --navbar-bg-color: var(--primary-color);
+    --navbar-text-color: #fff;
+}
+
 html {
   font-size: 14px;
 }
@@ -18,5 +27,6 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    background-color: var(--body-bg-color);
+    color: var(--body-text-color);
 }

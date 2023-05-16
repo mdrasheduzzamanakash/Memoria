@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Memoria.DataService.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,10 +62,11 @@ namespace Memoria.DataService.Migrations
                     NoticeState = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsSent = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,10 +84,11 @@ namespace Memoria.DataService.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Image = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -210,10 +212,11 @@ namespace Memoria.DataService.Migrations
                     Content = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -237,10 +240,11 @@ namespace Memoria.DataService.Migrations
                     AuthorizerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AuthorizedUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -268,10 +272,11 @@ namespace Memoria.DataService.Migrations
                     NoteId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CommenterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -292,10 +297,11 @@ namespace Memoria.DataService.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LabelerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -313,21 +319,28 @@ namespace Memoria.DataService.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TrashingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BgColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Todos = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TrashingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BgColor = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsHidden = table.Column<bool>(type: "bit", nullable: false),
                     IsTrashed = table.Column<bool>(type: "bit", nullable: false),
                     IsArchived = table.Column<bool>(type: "bit", nullable: false),
+                    IsPinned = table.Column<bool>(type: "bit", nullable: false),
+                    IsMarked = table.Column<bool>(type: "bit", nullable: false),
+                    IsDraft = table.Column<bool>(type: "bit", nullable: false),
+                    IsArchieved = table.Column<bool>(type: "bit", nullable: false),
                     IsRemainderAdded = table.Column<bool>(type: "bit", nullable: false),
-                    RemainderDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RemainderDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -336,8 +349,7 @@ namespace Memoria.DataService.Migrations
                         name: "FK_Notes_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -349,10 +361,11 @@ namespace Memoria.DataService.Migrations
                     AssignerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LabelId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -383,10 +396,11 @@ namespace Memoria.DataService.Migrations
                     NoteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TrasherId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

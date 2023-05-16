@@ -1,0 +1,45 @@
+﻿.input-group {
+    max-width: 500px;
+    width: 500px; /* Set the width of the search bar */
+    margin: 0 auto; /* Center the search bar horizontally */
+    display: flex; /* Use flexbox to center the search bar vertically */
+    align-items: center; /* Center items vertically in the container */
+    position: relative;
+}
+
+.form-control {
+    border: 1px solid #ced4da; /* Add border to the search box */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add elevation */
+    background-color: rgb(247, 247, 247);
+    
+}
+
+.form-control:focus {
+    box-shadow: none; /* Remove the focus shadow */
+}
+
+.form-control::placeholder {
+    color: #ccc; /* Change the placeholder color */
+}
+
+.form-control::placeholder {
+    color: rgb(106, 104, 104);
+}
+
+.nav-item i {
+    margin-right: 20px;
+}
+
+.container-search-create{
+    display: flex;
+    flex-direction: row;
+}
+
+.container-search-create-item {
+    flex:1;
+    margin-left: 10px;
+}
+
+.search-box {
+    margin-right: 20px;
+}

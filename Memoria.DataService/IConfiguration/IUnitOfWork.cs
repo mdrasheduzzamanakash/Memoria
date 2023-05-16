@@ -9,7 +9,11 @@ namespace Memoria.DataService.IConfiguration
 {
     public interface IUnitOfWork
     {
+       
         IUserRepository Users { get; }
+
+        INoteRepository Notes { get; }
+
         INotificationRepository Notifications { get; }
         ILabelRepository Labels { get; }
         IAttachmentRepository Attachments { get; }

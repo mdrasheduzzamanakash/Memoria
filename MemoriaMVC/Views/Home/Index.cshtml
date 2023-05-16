@@ -1,0 +1,155 @@
+﻿@model MemoriaMVC.ViewModel.HomePageViewModel.HomeIndexViewModel
+
+<link rel="stylesheet" href="~/css/Home/index.css" />
+
+<div class="flex-note-container"></div>
+
+
+<div id="myModal" class="modal" style="display:none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- modal content goes here -->
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@*this script is responsible for opening modals*@
+<script>
+
+    var userData = @Html.Raw(Json.Serialize(@Model));
+
+    // ajax function for partial note-creation-modal fetching 
+
+    $(function () {
+        function fetchNoteCreationModal() {
+            var deferred = $.Deferred();
+
+            $.ajax({
+                url: '/Notes/GetPartialView/' + userData.id,
+                type: 'GET',
+                success: function (result) {
+                    $('#myModal').find('.modal-content').html(result);
+                    $('#myModal').modal('show');
+                    deferred.resolve(result);
+                },
+                error: function () {
+                    alert('Error loading partial view');
+                }
+            });
+
+            return deferred.promise();
+        }
+
+        function fetchUserData(dataFromPrevious) {
+            var deferred = $.Deferred();
+            $.ajax({
+                url: '/Users/GetById/' + userData.id,
+                type: 'GET',
+                success: function (user) {
+                    deferred.resolve(user);
+                },
+                error: function () {
+                    alert('Error loading user data');
+                }
+            });
+            return deferred.promise();
+        }
+
+        $('#btnAddNewNote').off('click').on('click', function () {
+
+           fetchNoteCreationModal()
+           .then(function(data) {
+               return fetchUserData(data);
+           })
+           .then(function(userData) {
+                console.log(userData);
+                //TODO: create a note obj
+                //TEST: wether note works 
+                //TODO: Upload attachments on Selection
+                //TODO: save label on db and create label Option
+                //TODO: Add remainder on note
+                //TODO: Implement home note container 
+                //TODO: implement Edit and Trash
+                //TODO: implements Sharing
+
+                // modal handling code
+                var labelSelect = document.getElementById('labelsSelect');
+                var labelsContainer = document.getElementById('labelsContainer');
+
+                // label selecting code
+                labelSelect.addEventListener('change', function () {
+                    var selectedLabel = labelSelect.value;
+                    var labelElement = document.createElement('p');
+                    labelElement.classList.add('labels-container-item');
+                    labelElement.textContent = selectedLabel;
+                    labelsContainer.appendChild(labelElement);
+                })
+
+                // Get the necessary elements
+                const todoContainer = document.getElementById('todo-container');
+                const addTodoButton = document.getElementById('add-todo');
+                const todoToggle = document.querySelector('#myCheckbox');
+                const todoSection = document.getElementById('todo-section');
+                todoSection.style.display = 'none';
+                const todoInputs = []; // Array to store the todo input elements
+
+                // Function to create a new todo element
+                function createTodoElement() {
+                    const todoElement = document.createElement('div');
+                    todoElement.classList.add('form-check');
+
+                    const checkboxElement = document.createElement('input');
+                    checkboxElement.classList.add('form-check-input');
+                    checkboxElement.type = 'checkbox';
+
+                    const inputElement = document.createElement('input');
+                    inputElement.classList.add('form-control');
+                    inputElement.placeholder = 'Enter todo';
+
+                    // Append the checkbox and input field to the todo element
+                    todoElement.appendChild(checkboxElement);
+                    todoElement.appendChild(inputElement);
+
+                    // Append the todo element to the todo container
+                    todoContainer.appendChild(todoElement);
+
+                    // Add the input element to the todoInputs array
+                    todoInputs.push(inputElement);
+                }
+                addTodoButton.addEventListener('click', createTodoElement);
+
+                // Event listener for the todo toggle checkbox
+                todoToggle.addEventListener('change', function () {
+                    if (this.checked) {
+                        todoSection.style.display = 'block'; // Show the todo container
+                    } else {
+                        todoSection.style.display = 'none'; // Hide the todo container
+                    }
+                });
+
+                // Function to retrieve all the todo inputs
+                function getTodoInputs() {
+                    const todoValues = [];
+                    for (let i = 0; i < todoInputs.length; i++) {
+                        const todoInput = todoInputs[i];
+                        const todoValue = todoInput.value.trim();
+                        if (todoValue !== '') {
+                            todoValues.push(todoValue);
+                        }
+                    }
+                    return todoValues;
+                }
+           })
+           .fail(function (error) {
+                console.error("Error in nested AJAX calls");
+                console.error(error);
+           });
+        });
+        
+    });
+
+
+</script>

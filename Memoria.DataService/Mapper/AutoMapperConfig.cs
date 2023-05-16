@@ -12,6 +12,11 @@ namespace Memoria.DataService.Mapper
             var mapperConfiguration = new MapperConfiguration(cfg => {
                 cfg.CreateMap<UserSingleInDTO, User>();
                 cfg.CreateMap<User, UserSingleOutDTO>();
+                cfg.CreateMap<Label, LabelSingleOutDTO>();
+                cfg.CreateMap<UserSingleOutDTO, User>();
+                cfg.CreateMap<Note, NoteSingleOutDTO>();
+                cfg.CreateMap<NoteSingleInDTO, Note>();
+                cfg.CreateMap<Note, NoteSingleOutDTO>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();

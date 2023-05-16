@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Memoria.Entities.DbSet.Note>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Todos)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrashingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BgColor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsHidden)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsTrashed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsArchived)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPinned)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsMarked)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsRemainderAdded)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RemainderDateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddedDateAndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedDateAndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileFormat)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Todos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrashingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BgColor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsHidden)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsTrashed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsArchived)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsPinned)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsMarked)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRemainderAdded)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RemainderDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddedDateAndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedDateAndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileFormat)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
