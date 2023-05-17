@@ -2,7 +2,7 @@
 {
     public class NoteSingleInDTO
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public int? Status { get; set; }
         public System.DateTime? UpdatedDateAndTime { get; set; }
         public string? UpdatedBy { get; set; }
@@ -15,6 +15,8 @@
         public string? Description { get; set; }
 
         public string? Todos { get; set; }
+
+        public string? Labels { get; set; }
 
         public System.DateTime? TrashingDate { get; set; }
 

@@ -24,6 +24,8 @@ namespace Memoria.Entities.DTOs.Outgoing
 
         public string? Todos { get; set; }
 
+        public string? Labels { get; set; }
+
         public System.DateTime? TrashingDate { get; set; }
 
 

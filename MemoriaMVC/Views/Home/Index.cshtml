@@ -36,6 +36,7 @@
                 Title: null,
                 Description: null,
                 Todos: null,
+                Labels: null,
                 TrashingDate: null,
                 BgColor: null,
                 IsHidden: false,
@@ -85,9 +86,28 @@
             function createDraftNote(userData) {
                 var deferred = $.Deferred();
                 note.AuthorId = userData.id;
+                note.IsDraft = true;
                 var noteString = JSON.stringify(note);
                 $.ajax({
                     url: '/Notes/CreateDraftNote/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: noteString,
+                    success: function (noteData) {
+                        deferred.resolve(noteData);
+                    },
+                    error: function () {
+                        alert('Error loading user data');
+                    }
+                });
+                return deferred.promise();
+            }
+
+            function saveNote(finalNote) {
+                var deferred = $.Deferred();
+                var noteString = JSON.stringify(finalNote);
+                $.ajax({
+                    url: '/Notes/SaveNote/',
                     type: 'POST',
                     contentType: 'application/json',
                     data: noteString,
@@ -168,19 +188,20 @@
                return createDraftNote(userData);
            })
            .then(function(noteData) {
-                
+
                 let totalSelectedAttachment = 0;
                 let totalUploadedAttachment = 0;
                 // modal handling code
-                
-                console.log(noteData);
+
+
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
                 const todoContainer = document.getElementById('todo-container');
                 const addTodoButton = document.getElementById('add-todo');
                 const todoToggle = document.querySelector('#myCheckbox');
                 const todoSection = document.getElementById('todo-section');
-                todoSection.style.display = 'none';
+                const noteTitle = document.getElementById('note-title');
+                const noteDescription = document.getElementById('note-description');
 
                 // getting all the buttons
                 const saveButton = document.getElementById('save-button');
@@ -190,6 +211,33 @@
 
                 // data containers 
                 const todoInputs = []; // Array to store the todo input elements
+                const labelsInputs = []; // Array to store the label input elements
+
+                // Function to retrieve all the todo inputs
+                function getTodoInputs() {
+                    const todoValues = [];
+                    for (let i = 0; i < todoInputs.length; i++) {
+                        const todoInput = todoInputs[i];
+                        const todoValue = todoInput.value.trim();
+                        if (todoValue !== '') {
+                            todoValues.push(todoValue);
+                        }
+                    }
+                    return todoValues;
+                }
+
+                // Function to retrieve all the label inputs
+                function getLabelsInputs() {
+                    const labelsValues = [];
+                    for(let i = 0;i < labelsInputs.length;i++) {
+                        const labelInput = labelsInputs[i];
+                            const labelValue = labelInput.textContent.trim();
+                        if(labelValue != null) {
+                            labelsValues.push(labelValue);
+                        }
+                    }
+                    return labelsValues;
+                }
 
                 // label selecting code
                 labelSelect.addEventListener('change', function () {
@@ -198,6 +246,7 @@
                     labelElement.classList.add('labels-container-item');
                     labelElement.textContent = selectedLabel;
                     labelsContainer.appendChild(labelElement);
+                    labelsInputs.push(labelElement);
                 })
 
                 // Function to create a new todo element
@@ -223,19 +272,6 @@
                     // Add the input element to the todoInputs array
                     todoInputs.push(inputElement);
                 }
-                // Function to retrieve all the todo inputs
-                function getTodoInputs() {
-                    const todoValues = [];
-                    for (let i = 0; i < todoInputs.length; i++) {
-                        const todoInput = todoInputs[i];
-                        const todoValue = todoInput.value.trim();
-                        if (todoValue !== '') {
-                            todoValues.push(todoValue);
-                        }
-                    }
-                    return todoValues;
-                }
-
 
                 // Adding event listeners 
                 todoToggle.addEventListener('change', function () {
@@ -297,7 +333,7 @@
                             var attachmentId = $(this).closest('.file-details').data('attachment-id');
                             $.ajax({
                                 url: '/Attachments/Delete/' + attachmentId,
-                                method: 'POST',
+                                method: 'DELETE',
                                 data: { attachmentId: attachmentId },
                                 success: function (response) {
                                     totalSelectedAttachment--;
@@ -351,7 +387,7 @@
                                             var attachmentId = $(this).closest('.file-details').data('attachment-id');
                                             $.ajax({
                                                 url: 'Attachments/Delete/' + attachmentId,
-                                                method: 'POST',
+                                                method: 'DELETE',
                                                 data: { attachmentId: attachmentId },
                                                 success: function (response) {
                                                     totalSelectedAttachment--;
@@ -381,9 +417,29 @@
 
                 // Saving the note
                 $('#save-button').off('click').on('click', function() {
+                    if(totalSelectedAttachment === totalUploadedAttachment) {
+                        note.Id = noteData.id;
+                        note.AddedBy = noteData.authorId;
+                        note.Todos = JSON.stringify(getTodoInputs());
+                        note.Title = noteTitle.value;
+                        note.Description = noteDescription.value;
+                        note.Labels = JSON.stringify(getLabelsInputs());
+                        note.Type = null;
+                        note.IsDraft = false;
+                        note.IsRemainderAdded = false;
+                        note.IsDraft = false;
+                        note.RemainderDateTime = null;
+                        saveNote(note)
+                            .then(function (addedNote) {
+                                console.log(addedNote);
+                                $('#myModal').modal('hide');
+                            });
+                    } else {
+
+                    }
                     
                 });
-
+                
            })
            .fail(function (error) {
                 console.error("Error in nested AJAX calls");
@@ -392,31 +448,5 @@
         });
         
     });
-    /*
-    var note = {
-                AuthorId: null,
-                Id: null,
-                Status: 0,
-                UpdatedDateAndTime: null,
-                UpdatedBy: null,
-                AddedBy: userData.Id,
-                FileFormat: null,
-                Type: null,
-                Title: null,
-                Description: null,
-                Todos: null,
-                TrashingDate: null,
-                BgColor: null,
-                IsHidden: false,
-                IsTrashed: false,
-                IsArchived: false,
-                IsPinned: false,
-                IsMarked: false,
-                IsDraft: false,
-                IsArchieved: false,
-                IsRemainderAdded: false,
-                RemainderDateTime: null,
-            };
-    */
 
 </script>

@@ -35,6 +35,12 @@ namespace Memoria.DataService.Repository
                 return null;
             }
         }
+        public async Task<bool> Add(NoteSingleInDTO noteDto)
+        {
+            var note = _mapper.Map<Note>(noteDto);
+            await base.Add(note);
+            return true;
+        }
 
         public async Task<NoteSingleOutDTO?> AddDraftNote(NoteSingleInDTO noteDto)
         {
@@ -44,11 +50,12 @@ namespace Memoria.DataService.Repository
             return noteOutDto;
         }
 
-        public async Task<bool> Add(NoteSingleInDTO noteDto)
+        public async Task<NoteSingleOutDTO?> AddFinalNote(NoteSingleInDTO noteDto)
         {
-            var note = _mapper.Map<Note>(noteDto);
-            await base.Add(note);
-            return true;
+            var finalNote = _mapper.Map<Note>(noteDto);
+            await base.Upsert(finalNote, finalNote.Id);
+            var finalNoteOutDto = _mapper.Map<NoteSingleOutDTO>(finalNote);
+            return finalNoteOutDto;
         }
     }
 }

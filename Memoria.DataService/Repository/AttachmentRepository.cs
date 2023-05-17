@@ -18,14 +18,14 @@ namespace Memoria.DataService.Repository
         {
         }
 
-        public async Task<bool> Add(Attachment attachment)
+        public override async Task<bool> Add(Attachment attachment)
         {
             return await base.Add(attachment);
         }
 
-        public async Task<bool> Delete(string id)
+        public override async Task<bool> Delete(string id)
         {
-            throw new NotImplementedException();
+            return await base.Delete(id);
         }
     }
 }

@@ -56,6 +56,13 @@ namespace MemoriaMVC.Controllers
         }
 
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _unitOfWork.Attachments.Delete(id);
+            return Json(null);
+        }
+
         /*
         // GET: Attachments/Details/5
         public async Task<IActionResult> Details(string id)
