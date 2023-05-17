@@ -13,8 +13,8 @@
     </div>
 </div>
 
-
-
+<!-- For PDF preview -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 @*this script is responsible for opening modals*@
 <script>
@@ -22,62 +22,222 @@
     var userData = @Html.Raw(Json.Serialize(@Model));
 
     // ajax function for partial note-creation-modal fetching 
-
     $(function () {
-        function fetchNoteCreationModal() {
-            var deferred = $.Deferred();
-
-            $.ajax({
-                url: '/Notes/GetPartialView/' + userData.id,
-                type: 'GET',
-                success: function (result) {
-                    $('#myModal').find('.modal-content').html(result);
-                    $('#myModal').modal('show');
-                    deferred.resolve(result);
-                },
-                error: function () {
-                    alert('Error loading partial view');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function fetchUserData(dataFromPrevious) {
-            var deferred = $.Deferred();
-            $.ajax({
-                url: '/Users/GetById/' + userData.id,
-                type: 'GET',
-                success: function (user) {
-                    deferred.resolve(user);
-                },
-                error: function () {
-                    alert('Error loading user data');
-                }
-            });
-            return deferred.promise();
-        }
-
         $('#btnAddNewNote').off('click').on('click', function () {
+            var note = {
+                AuthorId: null,
+                Id: null,
+                Status: 0,
+                UpdatedDateAndTime: null,
+                UpdatedBy: null,
+                AddedBy: null,
+                FileFormat: null,
+                Type: null,
+                Title: null,
+                Description: null,
+                Todos: null,
+                Labels: null,
+                TrashingDate: null,
+                BgColor: null,
+                IsHidden: false,
+                IsTrashed: false,
+                IsArchived: false,
+                IsPinned: false,
+                IsMarked: false,
+                IsDraft: false,
+                IsArchieved: false,
+                IsRemainderAdded: false,
+                RemainderDateTime: null,
+            };
+            function fetchNoteCreationModal() {
+                var deferred = $.Deferred();
+
+                $.ajax({
+                    url: '/Notes/GetPartialView/' + userData.id,
+                    type: 'GET',
+                    success: function (result) {
+                        $('#myModal').find('.modal-content').html(result);
+                        $('#myModal').modal('show');
+                        deferred.resolve(result);
+                    },
+                    error: function () {
+                        alert('Error loading partial view');
+                    }
+                });
+
+                return deferred.promise();
+            }
+
+            function fetchUserData(dataFromPrevious) {
+                var deferred = $.Deferred();
+                $.ajax({
+                    url: '/Users/GetById/' + userData.id,
+                    type: 'GET',
+                    success: function (user) {
+                        deferred.resolve(user);
+                    },
+                    error: function () {
+                        alert('Error loading user data');
+                    }
+                });
+                return deferred.promise();
+            }
+
+            function createDraftNote(userData) {
+                var deferred = $.Deferred();
+                note.AuthorId = userData.id;
+                note.IsDraft = true;
+                var noteString = JSON.stringify(note);
+                $.ajax({
+                    url: '/Notes/CreateDraftNote/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: noteString,
+                    success: function (noteData) {
+                        deferred.resolve(noteData);
+                    },
+                    error: function () {
+                        alert('Error loading user data');
+                    }
+                });
+                return deferred.promise();
+            }
+
+            function saveNote(finalNote) {
+                var deferred = $.Deferred();
+                var noteString = JSON.stringify(finalNote);
+                $.ajax({
+                    url: '/Notes/SaveNote/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: noteString,
+                    success: function (noteData) {
+                        deferred.resolve(noteData);
+                    },
+                    error: function () {
+                        alert('Error loading user data');
+                    }
+                });
+                return deferred.promise();
+            }
+
+            function UploadAttachment(noteData, file) {
+                var deferred = $.Deferred();
+                var formData = new FormData();
+                formData.append("file", file);
+                
+                formData.append('attachmentMetaData', JSON.stringify({
+                    NoteId : noteData.id,
+                    FileType: file.type,
+                    ContentSize : file.size,
+                    OwnerId : noteData.authorId
+                }));
+
+                $.ajax({
+                    url: "/Attachments/AddAttachment",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+
+                    success: function (response) {
+                        deferred.resolve(response);
+                    },
+                    error: function () {
+                        alert('Error uploading attachment');
+                    }
+                });
+
+                return deferred.promise();
+            }
+
+            function DeleteAttachment(attachmentId) {
+                var deferred = $.Deferred();
+
+                $.ajax({
+                    url: "/Attachments/DeleteAttachment/" + attachmentId,
+                    type: "DELETE",
+                    success: function (response) {
+                        deferred.resolve(response);
+                    },
+                    error: function () {
+                        alert('Error deleting attachment');
+                    }
+                });
+
+                return deferred.promise();
+            }
+
+            function UploadLabel() {
+                // take all the labels as array
+                // make a obj
+                // stringify them
+                //save as one single label
+            }
+
+            function AddAuthorizer() { }
+
+            function DeleteAuthorizer() { }
+
 
            fetchNoteCreationModal()
            .then(function(data) {
                return fetchUserData(data);
            })
            .then(function(userData) {
-                console.log(userData);
-                //TODO: create a note obj
-                //TEST: wether note works 
-                //TODO: Upload attachments on Selection
-                //TODO: save label on db and create label Option
-                //TODO: Add remainder on note
-                //TODO: Implement home note container 
-                //TODO: implement Edit and Trash
-                //TODO: implements Sharing
+               return createDraftNote(userData);
+           })
+           .then(function(noteData) {
 
+                let totalSelectedAttachment = 0;
+                let totalUploadedAttachment = 0;
                 // modal handling code
+
+
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
+                const todoContainer = document.getElementById('todo-container');
+                const addTodoButton = document.getElementById('add-todo');
+                const todoToggle = document.querySelector('#myCheckbox');
+                const todoSection = document.getElementById('todo-section');
+                const noteTitle = document.getElementById('note-title');
+                const noteDescription = document.getElementById('note-description');
+
+                // getting all the buttons
+                const saveButton = document.getElementById('save-button');
+                const attachmentButton = document.getElementById('attachment-button');
+                const remainderButton = document.getElementById('remainder-button');
+                const authorizationButton = document.getElementById('authorization-button');
+
+                // data containers 
+                const todoInputs = []; // Array to store the todo input elements
+                const labelsInputs = []; // Array to store the label input elements
+
+                // Function to retrieve all the todo inputs
+                function getTodoInputs() {
+                    const todoValues = [];
+                    for (let i = 0; i < todoInputs.length; i++) {
+                        const todoInput = todoInputs[i];
+                        const todoValue = todoInput.value.trim();
+                        if (todoValue !== '') {
+                            todoValues.push(todoValue);
+                        }
+                    }
+                    return todoValues;
+                }
+
+                // Function to retrieve all the label inputs
+                function getLabelsInputs() {
+                    const labelsValues = [];
+                    for(let i = 0;i < labelsInputs.length;i++) {
+                        const labelInput = labelsInputs[i];
+                            const labelValue = labelInput.textContent.trim();
+                        if(labelValue != null) {
+                            labelsValues.push(labelValue);
+                        }
+                    }
+                    return labelsValues;
+                }
 
                 // label selecting code
                 labelSelect.addEventListener('change', function () {
@@ -86,15 +246,8 @@
                     labelElement.classList.add('labels-container-item');
                     labelElement.textContent = selectedLabel;
                     labelsContainer.appendChild(labelElement);
+                    labelsInputs.push(labelElement);
                 })
-
-                // Get the necessary elements
-                const todoContainer = document.getElementById('todo-container');
-                const addTodoButton = document.getElementById('add-todo');
-                const todoToggle = document.querySelector('#myCheckbox');
-                const todoSection = document.getElementById('todo-section');
-                todoSection.style.display = 'none';
-                const todoInputs = []; // Array to store the todo input elements
 
                 // Function to create a new todo element
                 function createTodoElement() {
@@ -119,9 +272,8 @@
                     // Add the input element to the todoInputs array
                     todoInputs.push(inputElement);
                 }
-                addTodoButton.addEventListener('click', createTodoElement);
 
-                // Event listener for the todo toggle checkbox
+                // Adding event listeners 
                 todoToggle.addEventListener('change', function () {
                     if (this.checked) {
                         todoSection.style.display = 'block'; // Show the todo container
@@ -129,19 +281,165 @@
                         todoSection.style.display = 'none'; // Hide the todo container
                     }
                 });
+                addTodoButton.addEventListener('click', createTodoElement);
+                remainderButton.addEventListener('click', function(){})
+                authorizationButton.addEventListener('click',AddAuthorizer);
 
-                // Function to retrieve all the todo inputs
-                function getTodoInputs() {
-                    const todoValues = [];
-                    for (let i = 0; i < todoInputs.length; i++) {
-                        const todoInput = todoInputs[i];
-                        const todoValue = todoInput.value.trim();
-                        if (todoValue !== '') {
-                            todoValues.push(todoValue);
-                        }
+                // attachment related code
+                $("#attachment-button").click(function () {
+                    // Trigger the file input element
+                    $("#file-input").click();
+                });
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js';
+
+                $("#file-input").change(function () {
+                    totalSelectedAttachment++;
+                    var file = this.files[0];
+                    // Check the file type
+                    if (file.type.startsWith("image/")) {
+                        // Upload the image to the database
+                        UploadAttachment(noteData, file)
+                        .then(function(attachmentId) {
+                            totalUploadedAttachment++;
+                            // Preview Image file
+                            previewImage(file, attachmentId);
+                        });
+                    } else if (file.type === "application/pdf") {
+                        // Upload the file to the database
+                        UploadAttachment(noteData, file)
+                        .then(function(attachmentId) {
+                            totalUploadedAttachment++;
+                            // Preview Pdf file
+                            previewPDF(file, attachmentId);
+                        });
                     }
-                    return todoValues;
+
+                    $(this).val("");
+                });
+
+                function previewImage(file, attachmentId) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        // Create an image element
+                        var img = $("<img>").attr("src", e.target.result);
+
+                        // Create the close button
+                        const closeButton = $('<button>', {
+                            class: 'close-button',
+                            html: '&times;'
+                        });
+                        // remove attachment from database
+                        closeButton.on('click', function () {
+                            var attachmentId = $(this).closest('.file-details').data('attachment-id');
+                            $.ajax({
+                                url: '/Attachments/Delete/' + attachmentId,
+                                method: 'DELETE',
+                                data: { attachmentId: attachmentId },
+                                success: function (response) {
+                                    totalSelectedAttachment--;
+                                    totalUploadedAttachment--;
+                                    closeButton.parent().remove();
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log('Error:', error);
+                                }
+                            });
+                        });
+
+                        // Append the image to the file details container
+                        var fileDetails = $("<div>")
+                            .addClass(["file-details"])
+                            .data('attachment-id', attachmentId)
+                            .append(img);
+                            fileDetails.append(closeButton);
+                        $("#file-details-container").append(fileDetails);
+                    };
+                    reader.readAsDataURL(file);
                 }
+
+                function previewPDF(file, attachmentId) {
+                        var fileReader = new FileReader();
+                        fileReader.onload = function () {
+                            var typedarray = new Uint8Array(this.result);
+
+                            // Load the PDF using pdf.js
+                            pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
+                                // Render the first page of the PDF
+                                pdf.getPage(1).then(function (page) {
+                                    var viewport = page.getViewport({ scale: 1 });
+                                    var canvas = $("<canvas>").get(0);
+                                    var context = canvas.getContext("2d");
+
+                                    canvas.width = viewport.width;
+                                    canvas.height = viewport.height;
+
+                                    // Render the PDF page to the canvas
+                                    page.render({
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    }).promise.then(function () {
+                                        // Create the close button
+                                        const closeButton = $('<button>', {
+                                            class: 'close-button',
+                                            html: '&times;'
+                                        });
+                                        closeButton.on('click', function () {
+                                            var attachmentId = $(this).closest('.file-details').data('attachment-id');
+                                            $.ajax({
+                                                url: 'Attachments/Delete/' + attachmentId,
+                                                method: 'DELETE',
+                                                data: { attachmentId: attachmentId },
+                                                success: function (response) {
+                                                    totalSelectedAttachment--;
+                                                    totalUploadedAttachment--;
+                                                    closeButton.parent().remove();
+                                                },
+                                                error: function (xhr, status, error) {
+                                                    console.log('Error:', error);
+                                                }
+                                            });
+                                        });
+                                        // Append the canvas to the file details container
+                                        var fileDetails = $("<div>")
+                                        .addClass("file-details")
+                                        .append(canvas);
+                                        $("#file-details-container")
+                                        .append(fileDetails);
+                                        fileDetails.append(closeButton);
+                                    });
+                                });
+                            }).catch(function (error) {
+                                console.error("Error occurred while loading PDF:", error);
+                            });
+                        };
+                        fileReader.readAsArrayBuffer(file);
+                    }
+
+                // Saving the note
+                $('#save-button').off('click').on('click', function() {
+                    if(totalSelectedAttachment === totalUploadedAttachment) {
+                        note.Id = noteData.id;
+                        note.AddedBy = noteData.authorId;
+                        note.Todos = JSON.stringify(getTodoInputs());
+                        note.Title = noteTitle.value;
+                        note.Description = noteDescription.value;
+                        note.Labels = JSON.stringify(getLabelsInputs());
+                        note.Type = null;
+                        note.IsDraft = false;
+                        note.IsRemainderAdded = false;
+                        note.IsDraft = false;
+                        note.RemainderDateTime = null;
+                        saveNote(note)
+                            .then(function (addedNote) {
+                                console.log(addedNote);
+                                $('#myModal').modal('hide');
+                            });
+                    } else {
+
+                    }
+                    
+                });
+                
            })
            .fail(function (error) {
                 console.error("Error in nested AJAX calls");
@@ -150,6 +448,5 @@
         });
         
     });
-
 
 </script>

@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Memoria.DataService.Data;
-using Memoria.Entities.DbSet;
+﻿using Microsoft.AspNetCore.Mvc;
 using Memoria.DataService.IConfiguration;
 using AutoMapper;
-using Memoria.Entities.DTOs.Outgoing;
 using Memoria.Entities.DTOs.Incomming;
 
 namespace MemoriaMVC.Controllers
@@ -35,21 +26,27 @@ namespace MemoriaMVC.Controllers
             return PartialView("_NoteCreationModal");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> CreateDraftNote(NoteSingleInDTO note)
+
+        [HttpPost]
+        public async Task<IActionResult> CreateDraftNote([FromBody] NoteSingleInDTO note)
         {
             var draftNote = await _unitOfWork.Notes.AddDraftNote(note);
             await _unitOfWork.CompleteAsync();
             return Json(draftNote);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SaveNote(NoteSingleInDTO note)
+        [HttpPost]
+        public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
         {
-            await _unitOfWork.Notes.Add(note);
+            var finalNote = await _unitOfWork.Notes.AddFinalNote(finalNoteDto);
             await _unitOfWork.CompleteAsync();
-            return Ok();
+            return Json(finalNote);
         }
+
+
+
+
+        
         /*
         // GET: Notes/Details/5
         public async Task<IActionResult> Details(string id)

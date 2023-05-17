@@ -12,6 +12,9 @@ namespace Memoria.DataService.IRepository
     public interface INoteRepository
     {
         Task<NoteSingleOutDTO?> AddDraftNote(NoteSingleInDTO noteDto);
+
+        Task<NoteSingleOutDTO?> AddFinalNote(NoteSingleInDTO noteDto);
+
         Task<bool> Add(NoteSingleInDTO noteDto);
     }
 }

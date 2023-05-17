@@ -7,14 +7,24 @@ using System.Threading.Tasks;
 
 namespace Memoria.Entities.DTOs.Outgoing
 {
-    public class NoteSingleOutDTO : BaseDTO
+    public class NoteSingleOutDTO
     {
+        public string Id { get; set; }
+        public int Status { get; set; } = 1;
+        public DateTime AddedDateAndTime { get; set; }
+        public DateTime UpdatedDateAndTime { get; set; }
+        public string UpdatedBy { get; set; }
+        public string AddedBy { get; set; }
+        public string? FileFormat { get; set; }
+        public string? AuthorId { get; set; }
         public string? Type { get; set; }
         public string? Title { get; set; }
 
         public string? Description { get; set; }
 
         public string? Todos { get; set; }
+
+        public string? Labels { get; set; }
 
         public System.DateTime? TrashingDate { get; set; }
 
@@ -38,10 +48,5 @@ namespace Memoria.Entities.DTOs.Outgoing
 
 
         public System.DateTime? RemainderDateTime { get; set; }
-
-
-        public User User { get; set; }
-
-        public ICollection<NoteLabel>? Labels { get; set; }
     }
 }

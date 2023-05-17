@@ -71,5 +71,27 @@ namespace Memoria.DataService.Repository
             return null;
         }
 
+        public virtual async Task<bool> Upsert(T entity, string id)
+        {
+            try
+            {
+                var existingEntity = await _dbSet.FindAsync(id);
+                if (existingEntity != null)
+                {
+                    _dbSet.Entry(existingEntity).CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    await _dbSet.AddAsync(entity);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return false;
+            }
+        }
+
     }
 }

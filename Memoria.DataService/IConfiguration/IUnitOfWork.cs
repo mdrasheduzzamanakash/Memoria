@@ -1,4 +1,6 @@
 ﻿using Memoria.DataService.IRepository;
+using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,7 @@ namespace Memoria.DataService.IConfiguration
         IAuthorizationRepository Authorizations { get; }
         ICommentRepository Comments { get; }
 
+        Task<string> AddAttachmentAsync(AttachmentSingleInDTO attachment);
         Task CompleteAsync();
 
     }

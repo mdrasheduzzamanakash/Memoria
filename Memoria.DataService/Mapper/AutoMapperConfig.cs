@@ -17,6 +17,7 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
                 cfg.CreateMap<NoteSingleInDTO, Note>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
+                cfg.CreateMap<AttachmentSingleInDTO, Attachment>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();
