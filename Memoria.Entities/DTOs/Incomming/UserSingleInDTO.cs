@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Memoria.Entities.DTOs.Incomming
+﻿namespace Memoria.Entities.DTOs.Incomming
 {
-    public class UserSingleInDTO : BaseDTO
+    public class UserSingleInDTO
     {
+        public string Id { get; set; }
+        public int? Status { get; set; }
+        public System.DateTime? UpdatedDateAndTime { get; set; }
+        public string? UpdatedBy { get; set; }
+        public string? AddedBy { get; set; }
+        public string? FileFormat { get; set; }
         public string FirstName { get; set; }
 
         public string LastName { get; set; }

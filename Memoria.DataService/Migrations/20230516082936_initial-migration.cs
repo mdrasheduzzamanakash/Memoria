@@ -51,6 +51,39 @@ namespace Memoria.DataService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notes",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AuthorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Todos = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TrashingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BgColor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsHidden = table.Column<bool>(type: "bit", nullable: false),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
+                    IsPinned = table.Column<bool>(type: "bit", nullable: false),
+                    IsMarked = table.Column<bool>(type: "bit", nullable: false),
+                    IsDraft = table.Column<bool>(type: "bit", nullable: false),
+                    IsArchieved = table.Column<bool>(type: "bit", nullable: false),
+                    IsRemainderAdded = table.Column<bool>(type: "bit", nullable: false),
+                    RemainderDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
                 {
@@ -315,26 +348,12 @@ namespace Memoria.DataService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notes",
+                name: "Trashs",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Todos = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TrashingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BgColor = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsHidden = table.Column<bool>(type: "bit", nullable: false),
-                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
-                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
-                    IsPinned = table.Column<bool>(type: "bit", nullable: false),
-                    IsMarked = table.Column<bool>(type: "bit", nullable: false),
-                    IsDraft = table.Column<bool>(type: "bit", nullable: false),
-                    IsArchieved = table.Column<bool>(type: "bit", nullable: false),
-                    IsRemainderAdded = table.Column<bool>(type: "bit", nullable: false),
-                    RemainderDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    NoteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TrasherId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -344,10 +363,16 @@ namespace Memoria.DataService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notes", x => x.Id);
+                    table.PrimaryKey("PK_Trashs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notes_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Trashs_Notes_NoteId",
+                        column: x => x.NoteId,
+                        principalTable: "Notes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Trashs_Users_TrasherId",
+                        column: x => x.TrasherId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -384,36 +409,6 @@ namespace Memoria.DataService.Migrations
                     table.ForeignKey(
                         name: "FK_NoteLabels_Users_AssignerId",
                         column: x => x.AssignerId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Trashs",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NoteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TrasherId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    AddedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedDateAndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FileFormat = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Trashs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Trashs_Notes_NoteId",
-                        column: x => x.NoteId,
-                        principalTable: "Notes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Trashs_Users_TrasherId",
-                        column: x => x.TrasherId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -496,11 +491,6 @@ namespace Memoria.DataService.Migrations
                 name: "IX_NoteLabels_NoteId",
                 table: "NoteLabels",
                 column: "NoteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_UserId",
-                table: "Notes",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trashs_NoteId",

@@ -24,7 +24,6 @@ namespace Memoria.DataService.Repository
             var user = _mapper.Map<User>(userDto);
 
             var note = new Note();
-            note.User = user;
             note.IsRemainderAdded = false;
             var status = await base.Add(note);
             if(status)

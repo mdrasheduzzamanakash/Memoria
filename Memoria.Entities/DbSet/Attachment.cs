@@ -11,15 +11,12 @@ namespace Memoria.Entities.DbSet
     public class Attachment : BaseEntity
     {
         public string NoteId { get; set; }
-        public string ContentType { get; set; }
+        public string FileType { get; set; }
 
-        public int ContentSize { get; set; }
+        public int? ContentSize { get; set; }
 
-        public byte[] Content { get; set; }
+        public byte[] file { get; set; }
 
-        [ForeignKey("User")]
-        [Required]
-        public string UserId { get; set; }
-        public virtual User User { get; set; }
+        public string OwnerId { get; set; }
     }
-}
+}   

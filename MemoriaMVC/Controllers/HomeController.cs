@@ -19,7 +19,7 @@ namespace MemoriaMVC.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "Home Page";
-            var user = await _unitOfWork.Users.GetById("8c5ab811-8636-4812-9439-05210cbb9585");
+            var user = await _unitOfWork.Users.GetById("1ff4e1cd-6081-450d-abef-5c1667daf7f7");
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
             return View(userViewModel);
         }

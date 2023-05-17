@@ -10,6 +10,7 @@ namespace Memoria.Entities.DbSet
 {
     public class Note : BaseEntity
     {
+        public string? AuthorId { get; set; }
         public string? Type { get; set; }
         public string? Title { get; set; }
 
@@ -36,12 +37,8 @@ namespace Memoria.Entities.DbSet
 
         public bool IsArchieved { get; set; } = false;
 
-        public bool IsRemainderAdded { get; set; }
+        public bool IsRemainderAdded { get; set; } = false;
 
         public System.DateTime? RemainderDateTime { get; set; }
-
-        public User User { get; set; }
-
-        public ICollection<NoteLabel>? Labels { get; set; }
     }
 }

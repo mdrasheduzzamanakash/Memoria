@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memoria.DataService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230515110230_initial-migration")]
+    [Migration("20230516082936_initial-migration")]
     partial class initialmigration
     {
         /// <inheritdoc />
@@ -223,6 +223,10 @@ namespace Memoria.DataService.Migrations
                     b.Property<DateTime?>("AddedDateAndTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BgColor")
                         .HasColumnType("nvarchar(max)");
 
@@ -280,12 +284,7 @@ namespace Memoria.DataService.Migrations
                     b.Property<DateTime?>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Notes");
                 });
@@ -724,15 +723,6 @@ namespace Memoria.DataService.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Memoria.Entities.DbSet.Note", b =>
-                {
-                    b.HasOne("Memoria.Entities.DbSet.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Memoria.Entities.DbSet.NoteLabel", b =>
                 {
                     b.HasOne("Memoria.Entities.DbSet.User", "Assigner")
@@ -746,7 +736,7 @@ namespace Memoria.DataService.Migrations
                         .IsRequired();
 
                     b.HasOne("Memoria.Entities.DbSet.Note", "Note")
-                        .WithMany("Labels")
+                        .WithMany()
                         .HasForeignKey("NoteId");
 
                     b.Navigation("Assigner");
@@ -822,11 +812,6 @@ namespace Memoria.DataService.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Memoria.Entities.DbSet.Note", b =>
-                {
-                    b.Navigation("Labels");
                 });
 #pragma warning restore 612, 618
         }
