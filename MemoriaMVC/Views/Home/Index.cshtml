@@ -30,7 +30,7 @@
                 Status: 0,
                 UpdatedDateAndTime: null,
                 UpdatedBy: null,
-                AddedBy: userData.Id,
+                AddedBy: null,
                 FileFormat: null,
                 Type: null,
                 Title: null,
@@ -91,8 +91,8 @@
                     type: 'POST',
                     contentType: 'application/json',
                     data: noteString,
-                    success: function (data) {
-                        deferred.resolve(data);
+                    success: function (noteData) {
+                        deferred.resolve(noteData);
                     },
                     error: function () {
                         alert('Error loading user data');
@@ -101,11 +101,17 @@
                 return deferred.promise();
             }
 
-            function UploadAttachment(userData, file) {
+            function UploadAttachment(noteData, file) {
                 var deferred = $.Deferred();
                 var formData = new FormData();
                 formData.append("file", file);
-                formData.append('userData', JSON.stringify(userData));
+                
+                formData.append('attachmentMetaData', JSON.stringify({
+                    NoteId : noteData.id,
+                    FileType: file.type,
+                    ContentSize : file.size,
+                    OwnerId : noteData.authorId
+                }));
 
                 $.ajax({
                     url: "/Attachments/AddAttachment",
@@ -124,8 +130,6 @@
 
                 return deferred.promise();
             }
-
-
 
             function DeleteAttachment(attachmentId) {
                 var deferred = $.Deferred();
@@ -163,10 +167,13 @@
            .then(function(userData) {
                return createDraftNote(userData);
            })
-           .then(function(userData) {
+           .then(function(noteData) {
+                
+                let totalSelectedAttachment = 0;
+                let totalUploadedAttachment = 0;
                 // modal handling code
                 
-                console.log(userData);
+                console.log(noteData);
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
                 const todoContainer = document.getElementById('todo-container');
@@ -249,6 +256,31 @@
                 });
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js';
 
+                $("#file-input").change(function () {
+                    totalSelectedAttachment++;
+                    var file = this.files[0];
+                    // Check the file type
+                    if (file.type.startsWith("image/")) {
+                        // Upload the image to the database
+                        UploadAttachment(noteData, file)
+                        .then(function(attachmentId) {
+                            totalUploadedAttachment++;
+                            // Preview Image file
+                            previewImage(file, attachmentId);
+                        });
+                    } else if (file.type === "application/pdf") {
+                        // Upload the file to the database
+                        UploadAttachment(noteData, file)
+                        .then(function(attachmentId) {
+                            totalUploadedAttachment++;
+                            // Preview Pdf file
+                            previewPDF(file, attachmentId);
+                        });
+                    }
+
+                    $(this).val("");
+                });
+
                 function previewImage(file, attachmentId) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
@@ -264,10 +296,12 @@
                         closeButton.on('click', function () {
                             var attachmentId = $(this).closest('.file-details').data('attachment-id');
                             $.ajax({
-                                url: 'delete_attachment.php',
+                                url: '/Attachments/Delete/' + attachmentId,
                                 method: 'POST',
                                 data: { attachmentId: attachmentId },
                                 success: function (response) {
+                                    totalSelectedAttachment--;
+                                    totalUploadedAttachment--;
                                     closeButton.parent().remove();
                                 },
                                 error: function (xhr, status, error) {
@@ -286,6 +320,7 @@
                     };
                     reader.readAsDataURL(file);
                 }
+
                 function previewPDF(file, attachmentId) {
                         var fileReader = new FileReader();
                         fileReader.onload = function () {
@@ -315,10 +350,12 @@
                                         closeButton.on('click', function () {
                                             var attachmentId = $(this).closest('.file-details').data('attachment-id');
                                             $.ajax({
-                                                url: 'delete_attachment.php',
+                                                url: 'Attachments/Delete/' + attachmentId,
                                                 method: 'POST',
                                                 data: { attachmentId: attachmentId },
                                                 success: function (response) {
+                                                    totalSelectedAttachment--;
+                                                    totalUploadedAttachment--;
                                                     closeButton.parent().remove();
                                                 },
                                                 error: function (xhr, status, error) {
@@ -342,37 +379,9 @@
                         fileReader.readAsArrayBuffer(file);
                     }
 
-                $("#file-input").change(function () {
-                    var file = this.files[0];
-                    // Check the file type
-                    if (file.type.startsWith("image/")) {
-                        // Upload the image to the database
-                        UploadAttachment(userData, file)
-                        .then(function(attachmentId) {
-                            // Preview Image file
-                            previewImage(file, attachmentId);
-                        });
-                    } else if (file.type === "application/pdf") {
-                        // Upload the file to the database
-                        UploadAttachment(userData, file)
-                        .then(function(attachmentId) {
-                            // Preview Pdf file
-                            previewPDF(file, attachmentId);
-                        });
-                    }
-
-                    $(this).val("");
-                });
-
                 // Saving the note
                 $('#save-button').off('click').on('click', function() {
-                    // complete attachment uploading 
-                    // complete labels uploading 
-                    // get title and description 
-                    // get todos as obj and then string 
-                    // add the todos to the note 
-                    // initialize misselenous properties of the note
-                    // upload the note using ajax call 
+                    
                 });
 
            })
@@ -383,5 +392,31 @@
         });
         
     });
+    /*
+    var note = {
+                AuthorId: null,
+                Id: null,
+                Status: 0,
+                UpdatedDateAndTime: null,
+                UpdatedBy: null,
+                AddedBy: userData.Id,
+                FileFormat: null,
+                Type: null,
+                Title: null,
+                Description: null,
+                Todos: null,
+                TrashingDate: null,
+                BgColor: null,
+                IsHidden: false,
+                IsTrashed: false,
+                IsArchived: false,
+                IsPinned: false,
+                IsMarked: false,
+                IsDraft: false,
+                IsArchieved: false,
+                IsRemainderAdded: false,
+                RemainderDateTime: null,
+            };
+    */
 
 </script>

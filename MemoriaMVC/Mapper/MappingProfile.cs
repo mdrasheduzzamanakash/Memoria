@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.ViewModel.Attachment;
 using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 
@@ -30,6 +31,8 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<UserSingleOutDTO, UserEditViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+
+            CreateMap<AttachmentViewModel, AttachmentSingleInDTO>();
 
         }
 

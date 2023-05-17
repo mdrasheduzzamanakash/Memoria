@@ -12,6 +12,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using Memoria.Entities.DTOs.Outgoing;
 using Memoria.Entities.DTOs.Incomming;
+using MemoriaMVC.ViewModel.Attachment;
 
 namespace MemoriaMVC.Controllers
 {
@@ -25,20 +26,33 @@ namespace MemoriaMVC.Controllers
         public async Task<IActionResult> AddAttachment()
         {
             var file = Request.Form.Files[0];
-            string userDataString = Request.Form["userData"];
-            
+            string attachMentMetaDataString = Request.Form["attachmentMetaData"];
+
             if(file == null)
             {
                 throw new ArgumentNullException(nameof(file));
             } 
-            if(userDataString == null)
+            if(attachMentMetaDataString == null)
             {
-                throw new ArgumentNullException(userDataString, nameof(userDataString));
+                throw new ArgumentNullException(attachMentMetaDataString, nameof(attachMentMetaDataString));
             }
 
-            var user = JsonConvert.DeserializeObject<UserSingleInDTO>(userDataString);
+            var attachmentMetaData = JsonConvert.DeserializeObject<AttachmentViewModel>(attachMentMetaDataString);
 
-            return View(user);
+            var attchmentDto = _mapper.Map<AttachmentSingleInDTO>(attachmentMetaData);
+
+            // auto clearing memory via disposable object
+            using (var memoryStream = new MemoryStream())
+            {
+                file.CopyTo(memoryStream);
+                attachmentMetaData.file = memoryStream.ToArray();
+            }
+
+            var attachmentMetaDataDto = _mapper.Map<AttachmentSingleInDTO>(attachmentMetaData);
+            // now add to the database
+            string attachmentId = await _unitOfWork.AddAttachmentAsync(attachmentMetaDataDto);
+
+            return Json(attachmentId);
         }
 
 
