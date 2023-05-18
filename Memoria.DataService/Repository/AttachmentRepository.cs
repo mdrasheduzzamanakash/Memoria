@@ -3,6 +3,8 @@ using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
+using Memoria.Entities.DTOs.Outgoing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -27,5 +29,19 @@ namespace Memoria.DataService.Repository
         {
             return await base.Delete(id);
         }
+
+        public async Task<List<AttachmentSingleOutDTO>> GetFirstOneByIds(string[] noteIds)
+        {
+            var attachments = await _dbSet
+                .Where(x => noteIds.Contains(x.NoteId))
+                .GroupBy(x => x.Id)
+                .Select(x => x.First())
+                .ToListAsync();
+
+            var attachmentDtos = attachments.Select(_mapper.Map<AttachmentSingleOutDTO>).ToList();
+
+            return attachmentDtos;
+        }
+
     }
 }

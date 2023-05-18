@@ -4,6 +4,7 @@ using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,18 @@ namespace Memoria.DataService.Repository
             await base.Upsert(finalNote, finalNote.Id);
             var finalNoteOutDto = _mapper.Map<NoteSingleOutDTO>(finalNote);
             return finalNoteOutDto;
+        }
+
+        public async Task<List<NoteSingleOutDTO>> AllNotesWithOutDraft(string authorId)
+        {
+            var notes = await _dbSet.Where(x => x.AuthorId == authorId && x.IsDraft == false).ToListAsync();
+            var notesDto = new List<NoteSingleOutDTO>();
+            foreach (var note in notes)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                notesDto.Add(noteDto);
+            }
+            return notesDto;
         }
     }
 }

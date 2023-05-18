@@ -107,7 +107,24 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
+    .remainder-container {
+        align-items: center;
+        justify-content: center;
+        justify-items: center;
+        height 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border: solid 1px;
+        border-radius: 20px;
+    }
 
+    .remainder-container-item {
+        padding: 5px 10px;
+        border-radius: 10px;
+        margin-left: 20px;
+        border-color: blue;
+    }
 
 
 </style>
@@ -130,13 +147,16 @@
         </div>
     </div>
 
+    <div class="ramainder-container">
+        <input class="remainder-container-item" type="datetime-local" id="reminder-datepicker" style="display: none;">
+    </div>
+
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <div class="labels-container" id="labelsContainer">
         <!--labels container-->
     </div>
-    <hr />
     <div class="form-group">
         <label for="note-title">Title</label>
         <input type="text" class="form-control" id="note-title" placeholder="Enter note title">
@@ -158,22 +178,20 @@
     <input type="file" id="file-input" style="display: none">
 
 </div>
-<!-- Font Awesome CDN link for icons -->
 <div class="modal-footer">
 
     <button type="button" class="btn btn-outline-primary" id="authorization-button">
-        <i class="fas fa-user-plus"></i>
+        <i class="fas fa-user-plus"></i> Collaborator
     </button>
     <button type="button" class="btn btn-outline-primary" id="remainder-button">
-        <i class="fas fa-clock"></i>
+        <i class="fas fa-clock"></i> Remainder
     </button>
 
     <button type="button" class="btn btn-outline-primary" id="attachment-button">
         <i class="fas fa-paperclip"></i>
     </button>
-    <button type="button" class="btn btn-outline-primary" id="save-button">
+    <button type="button" class="btn btn-outline-primary" id="save-button" disabled>
         <i class="fas fa-save"></i> Save
     </button>
 
 </div>
-
