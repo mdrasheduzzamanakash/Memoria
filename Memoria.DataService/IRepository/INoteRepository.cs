@@ -16,5 +16,7 @@ namespace Memoria.DataService.IRepository
         Task<NoteSingleOutDTO?> AddFinalNote(NoteSingleInDTO noteDto);
 
         Task<bool> Add(NoteSingleInDTO noteDto);
+
+        Task<List<NoteSingleOutDTO>> AllNotesWithOutDraft(string id);
     }
 }

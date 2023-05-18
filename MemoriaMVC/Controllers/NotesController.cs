@@ -2,6 +2,7 @@
 using Memoria.DataService.IConfiguration;
 using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
+using Newtonsoft.Json;
 
 namespace MemoriaMVC.Controllers
 {
@@ -11,7 +12,24 @@ namespace MemoriaMVC.Controllers
         {
         }
 
-        // GET: Notes
+        // get all attachments previews 
+        [HttpGet]
+        public async Task<IActionResult> AllAttachmentPreview([FromQuery] string noteIds)
+        {
+            var noteIdsArray = JsonConvert.DeserializeObject<string[]>(noteIds);
+            var attchmentPreviews = await _unitOfWork.Attachments.GetFirstOneByIds(noteIdsArray);
+            return Json(attchmentPreviews);
+        }
+
+        // get all the notes 
+        [HttpGet]
+        public async Task<IActionResult> AllWithOutDraft(string authorId)
+        {
+            var notes = await _unitOfWork.Notes.AllNotesWithOutDraft(authorId);
+            return Json(notes);
+        }
+
+        // get partial view        
         [HttpGet]
         public async Task<IActionResult> GetPartialViewAsync(string id)
         {
@@ -26,7 +44,7 @@ namespace MemoriaMVC.Controllers
             return PartialView("_NoteCreationModal");
         }
 
-
+        // create draft note from empty note
         [HttpPost]
         public async Task<IActionResult> CreateDraftNote([FromBody] NoteSingleInDTO note)
         {
@@ -34,7 +52,8 @@ namespace MemoriaMVC.Controllers
             await _unitOfWork.CompleteAsync();
             return Json(draftNote);
         }
-
+        
+        // Save note using updated note
         [HttpPost]
         public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
         {
