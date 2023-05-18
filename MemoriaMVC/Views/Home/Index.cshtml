@@ -1,0 +1,185 @@
+﻿@model MemoriaMVC.ViewModel.HomePageViewModel.HomeIndexViewModel
+
+<style>
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-create-note {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 700px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-note-container {
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: 10px;
+        
+    }
+
+    .flex-note-container-item {
+        margin: 10px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #fff;
+        border-radius: 8px;
+        align-self: flex-start;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .flex-note-container-item:hover {
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
+
+</style>
+
+<div class="flex-note-container" id="card-container"></div>
+
+<div id="myModal" class="modal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- modal content goes here -->
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    var userData = @Html.Raw(Json.Serialize(@Model));
+</script>
+<script src="~/js//noteCreationModal.js"></script>
+
+
+<script>
+    // home page functionality
+    $(function () {
+        var nonDraftNotes = [];
+        var attachments = []; // only one attachment per note is here
+
+        function fetchNonDraftNotes() {
+            var deferred = $.Deferred();
+
+            $.ajax({
+                url: "/Notes/AllWithOutDraft/",
+                data: {
+                    authorId: userData.id
+                },
+                success: function (response) {
+                    deferred.resolve(response);
+                },
+                error: function (xhr, status, error) {
+                    console.log("error in fetchNonDraftNotes");
+                }
+            });
+
+            return deferred.promise();
+        }
+
+        function fetchAttachmentPreview(notes) {
+            var deferred = $.Deferred();
+
+            var noteIds = ["fs4414rfa", "f42142asdf"];
+            for (let i = 0; i < nonDraftNotes.length; i++) {
+                noteIds.push(nonDraftNotes[i].id);
+            }
+
+            $.ajax({
+                url: "/Notes/AllAttachmentPreview/",
+                data: {
+                    noteIds: JSON.stringify(noteIds) // Serialize the array as a JSON string
+                },
+                success: function (response) {
+                    attachments = response;
+                    deferred.resolve(response);
+                },
+                error: function (xhr, status, error) {
+                    console.log("error in fetchAttachmentPreview");
+                }
+            });
+
+            return deferred.promise();
+        }
+
+        function showRawCard() {
+            for(let i = 0;i < nonDraftNotes.length;i++) {
+                var cardData = nonDraftNotes[i];
+                var maxTitleLength = 50;
+                var maxDescriptionLength = 100; // maximum length for description
+
+                // Truncate the description if it exceeds the maximum length
+                var truncatedDescription = cardData.description.length > maxDescriptionLength
+                    ? cardData.description.slice(0, maxDescriptionLength) + '...'
+                    : cardData.description;
+                var truncatedTitle = cardData.title.length > maxTitleLength
+                    ? cardData.title.slice(0, maxTitleLength) + '...'
+                    : cardData.title;
+
+                var todosArray = JSON.parse(cardData.todos);
+                todosArray = todosArray.slice(0, 3).map(todo => {
+                    if (todo.length > 25) {
+                        console.log(todo.length);
+                        return todo.slice(0, 25) + '...';
+                    } else {
+                        return todo;
+                    }
+                });
+
+                
+
+                // Create the card HTML using template literals
+                var cardHTML = `
+                    <div class="flex-note-container-item" style=" width: 18rem;">
+                        <img src="..." class="" alt="...">
+                        <div class="">
+                                <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
+                            <p class="">${truncatedDescription}</p>
+                         </div>
+                        <ul class="">
+                                ${todosArray
+                                    .map(item => `<li class="">${item}</li>`)
+                                    .join('')}
+                        </ul>
+                        <div class="">
+                            <a href="#" class="">Card link</a>
+                            <a href="#" class="">Another link</a>
+                        </div>
+                    </div>
+                `;
+
+                // Append the card HTML to the container
+                var cardContainer = document.getElementById('card-container');
+                cardContainer.innerHTML += cardHTML;
+            }
+        }
+        
+        fetchNonDraftNotes()
+        .then(function(data) {
+            nonDraftNotes = data;
+            console.log(data);
+            return fetchAttachmentPreview(data);
+        })
+        .then(function(data) {
+            attachments = data;
+            console.log(attachments);
+            // make the notes view 
+            showRawCard();
+            showAttachmentPreviewToEachCard();
+        })
+    })
+</script>
+

@@ -9,7 +9,7 @@ namespace Memoria.DataService.IRepository
     public interface IGenericRepository<T> where T : class
     {
         // GET all entities 
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> All();
 
         // GET by id 
         Task<T> GetById(string id);
@@ -19,8 +19,5 @@ namespace Memoria.DataService.IRepository
 
         // Delete an entity
         Task<bool> Delete(string id);
-
-        // Update an entity or add if doesn't exist
-        Task<bool> Upsert(T entity);
     }
 }
