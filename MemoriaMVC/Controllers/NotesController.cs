@@ -12,15 +12,7 @@ namespace MemoriaMVC.Controllers
         {
         }
 
-        // get all attachments previews 
-        [HttpGet]
-        public async Task<IActionResult> AllAttachmentPreview([FromQuery] string noteIds)
-        {
-            var noteIdsArray = JsonConvert.DeserializeObject<string[]>(noteIds);
-            var attchmentPreviews = await _unitOfWork.Attachments.GetFirstOneByIds(noteIdsArray);
-            return Json(attchmentPreviews);
-        }
-
+       
         // get all the notes 
         [HttpGet]
         public async Task<IActionResult> AllWithOutDraft(string authorId)

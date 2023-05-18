@@ -150,6 +150,12 @@ $(function () {
 
         function DeleteAuthorizer() { }
 
+        function GetDefaultAttachment(noteId) {
+            $.ajax({
+                
+            });
+        }
+
 
         fetchNoteCreationModal()
             .then(function (data) {
@@ -254,6 +260,7 @@ $(function () {
                 }
 
                 function showSingleRawCardTop(newNote) {
+                    console.log(newNote);
                     var maxTitleLength = 50;
                     var maxDescriptionLength = 100; // maximum length for description
 
@@ -274,25 +281,29 @@ $(function () {
                             return todo;
                         }
                     });
+                    
 
 
                     // Create the card HTML using template literals
                     var cardHTML = `
-                        <div class="flex-note-container-item" style=" width: 18rem;">
-                          <img src="..." class="" alt="...">
-                          <div class="">
-                            <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                            <p class="">${truncatedDescription}</p>
-                          </div>
-                          <ul class="">
-                            ${todosArray
-                                    .map(item => `<li class="">${item}</li>`)
-                                    .join('')}
-                          </ul>
-                          <div class="">
-                            <a href="#" class="">Card link</a>
-                            <a href="#" class="">Another link</a>
-                          </div>
+                        <div class="flex-note-container-item" style=" width: 18rem;" id="${newNote.id}">
+
+                            <div style="padding:10px;">
+                                <div class="">
+                                <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
+                                <p class="">${truncatedDescription}</p>
+                                </div>
+                                <ul class="">
+                                ${todosArray
+                                        .map(item => `<li class="">${item}</li>`)
+                                        .join('')}
+                                </ul>
+                                <div class="">
+                                <a href="#" class="">Card link</a>
+                                <a href="#" class="">Another link</a>
+                                </div>
+                             </div>
+                          
                         </div>
                       `;
 
@@ -301,6 +312,28 @@ $(function () {
                     cardContainer.insertAdjacentHTML('afterbegin', cardHTML);
                 }
 
+                function showAttachmentPreviewToEachCard(attachment) {
+                    try {
+                        var attachment = attachments[i];
+                        var noteElement = document.getElementById(attachment.noteId);
+
+                        if (attachment.fileType.startsWith('image')) {
+                            // Create an img element for image preview
+                            var imgElement = document.createElement('img');
+                            imgElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
+                            imgElement.classList.add('image-preview-in-note');
+                            noteElement.insertBefore(imgElement, noteElement.firstChild);
+                        } else if (attachment.fileType === 'application/pdf') {
+                            // Create an iframe element for PDF preview
+                            var iframeElement = document.createElement('iframe');
+                            iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
+                            iframeElement.classList.add('pdf-preview-in-note');
+                            noteElement.insertBefore(iframeElement, noteElement.firstChild);
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
 
                 // Adding event listeners 
                 labelSelect.addEventListener('change', insertANewLabel);
@@ -490,7 +523,6 @@ $(function () {
                         saveNote(note)
                             .then(function (addedNote) {
                                 $('#myModal').modal('hide');
-                                console.log('---',addedNote)
                                 showSingleRawCardTop(addedNote);
                             });
                     } else {

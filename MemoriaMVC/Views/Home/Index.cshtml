@@ -31,7 +31,6 @@
 
     .flex-note-container-item {
         margin: 10px;
-        padding: 10px;
         box-sizing: border-box;
         background-color: #fff;
         border-radius: 8px;
@@ -44,10 +43,25 @@
         box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.2);
     }
 
+    .image-preview-in-note {
+        width: inherit;
+        height: inherit;
+    }
+
+    .pdf-preview-in-note {
+        width: inherit;
+        height: inherit;
+        scroll-behavior:unset;
+    }
+
+    .note-link-container {
+        display:flex;
+        flex-direction:column;
+    }
+
 </style>
 
 <div class="flex-note-container" id="card-container"></div>
-
 <div id="myModal" class="modal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -56,12 +70,9 @@
     </div>
 </div>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script>
-    var userData = @Html.Raw(Json.Serialize(@Model));
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+<script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
 <script src="~/js//noteCreationModal.js"></script>
 
 
@@ -99,7 +110,7 @@
             }
 
             $.ajax({
-                url: "/Notes/AllAttachmentPreview/",
+                url: "/Attachments/AllAttachmentPreview/",
                 data: {
                     noteIds: JSON.stringify(noteIds) // Serialize the array as a JSON string
                 },
@@ -113,6 +124,45 @@
             });
 
             return deferred.promise();
+        }
+
+        function showAttachmentPreviewToEachCard() {
+            try {
+                for (var i = 0; i < attachments.length; i++) {
+                    try {
+                        var attachment = attachments[i];
+                        var noteElement = document.getElementById(attachment.noteId);
+
+                        if (attachment.fileType.startsWith('image')) {
+                            // Create an img element for image preview
+                            var imgElement = document.createElement('img');
+                            imgElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
+                            imgElement.classList.add('image-preview-in-note');
+                            noteElement.insertBefore(imgElement, noteElement.firstChild);
+                        } else if (attachment.fileType === 'application/pdf') {
+                            // Create an iframe element for PDF preview
+                            var iframeElement = document.createElement('iframe');
+                            iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
+                            iframeElement.classList.add('pdf-preview-in-note');
+                            noteElement.insertBefore(iframeElement, noteElement.firstChild);
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            } catch(ex) {
+                console.log(ex);
+            }
+        }
+
+        function extractLinks(text) {
+            try {
+                var urlRegex = /(https?:\/\/[^\s]+)/g;
+                var urls = text.match(urlRegex);
+                return urls;
+            } catch(ex) {
+                console.log(ex);
+            }
         }
 
         function showRawCard() {
@@ -139,46 +189,69 @@
                     }
                 });
 
-                
 
                 // Create the card HTML using template literals
                 var cardHTML = `
-                    <div class="flex-note-container-item" style=" width: 18rem;">
-                        <img src="..." class="" alt="...">
-                        <div class="">
-                                <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                            <p class="">${truncatedDescription}</p>
-                         </div>
-                        <ul class="">
-                                ${todosArray
-                                    .map(item => `<li class="">${item}</li>`)
-                                    .join('')}
-                        </ul>
-                        <div class="">
-                            <a href="#" class="">Card link</a>
-                            <a href="#" class="">Another link</a>
+                        <div class="flex-note-container-item" style=" width: 18rem;" id="${cardData.id}">
+
+                            <div style="padding:10px;">
+                                <div class="">
+                                    <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
+                                    <p class="">${truncatedDescription}</p>
+                                </div>
+                                <ul class="">
+                                    ${todosArray
+                                    .map(item => `<li class="">${item}</li>`).join('')}
+                                </ul>
+                                <div class="note-link-container">
+                                    
+                                </div>
+                            </div>
                         </div>
-                    </div>
                 `;
 
                 // Append the card HTML to the container
                 var cardContainer = document.getElementById('card-container');
                 cardContainer.innerHTML += cardHTML;
+
+                var links
             }
         }
-        
+
+        function showLinksPerNote() {
+            for(let i = 0;i < nonDraftNotes.length;i++) {
+                
+                try {
+                    var text = nonDraftNotes[i].description;
+                    var links = extractLinks(text);
+                    if(links != null) {
+                        var noteContainer = document.getElementById(nonDraftNotes[i].id);
+                        var linkContainer = noteContainer.querySelector('.note-link-container');
+                        for(let j = 0;j < links.length;j++) {
+                            var link = links[j];
+                            var linkText = link.slice(0, 35) + '...';
+                            var linkHTML = `<a href="${link}" style="text-decoration: none;
+                                                                         color: #808080">${linkText}</a>`;
+                            linkContainer.innerHTML += linkHTML;
+                        }
+                    }
+                } catch(ex) {
+                    console.log(ex);
+                }
+                
+            }
+        }
+
         fetchNonDraftNotes()
         .then(function(data) {
             nonDraftNotes = data;
-            console.log(data);
             return fetchAttachmentPreview(data);
         })
         .then(function(data) {
             attachments = data;
-            console.log(attachments);
-            // make the notes view 
             showRawCard();
             showAttachmentPreviewToEachCard();
+            showLinksPerNote();
         })
     })
 </script>
