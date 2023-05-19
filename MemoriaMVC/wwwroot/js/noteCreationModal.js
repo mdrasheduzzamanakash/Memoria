@@ -1,4 +1,11 @@
-﻿// ajax function for partial note-creation-modal fetching 
+﻿/*
+    this file requires _shared.js file as dependency
+    this file also take jquery.min.js as dependency
+*/
+
+
+
+// ajax function for partial note-creation-modal fetching 
 $(function () {
     // creating new note functionality
     $('#btnAddNewNote').off('click').on('click', function () {
@@ -27,40 +34,7 @@ $(function () {
             IsRemainderAdded: false,
             RemainderDateTime: null,
         };
-        function fetchNoteCreationModal() {
-            var deferred = $.Deferred();
-
-            $.ajax({
-                url: '/Notes/GetPartialView/' + userData.id,
-                type: 'GET',
-                success: function (result) {
-                    $('#myModal').find('.modal-content').html(result);
-                    $('#myModal').modal('show');
-                    deferred.resolve(result);
-                },
-                error: function () {
-                    alert('Error loading partial view');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function fetchUserData(dataFromPrevious) {
-            var deferred = $.Deferred();
-            $.ajax({
-                url: '/Users/GetById/' + userData.id,
-                type: 'GET',
-                success: function (user) {
-                    deferred.resolve(user);
-                },
-                error: function () {
-                    alert('Error loading user data');
-                }
-            });
-            return deferred.promise();
-        }
-
+       
         function createDraftNote(userData) {
             var deferred = $.Deferred();
             note.AuthorId = userData.id;
@@ -80,82 +54,6 @@ $(function () {
             });
             return deferred.promise();
         }
-
-        function saveNote(finalNote) {
-            var deferred = $.Deferred();
-            var noteString = JSON.stringify(finalNote);
-            $.ajax({
-                url: '/Notes/SaveNote/',
-                type: 'POST',
-                contentType: 'application/json',
-                data: noteString,
-                success: function (noteData) {
-                    deferred.resolve(noteData);
-                },
-                error: function () {
-                    alert('Error loading user data');
-                }
-            });
-            return deferred.promise();
-        }
-
-        function UploadAttachment(noteData, file) {
-            var deferred = $.Deferred();
-            var formData = new FormData();
-            formData.append("file", file);
-
-            formData.append('attachmentMetaData', JSON.stringify({
-                NoteId: noteData.id,
-                FileType: file.type,
-                ContentSize: file.size,
-                OwnerId: noteData.authorId
-            }));
-
-            $.ajax({
-                url: "/Attachments/AddAttachment",
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-
-                success: function (response) {
-                    deferred.resolve(response);
-                },
-                error: function () {
-                    alert('Error uploading attachment');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function DeleteAttachment(attachmentId) {
-            var deferred = $.Deferred();
-
-            $.ajax({
-                url: "/Attachments/DeleteAttachment/" + attachmentId,
-                type: "DELETE",
-                success: function (response) {
-                    deferred.resolve(response);
-                },
-                error: function () {
-                    alert('Error deleting attachment');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function AddAuthorizer() { }
-
-        function DeleteAuthorizer() { }
-
-        function GetDefaultAttachment(noteId) {
-            $.ajax({
-                
-            });
-        }
-
 
         fetchNoteCreationModal()
             .then(function (data) {
@@ -177,8 +75,6 @@ $(function () {
                 const noteTitle = document.getElementById('note-title');
                 const noteDescription = document.getElementById('note-description');
                 const closeButton = document.querySelector('#myModal .modal-header .btn-close');
-
-                // getting all the buttons
                 const saveButton = document.getElementById('save-button');
                 const attachmentButton = document.getElementById('attachment-button');
                 const remainderButton = document.getElementById('remainder-button');
@@ -190,6 +86,7 @@ $(function () {
                 // data containers 
                 const todoInputs = []; // Array to store the todo input elements
                 const labelsInputs = []; // Array to store the label input elements
+                var lastSelectedFile; // last selected file
 
                 // Function to retrieve all the todo inputs
                 function getTodoInputs() {
@@ -310,29 +207,7 @@ $(function () {
                     // Append the new note HTML at the top of the card container
                     var cardContainer = document.getElementById('card-container');
                     cardContainer.insertAdjacentHTML('afterbegin', cardHTML);
-                }
-
-                function showAttachmentPreviewToEachCard(attachment) {
-                    try {
-                        var attachment = attachments[i];
-                        var noteElement = document.getElementById(attachment.noteId);
-
-                        if (attachment.fileType.startsWith('image')) {
-                            // Create an img element for image preview
-                            var imgElement = document.createElement('img');
-                            imgElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
-                            imgElement.classList.add('image-preview-in-note');
-                            noteElement.insertBefore(imgElement, noteElement.firstChild);
-                        } else if (attachment.fileType === 'application/pdf') {
-                            // Create an iframe element for PDF preview
-                            var iframeElement = document.createElement('iframe');
-                            iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
-                            iframeElement.classList.add('pdf-preview-in-note');
-                            noteElement.insertBefore(iframeElement, noteElement.firstChild);
-                        }
-                    } catch (e) {
-                        console.log(e);
-                    }
+                    showAttachmentPreviewToEachCardSingleTop(newNote.id, lastSelectedFile);
                 }
 
                 // Adding event listeners 
@@ -358,6 +233,7 @@ $(function () {
                 $("#file-input").change(function () {
                     totalSelectedAttachment++;
                     var file = this.files[0];
+                    lastSelectedFile = file;
                     // Check the file type
                     if (file.type.startsWith("image/")) {
                         // Upload the image to the database
@@ -501,7 +377,6 @@ $(function () {
                     var selectedDateTime = event.target.value;
                     console.log(selectedDateTime);
                 });
-
 
                 // Saving the note
                 $('#save-button').off('click').on('click', function () {
