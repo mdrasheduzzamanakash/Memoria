@@ -61,9 +61,16 @@
 
 </style>
 
+<!--global datastructures-->
+<script>
+    var nonDraftNotes = [];
+    var attachments = []; // only one attachment per note is here
+</script>
+
 <!--Notes container-->
 <div class="flex-note-container" id="card-container"></div>
 
+<!--Note creation modal-->
 <div id="myModal" class="modal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -81,53 +88,6 @@
 <script>
     // home page functionality
     $(function () {
-        var nonDraftNotes = [];
-        var attachments = []; // only one attachment per note is here
-
-        function fetchNonDraftNotes() {
-            var deferred = $.Deferred();
-
-            $.ajax({
-                url: "/Notes/AllWithOutDraft/",
-                data: {
-                    authorId: userData.id
-                },
-                success: function (response) {
-                    deferred.resolve(response);
-                },
-                error: function (xhr, status, error) {
-                    console.log("error in fetchNonDraftNotes");
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function fetchAttachmentPreview(notes) {
-            var deferred = $.Deferred();
-
-            var noteIds = [];
-            for (let i = 0; i < nonDraftNotes.length; i++) {
-                noteIds.push(nonDraftNotes[i].id);
-            }
-
-            $.ajax({
-                url: "/Attachments/AllAttachmentPreview/",
-                data: {
-                    noteIds: JSON.stringify(noteIds) // Serialize the array as a JSON string
-                },
-                success: function (response) {
-                    attachments = response;
-                    deferred.resolve(response);
-                },
-                error: function (xhr, status, error) {
-                    console.log("error in fetchAttachmentPreview");
-                }
-            });
-
-            return deferred.promise();
-        }
-
         function showAttachmentPreviewToEachCard() {
             try {
                 for (var i = 0; i < attachments.length; i++) {

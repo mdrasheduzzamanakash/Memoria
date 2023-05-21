@@ -126,7 +126,28 @@
         border-color: blue;
     }
 
+    .no-box-shadow {
+        border: none;
+        box-shadow: none;
+        outline: none; /* Remove the default focus outline */
+    }
 
+    .underline {
+        height: 2px;
+        background-color: #808090;
+        transition: width 0.3s ease-in-out;
+        display:none;
+    }
+
+    .no-box-shadow:focus + .underline {
+        width: inherit;
+        margin-left: 10px;
+        display:block;
+    }
+
+    .no-pointer-cursor {
+        cursor: default;
+    }
 </style>
 
 <div class="modal-header">
@@ -169,9 +190,12 @@
     <div class="form-group" id="todo-section" style="display:none">
         <label for="note-todos">Todos</label>
         <div id="todo-container">
-            <!-- dynamically created todos will be added here -->
+            <div id="added-todos">
+                <!-- dynamically created todos will be added here -->
+            </div>
+            <input type="text" class="form-control no-box-shadow" id="todo-input">
+            <div class="underline"></div>
         </div>
-        <button type="button" class="btn btn-outline-primary mt-2" id="add-todo">Add Todo</button>
     </div>
     <!--for the attachment sections-->
     <div id="file-details-container"></div>

@@ -12,11 +12,10 @@
 
     var todosArray = JSON.parse(cardData.todos);
     todosArray = todosArray.slice(0, 3).map(todo => {
-        if (todo.length > 25) {
-            console.log(todo.length);
-            return todo.slice(0, 25) + '...';
+        if (todo.value.length > 25) {
+            return todo.value.slice(0, 25) + '...';
         } else {
-            return todo;
+            return todo.value;
         }
     });
 
@@ -27,8 +26,8 @@
 
                             <div style="padding:10px;">
                                 <div class="">
-                                    <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                                    <p class="">${truncatedDescription}</p>
+                                    <h5 class="" style="cursor:pointer; word-break: break-word;">${truncatedTitle}</h5>
+                                    <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
                                     ${todosArray
@@ -60,11 +59,10 @@ function showSingleRawCardTop(newNote) {
 
     var todosArray = JSON.parse(newNote.todos);
     todosArray = todosArray.slice(0, 3).map(todo => {
-        if (todo.length > 25) {
-            console.log(todo.length);
+        if (todo.value.length > 25) {
             return todo.slice(0, 25) + '...';
         } else {
-            return todo;
+            return todo.value;
         }
     });
 
@@ -76,17 +74,15 @@ function showSingleRawCardTop(newNote) {
 
                             <div style="padding:10px;">
                                 <div class="">
-                                <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                                <p class="">${truncatedDescription}</p>
+                                <h5 class="" style="cursor:pointer; word-break: break-word;">${truncatedTitle}</h5>
+                                <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
                                 ${todosArray
             .map(item => `<li class="">${item}</li>`)
             .join('')}
                                 </ul>
-                                <div class="">
-                                <a href="#" class="">Card link</a>
-                                <a href="#" class="">Another link</a>
+                                <div class="note-link-container">
                                 </div>
                              </div>
                           
@@ -147,54 +143,6 @@ function showAttachmentPreviewToEachCardSingle(attachment) {
         //    iframeElement.classList.add('pdf-preview-in-note');
         //    noteElement.insertBefore(iframeElement, noteElement.firstChild);
         //}
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-function showAttachmentPreviewToEachCardSingleTop(noteId, file) {
-    try {
-        var noteElement = document.getElementById(noteId);
-        if (file.type.startsWith('image')) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                // Create an image element
-                var img = document.createElement('img');
-                img.classList.add('image-preview-in-note');
-                img.src = e.target.result;
-                noteElement.insertBefore(img, noteElement.firstChild);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            var fileReader = new FileReader();
-            fileReader.onload = function () {
-                var typedarray = new Uint8Array(this.result);
-                // Load the PDF using pdf.js
-                pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
-                    // Render the first page of the PDF
-                    pdf.getPage(1).then(function (page) {
-                        var viewport = page.getViewport({ scale: 1 });
-                        var canvas = $("<canvas>").get(0);
-                        var context = canvas.getContext("2d");
-
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-
-                        // Render the PDF page to the canvas
-                        page.render({
-                            canvasContext: context,
-                            viewport: viewport
-                        }).promise.then(function () {
-                            canvas.classList.add('pdf-preview-in-note');
-                            noteElement.insertBefore(canvas, noteElement.firstChild);
-                        });
-                    });
-                }).catch(function (error) {
-                    console.error("Error occurred while loading PDF:", error);
-                });
-            };
-            fileReader.readAsArrayBuffer(file);
-        }
     } catch (e) {
         console.log(e);
     }
@@ -324,3 +272,47 @@ function AddAuthorizer() { }
 function DeleteAuthorizer() { }
 
 function GetDefaultAttachment(noteId) { }
+
+function fetchNonDraftNotes() {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/AllWithOutDraft/",
+        data: {
+            authorId: userData.id
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchNonDraftNotes");
+        }
+    });
+
+    return deferred.promise();
+}
+
+function fetchAttachmentPreview(notes) {
+    var deferred = $.Deferred();
+
+    var noteIds = [];
+    for (let i = 0; i < nonDraftNotes.length; i++) {
+        noteIds.push(nonDraftNotes[i].id);
+    }
+
+    $.ajax({
+        url: "/Attachments/AllAttachmentPreview/",
+        data: {
+            noteIds: JSON.stringify(noteIds) // Serialize the array as a JSON string
+        },
+        success: function (response) {
+            attachments = response;
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchAttachmentPreview");
+        }
+    });
+
+    return deferred.promise();
+}

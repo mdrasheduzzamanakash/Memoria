@@ -69,7 +69,6 @@ $(function () {
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
                 const todoContainer = document.getElementById('todo-container');
-                const addTodoButton = document.getElementById('add-todo');
                 const todoToggle = document.querySelector('#myCheckbox');
                 const todoSection = document.getElementById('todo-section');
                 const noteTitle = document.getElementById('note-title');
@@ -79,25 +78,29 @@ $(function () {
                 const attachmentButton = document.getElementById('attachment-button');
                 const remainderButton = document.getElementById('remainder-button');
                 const authorizationButton = document.getElementById('authorization-button');
+                const todoInput = document.getElementById('todo-input');
 
                 // date picking 
                 const datePicker = document.getElementById("reminder-datepicker");
 
                 // data containers 
-                const todoInputs = []; // Array to store the todo input elements
                 const labelsInputs = []; // Array to store the label input elements
-                var lastSelectedFile; // last selected file
 
                 // Function to retrieve all the todo inputs
                 function getTodoInputs() {
+                    const todoItems = document.querySelectorAll('#added-todos .todo-item');
                     const todoValues = [];
-                    for (let i = 0; i < todoInputs.length; i++) {
-                        const todoInput = todoInputs[i];
-                        const todoValue = todoInput.value.trim();
+                    todoItems.forEach(function (todoItem) {
+                        const todoInput = todoItem.querySelector('span');
+                        const todoValue = todoInput.textContent.trim();
                         if (todoValue !== '') {
-                            todoValues.push(todoValue);
+                            var obj = {
+                                value: todoValue,
+                                state: false
+                            };
+                            todoValues.push(obj);
                         }
-                    }
+                    });
                     return todoValues;
                 }
 
@@ -124,90 +127,12 @@ $(function () {
                     labelsInputs.push(labelElement);
                 }
 
-                // Function to create a new todo element
-                function createTodoElement() {
-                    const todoElement = document.createElement('div');
-                    todoElement.classList.add('form-check');
-
-                    const checkboxElement = document.createElement('input');
-                    checkboxElement.classList.add('form-check-input');
-                    checkboxElement.type = 'checkbox';
-
-                    const inputElement = document.createElement('input');
-                    inputElement.classList.add('form-control');
-                    inputElement.placeholder = 'Enter todo';
-
-                    // Append the checkbox and input field to the todo element
-                    todoElement.appendChild(checkboxElement);
-                    todoElement.appendChild(inputElement);
-
-                    // Append the todo element to the todo container
-                    todoContainer.appendChild(todoElement);
-
-                    // Add the input element to the todoInputs array
-                    todoInputs.push(inputElement);
-                }
-
                 function modifySaveButton (event) {
                     if (event.target.value.trim() == '') {
                         saveButton.disabled = true;
                     } else {
                         saveButton.disabled = false;
                     }
-                }
-
-                function showSingleRawCardTop(newNote) {
-                    console.log(newNote);
-                    var maxTitleLength = 50;
-                    var maxDescriptionLength = 100; // maximum length for description
-
-                    // Truncate the description if it exceeds the maximum length
-                    var truncatedDescription = newNote.description.length > maxDescriptionLength
-                        ? newNote.description.slice(0, maxDescriptionLength) + '...'
-                        : newNote.description;
-                    var truncatedTitle = newNote.title.length > maxTitleLength
-                        ? newNote.title.slice(0, maxTitleLength) + '...'
-                        : newNote.title;
-
-                    var todosArray = JSON.parse(newNote.todos);
-                    todosArray = todosArray.slice(0, 3).map(todo => {
-                        if (todo.length > 25) {
-                            console.log(todo.length);
-                            return todo.slice(0, 25) + '...';
-                        } else {
-                            return todo;
-                        }
-                    });
-                    
-
-
-                    // Create the card HTML using template literals
-                    var cardHTML = `
-                        <div class="flex-note-container-item" style=" width: 18rem;" id="${newNote.id}">
-
-                            <div style="padding:10px;">
-                                <div class="">
-                                <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                                <p class="">${truncatedDescription}</p>
-                                </div>
-                                <ul class="">
-                                ${todosArray
-                                        .map(item => `<li class="">${item}</li>`)
-                                        .join('')}
-                                </ul>
-                                <div class="">
-                                <a href="#" class="">Card link</a>
-                                <a href="#" class="">Another link</a>
-                                </div>
-                             </div>
-                          
-                        </div>
-                      `;
-
-                    // Append the new note HTML at the top of the card container
-                    var cardContainer = document.getElementById('card-container');
-                    cardContainer.insertAdjacentHTML('afterbegin', cardHTML);
-                    showAttachmentPreviewToEachCardSingleTop(newNote.id, lastSelectedFile);
                 }
 
                 // Adding event listeners 
@@ -219,7 +144,36 @@ $(function () {
                         todoSection.style.display = 'none'; // Hide the todo container
                     }
                 });
-                addTodoButton.addEventListener('click', createTodoElement);
+                todoInput.addEventListener('keypress', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+
+                        var todoText = this.value.trim();
+                        if (todoText !== '') {
+                            var todoItem = document.createElement('div');
+                            todoItem.classList.add('todo-item');
+                            var todoTextElement = document.createElement('span');
+                            todoTextElement.textContent = todoText;
+                            var removeButton = document.createElement('button');
+                            removeButton.classList.add('btn', 'remove-todo');
+                            removeButton.innerHTML = '<i class="fas fa-times"></i>';
+
+                            todoItem.appendChild(removeButton);
+                            todoItem.appendChild(todoTextElement);
+                            var addedTodos = document.getElementById('added-todos');
+                            addedTodos.appendChild(todoItem);
+                            this.value = '';
+                            this.focus();
+                            this.focus();
+                        }
+                    }
+                })
+                document.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('remove-todo')) {
+                        var todoItem = event.target.closest('.todo-item');
+                        todoItem.remove();
+                    }
+                });
                 remainderButton.addEventListener('click', function () { })
                 authorizationButton.addEventListener('click', AddAuthorizer);
                 noteTitle.addEventListener('input', modifySaveButton);
@@ -399,6 +353,11 @@ $(function () {
                             .then(function (addedNote) {
                                 $('#myModal').modal('hide');
                                 showSingleRawCardTop(addedNote);
+                                showLinksPerNoteSingle(addedNote);
+                                fetchAttachmentPreview([addedNote.id])
+                                    .then(function (attachments) {
+                                        showAttachmentPreviewToEachCardSingle(attachments[0]);
+                                    })
                             });
                     } else {
                         alert('Please wait.. Files uploading');
