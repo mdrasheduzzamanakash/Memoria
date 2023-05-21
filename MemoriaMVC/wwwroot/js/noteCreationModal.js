@@ -118,13 +118,15 @@ $(function () {
                 }
 
                 // label selecting code
+                var labelsValues = [];
                 function insertANewLabel () {
                     var selectedLabel = labelSelect.value;
-                    var labelElement = document.createElement('p');
-                    labelElement.classList.add('labels-container-item');
-                    labelElement.textContent = selectedLabel;
-                    labelsContainer.appendChild(labelElement);
-                    labelsInputs.push(labelElement);
+                    if (!labelsValues.includes(selectedLabel)) {
+                        var labelElement = document.createElement('p');
+                        labelElement.textContent = '#' + selectedLabel;
+                        labelsContainer.appendChild(labelElement);
+                        labelsInputs.push(labelElement);
+                    }
                 }
 
                 function modifySaveButton (event) {
@@ -354,10 +356,14 @@ $(function () {
                                 $('#myModal').modal('hide');
                                 showSingleRawCardTop(addedNote);
                                 showLinksPerNoteSingle(addedNote);
-                                fetchAttachmentPreview([addedNote.id])
+                                fetchAttachmentAllForANote(addedNote.id)
                                     .then(function (attachments) {
-                                        showAttachmentPreviewToEachCardSingle(attachments[0]);
+                                        if (attachments.length > 0) {
+                                            showAttachmentPreviewToEachCardSingle(attachments[0]);
+                                        }
                                     })
+                                var noteTitle = document.getElementById(`title-${addedNote.id}`);
+                                noteTitle.addEventListener('click', handleNoteTitleClick);
                             });
                     } else {
                         alert('Please wait.. Files uploading');

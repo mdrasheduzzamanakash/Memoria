@@ -37,6 +37,7 @@
         align-self: flex-start;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease-in-out;
+        flex-grow:1;
     }
 
     .flex-note-container-item:hover {
@@ -84,14 +85,17 @@
 <script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
 <script src="~/js/_shared.js"></script>
 <script src="~/js//noteCreationModal.js"></script>
+<script src="~/js/noteUpdationModal.js"></script>
 
 <script>
     // home page functionality
     $(function () {
         function showAttachmentPreviewToEachCard() {
             try {
+                var alreadyDone = [];
                 for (var i = 0; i < attachments.length; i++) {
-                    showAttachmentPreviewToEachCardSingle(attachments[i]);
+                    if(!alreadyDone.includes(attachments[i].noteId))showAttachmentPreviewToEachCardSingle(attachments[i]);
+                    alreadyDone.push(attachments[i].noteId);
                 }
             } catch(ex) {
                 console.log(ex);
@@ -101,6 +105,10 @@
         function showRawCard() {
             for(let i = 0;i < nonDraftNotes.length;i++) {
                 showRawCardSingle(nonDraftNotes[i]);
+            }
+            var noteTitles = document.getElementsByClassName('note-title');
+            for (var i = 0; i < noteTitles.length; i++) {
+                noteTitles[i].addEventListener('click', handleNoteTitleClick);
             }
         }
 

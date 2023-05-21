@@ -59,6 +59,8 @@ namespace Memoria.DataService.Repository
             return finalNoteOutDto;
         }
 
+
+
         public async Task<List<NoteSingleOutDTO>> AllNotesWithOutDraft(string authorId)
         {
             var notes = await _dbSet.Where(x => x.AuthorId == authorId && x.IsDraft == false).ToListAsync();
@@ -69,6 +71,13 @@ namespace Memoria.DataService.Repository
                 notesDto.Add(noteDto);
             }
             return notesDto;
+        }
+
+        public async Task<NoteSingleOutDTO> GetNoteById(string id)
+        {
+            var note = await base.GetById(id);
+            var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+            return noteDto;
         }
     }
 }

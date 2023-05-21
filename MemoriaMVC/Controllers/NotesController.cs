@@ -21,6 +21,13 @@ namespace MemoriaMVC.Controllers
             return Json(notes);
         }
 
+        [HttpGet]   
+        public async Task<IActionResult> GetById(string noteId)
+        {
+            var note = await _unitOfWork.Notes.GetNoteById(noteId);
+            return Json(note);
+        }
+
         // get partial view        
         [HttpGet]
         public async Task<IActionResult> GetPartialViewAsync(string id)
@@ -28,12 +35,16 @@ namespace MemoriaMVC.Controllers
             // add labels to the viewbag
             var labels = await _unitOfWork.Labels.AllUserLabels(id);
             ViewBag.Labels = labels;
-
-            foreach (var label in labels)
-            {
-                await Console.Out.WriteLineAsync(label.Content);
-            }
             return PartialView("_NoteCreationModal");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartialViewUpdation(string id)
+        {
+            // add labels to the viewbag
+            var labels = await _unitOfWork.Labels.AllUserLabels(id);
+            ViewBag.Labels = labels;
+            return PartialView("_NoteUpdationAndDeletion");
         }
 
         // create draft note from empty note
@@ -55,9 +66,6 @@ namespace MemoriaMVC.Controllers
         }
 
 
-
-
-        
         /*
         // GET: Notes/Details/5
         public async Task<IActionResult> Details(string id)

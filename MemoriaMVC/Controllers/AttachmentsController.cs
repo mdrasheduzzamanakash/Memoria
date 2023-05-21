@@ -33,6 +33,14 @@ namespace MemoriaMVC.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> AttachmentAllForANote([FromQuery] string noteId) 
+        {
+              var allAttachments = await _unitOfWork.Attachments.GetAllAttachmentForANote(noteId);
+            return Json(allAttachments);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> AddAttachment()
         {

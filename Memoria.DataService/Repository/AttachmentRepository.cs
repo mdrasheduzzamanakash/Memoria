@@ -30,6 +30,13 @@ namespace Memoria.DataService.Repository
             return await base.Delete(id);
         }
 
+        public async Task<List<AttachmentSingleOutDTO>> GetAllAttachmentForANote(string noteId)
+        {
+            var attachments = await _dbSet.Where(x => x.NoteId == noteId).ToListAsync();
+            var attachmentDtos = attachments.Select(_mapper.Map<AttachmentSingleOutDTO>).ToList();
+            return attachmentDtos;
+        }
+
         public async Task<List<AttachmentSingleOutDTO>> GetFirstOneByIds(string[] noteIds)
         {
             var attachments = await _dbSet

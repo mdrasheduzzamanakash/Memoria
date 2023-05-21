@@ -26,7 +26,7 @@
 
                             <div style="padding:10px;">
                                 <div class="">
-                                    <h5 class="" style="cursor:pointer; word-break: break-word;">${truncatedTitle}</h5>
+                                    <h5 class="note-title" style="cursor:pointer; word-break: break-word;" id="title-${cardData.id}">${truncatedTitle}</h5>
                                     <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
@@ -74,7 +74,7 @@ function showSingleRawCardTop(newNote) {
 
                             <div style="padding:10px;">
                                 <div class="">
-                                <h5 class="" style="cursor:pointer; word-break: break-word;">${truncatedTitle}</h5>
+                                <h5 class="note-title" style="cursor:pointer; word-break: break-word;" id="title-${newNote.id}">${truncatedTitle}</h5>
                                 <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
@@ -136,13 +136,13 @@ function showAttachmentPreviewToEachCardSingle(attachment) {
             imgElement.classList.add('image-preview-in-note');
             noteElement.insertBefore(imgElement, noteElement.firstChild);
         } 
-        //else if (attachment.fileType === 'application/pdf') {
-        //    // Create an iframe element for PDF preview
-        //    var iframeElement = document.createElement('iframe');
-        //    iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
-        //    iframeElement.classList.add('pdf-preview-in-note');
-        //    noteElement.insertBefore(iframeElement, noteElement.firstChild);
-        //}
+        else if (attachment.fileType === 'application/pdf') {
+            // Create an iframe element for PDF preview
+            var iframeElement = document.createElement('iframe');
+            iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
+            iframeElement.classList.add('pdf-preview-in-note');
+            noteElement.insertBefore(iframeElement, noteElement.firstChild);
+        }
     } catch (e) {
         console.log(e);
     }
@@ -166,6 +166,26 @@ function fetchNoteCreationModal() {
 
     return deferred.promise();
 }
+
+function fetchNoteUpdationModal() {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: '/Notes/GetPartialViewUpdation/' + userData.id,
+        type: 'GET',
+        success: function (result) {
+            $('#myModal').find('.modal-content').html(result);
+            $('#myModal').modal('show');
+            deferred.resolve(result);
+        },
+        error: function () {
+            alert('Error loading partial view');
+        }
+    });
+
+    return deferred.promise();
+}
+
 
 function fetchUserData(dataFromPrevious) {
     var deferred = $.Deferred();
@@ -219,6 +239,7 @@ function saveNote(finalNote) {
     });
     return deferred.promise();
 }
+
 
 function UploadAttachment(noteData, file) {
     var deferred = $.Deferred();
@@ -313,6 +334,43 @@ function fetchAttachmentPreview(notes) {
             console.log("error in fetchAttachmentPreview");
         }
     });
+
+    return deferred.promise();
+}
+
+function fetchAttachmentAllForANote(noteId) {
+    var deferred = $.Deferred();
+    $.ajax({
+        url: "/Attachments/AttachmentAllForANote/",
+        data: {
+            noteId: noteId 
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchAttachmentPreview");
+        }
+    });
+
+    return deferred.promise();
+}
+
+function fetchNoteById(id) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/GetById/",
+        data: {
+            noteId: id
+        }, 
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchNonDraftNotes");
+        }
+    })
 
     return deferred.promise();
 }
