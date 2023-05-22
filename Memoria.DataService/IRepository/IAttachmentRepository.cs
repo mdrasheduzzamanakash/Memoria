@@ -18,5 +18,7 @@ namespace Memoria.DataService.IRepository
         Task<List<AttachmentSingleOutDTO>> GetFirstOneByIds(string[] noteIds);
 
         Task<List<AttachmentSingleOutDTO>> GetAllAttachmentForANote(string noteId);
+
+        Task<bool> DeleteAllAttachmentOfANote (string noteId);
     }
 }

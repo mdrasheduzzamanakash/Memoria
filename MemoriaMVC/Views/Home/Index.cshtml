@@ -84,13 +84,62 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
 <script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
 <script src="~/js/_shared.js"></script>
-<script src="~/js//noteCreationModal.js"></script>
+<script src="~/js//noteCreationModalScript.js"></script>
 <script src="~/js/noteUpdationModal.js"></script>
 
 <script>
     // home page functionality
     $(function () {
-        function showAttachmentPreviewToEachCard() {
+
+        const searchBar = document.getElementById('searchBar');
+        let timeout;
+
+        searchBar.addEventListener('input', function (event) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+               if(searchBar.value !== '') {
+                    // Perform search here
+                    var searchedNotesIds = [];
+                    var searchedNotes = [];
+                    for (let i = 0; i < nonDraftNotes.length; i++) {
+                        if (nonDraftNotes[i].title.toLowerCase().includes(searchBar.value.toLowerCase()) ||
+                            nonDraftNotes[i].description.toLowerCase().includes(searchBar.value.toLowerCase())) {
+                            searchedNotes.push(nonDraftNotes[i]);
+                            searchedNotesIds.push(nonDraftNotes[i].id);
+                        }
+                    }
+                    var cardContainer = document.getElementById('card-container');
+                    cardContainer.innerHTML = '';
+                    
+                    showRawCard(searchedNotes);
+                    showLinksPerNote(searchedNotes);
+                    showAttachmentPreviewToEachCard(attachments);
+                    
+                    fetchSearchedNotes(searchBar.value, userData.id)
+                        .then(function (fetchedSearchedNotes) {
+                            fetchedSearchedNotes = fetchedSearchedNotes.filter(function (note) {
+                                return !searchedNotesIds.includes(note.id);
+                            });
+                            showRawCard(fetchedSearchedNotes);
+                            showLinksPerNote(fetchedSearchedNotes);
+                            fetchAttachmentPreview(fetchedSearchedNotes)
+                            .then(function(fetchedAttachments) {
+                                showAttachmentPreviewToEachCard(fetchedAttachments);
+                            })
+                        });
+               } else {
+                    var cardContainer = document.getElementById('card-container');
+                    cardContainer.innerHTML = '';
+                    showRawCard(nonDraftNotes);
+                    showAttachmentPreviewToEachCard(attachments);
+                    showLinksPerNote(nonDraftNotes);
+               }
+
+            }, 500); // Delay in milliseconds
+        });
+
+
+        function showAttachmentPreviewToEachCard(attachments) {
             try {
                 var alreadyDone = [];
                 for (var i = 0; i < attachments.length; i++) {
@@ -102,7 +151,7 @@
             }
         }
 
-        function showRawCard() {
+        function showRawCard(nonDraftNotes) {
             for(let i = 0;i < nonDraftNotes.length;i++) {
                 showRawCardSingle(nonDraftNotes[i]);
             }
@@ -112,7 +161,7 @@
             }
         }
 
-        function showLinksPerNote() {
+        function showLinksPerNote(nonDraftNotes) {
             for(let i = 0;i < nonDraftNotes.length;i++) {
                 showLinksPerNoteSingle(nonDraftNotes[i]);
             }
@@ -121,13 +170,13 @@
         fetchNonDraftNotes()
         .then(function(data) {
             nonDraftNotes = data;
-            return fetchAttachmentPreview(data);
+            return fetchAttachmentPreview(nonDraftNotes);
         })
         .then(function(data) {
             attachments = data;
-            showRawCard();
-            showAttachmentPreviewToEachCard();
-            showLinksPerNote();
+            showRawCard(nonDraftNotes);
+            showAttachmentPreviewToEachCard(attachments);
+            showLinksPerNote(nonDraftNotes);
         })
     })
 </script>

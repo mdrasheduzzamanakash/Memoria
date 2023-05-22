@@ -18,6 +18,7 @@
             const attachmentButton = document.getElementById('attachment-button');
             const authorizationButton = document.getElementById('authorization-button');
             const todoInput = document.getElementById('todo-input');
+            const trashButton = document.getElementById('trash-button');
 
 
             // Set note title and description
@@ -404,6 +405,23 @@
                     alert('Please wait.. Files uploading');
                 }
 
+            });
+
+            trashButton.addEventListener('click', function () {
+                noteData.isTrashed = true;
+                saveNote(noteData)
+                    .then(function (addedNote) {
+                        return deleteAllAttachments(addedNote.id);
+                    })
+                    .then(function (status) {
+                        if (status) {
+                            var noteElement = document.getElementById(noteData.id);
+                            $('#myModal').modal('hide');
+                            noteElement.remove();
+                        } else {
+                            alert('Error in trashing');
+                        }
+                    })
             });
         })
     

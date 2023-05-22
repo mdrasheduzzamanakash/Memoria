@@ -23,19 +23,15 @@
     // Create the card HTML using template literals
     var cardHTML = `
                         <div class="flex-note-container-item" style=" width: 18rem;" id="${cardData.id}">
-
                             <div style="padding:10px;">
                                 <div class="">
                                     <h5 class="note-title" style="cursor:pointer; word-break: break-word;" id="title-${cardData.id}">${truncatedTitle}</h5>
                                     <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
-                                    ${todosArray
-            .map(item => `<li class="">${item}</li>`).join('')}
+                                    ${todosArray.map(item => `<li class="">${item}</li>`).join('')}
                                 </ul>
-                                <div class="note-link-container">
-                                    
-                                </div>
+                                <div class="note-link-container"></div>
                             </div>
                         </div>
                 `;
@@ -60,7 +56,7 @@ function showSingleRawCardTop(newNote) {
     var todosArray = JSON.parse(newNote.todos);
     todosArray = todosArray.slice(0, 3).map(todo => {
         if (todo.value.length > 25) {
-            return todo.slice(0, 25) + '...';
+            return todo.value.slice(0, 25) + '...';
         } else {
             return todo.value;
         }
@@ -70,24 +66,20 @@ function showSingleRawCardTop(newNote) {
 
     // Create the card HTML using template literals
     var cardHTML = `
-                        <div class="flex-note-container-item" style=" width: 18rem;" id="${newNote.id}">
+                    <div class="flex-note-container-item" style=" width: 18rem;" id="${newNote.id}">
 
-                            <div style="padding:10px;">
-                                <div class="">
+                        <div style="padding:10px;">
+                            <div class="">
                                 <h5 class="note-title" style="cursor:pointer; word-break: break-word;" id="title-${newNote.id}">${truncatedTitle}</h5>
                                 <p class="" style="word-break: break-word;">${truncatedDescription}</p>
                                 </div>
                                 <ul class="">
-                                ${todosArray
-            .map(item => `<li class="">${item}</li>`)
-            .join('')}
+                                    ${todosArray.map(item => `<li class="">${item}</li>`).join('')}
                                 </ul>
-                                <div class="note-link-container">
-                                </div>
-                             </div>
-                          
+                                <div class="note-link-container"> </div>
                         </div>
-                      `;
+                    </div>
+                    `;
 
     // Append the new note HTML at the top of the card container
     var cardContainer = document.getElementById('card-container');
@@ -129,14 +121,14 @@ function showAttachmentPreviewToEachCardSingle(attachment) {
     try {
         var noteElement = document.getElementById(attachment.noteId);
 
-        if (attachment.fileType.startsWith('image')) {
+        if (attachment.fileType.startsWith('image') && noteElement !== null) {
             // Create an img element for image preview
             var imgElement = document.createElement('img');
             imgElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
             imgElement.classList.add('image-preview-in-note');
             noteElement.insertBefore(imgElement, noteElement.firstChild);
-        } 
-        else if (attachment.fileType === 'application/pdf') {
+        }
+        else if (attachment.fileType === 'application/pdf' && noteElement !== null) {
             // Create an iframe element for PDF preview
             var iframeElement = document.createElement('iframe');
             iframeElement.src = 'data:' + attachment.fileType + ';base64,' + attachment.fileBase64;
@@ -313,7 +305,7 @@ function fetchNonDraftNotes() {
     return deferred.promise();
 }
 
-function fetchAttachmentPreview(notes) {
+function fetchAttachmentPreview(nonDraftNotes) {
     var deferred = $.Deferred();
 
     var noteIds = [];
@@ -327,11 +319,30 @@ function fetchAttachmentPreview(notes) {
             noteIds: JSON.stringify(noteIds) // Serialize the array as a JSON string
         },
         success: function (response) {
-            attachments = response;
             deferred.resolve(response);
         },
         error: function (xhr, status, error) {
             console.log("error in fetchAttachmentPreview");
+        }
+    });
+
+    return deferred.promise();
+}
+
+function deleteAllAttachments(noteId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Attachments/DeleteAllAttachmentOfANote/",
+        type:"DELETE",
+        data: {
+            noteId: noteId
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in deleteAllAttachmentOfANote");
         }
     });
 
@@ -371,6 +382,26 @@ function fetchNoteById(id) {
             console.log("error in fetchNonDraftNotes");
         }
     })
+
+    return deferred.promise();
+}
+
+function fetchSearchedNotes(searchBarText, userId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/SearchedByTitleAndDescription/",
+        data: {
+            searchText: searchBarText,
+            userId: userId
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in fetchSearchedNotes");
+        }
+    });
 
     return deferred.promise();
 }

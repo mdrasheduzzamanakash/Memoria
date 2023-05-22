@@ -30,6 +30,27 @@ namespace Memoria.DataService.Repository
             return await base.Delete(id);
         }
 
+        public async Task<bool> DeleteAllAttachmentOfANote(string noteId)
+        {
+            try
+            {
+                var attachments = await _dbSet.Where(x => x.NoteId == noteId).ToListAsync();
+                foreach (var attachment in attachments)
+                {
+                    await base.Delete(attachment.Id); 
+                }
+
+                return true; 
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions or error cases
+                _logger.LogError($"An error occurred while deleting attachments: {ex.Message}");
+                return false; // Return false if the deletion failed
+            }
+        }
+
+
         public async Task<List<AttachmentSingleOutDTO>> GetAllAttachmentForANote(string noteId)
         {
             var attachments = await _dbSet.Where(x => x.NoteId == noteId).ToListAsync();

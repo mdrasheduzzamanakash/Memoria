@@ -34,6 +34,18 @@ $(function () {
             IsRemainderAdded: false,
             RemainderDateTime: null,
         };
+
+        var statusObj = {
+            isSaveClicked: false,
+            isTodoAdded: false,
+            isLabelAdded: false,
+            isTitleAdded: false,
+            isDescriptionAdded: false,
+            isFilesAdded: false,
+            isRemainderAdded: false,
+            isCollaboratorAdded: false
+        };
+
        
         function createDraftNote(userData) {
             var deferred = $.Deferred();
@@ -68,14 +80,11 @@ $(function () {
                 // modal handling code
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
-                const todoContainer = document.getElementById('todo-container');
                 const todoToggle = document.querySelector('#myCheckbox');
                 const todoSection = document.getElementById('todo-section');
                 const noteTitle = document.getElementById('note-title');
                 const noteDescription = document.getElementById('note-description');
-                const closeButton = document.querySelector('#myModal .modal-header .btn-close');
                 const saveButton = document.getElementById('save-button');
-                const attachmentButton = document.getElementById('attachment-button');
                 const remainderButton = document.getElementById('remainder-button');
                 const authorizationButton = document.getElementById('authorization-button');
                 const todoInput = document.getElementById('todo-input');
@@ -101,6 +110,9 @@ $(function () {
                             todoValues.push(obj);
                         }
                     });
+                    if (todoValues.length > 0) {
+                        statusObj.isTodoAdded = true;
+                    }
                     return todoValues;
                 }
 
@@ -114,7 +126,11 @@ $(function () {
                             labelsValues.push(labelValue);
                         }
                     }
+                    if (labelsValues.length > 0) {
+                        statusObj.isLabelAdded = true;
+                    }
                     return labelsValues;
+                    
                 }
 
                 // label selecting code
@@ -131,8 +147,10 @@ $(function () {
 
                 function modifySaveButton (event) {
                     if (event.target.value.trim() == '') {
+                        statusObj.isTitleAdded = false;
                         saveButton.disabled = true;
                     } else {
+                        statusObj.isTitleAdded = true;
                         saveButton.disabled = false;
                     }
                 }
@@ -187,6 +205,7 @@ $(function () {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js';
 
                 $("#file-input").change(function () {
+                    statusObj.isFilesAdded = true;
                     totalSelectedAttachment++;
                     var file = this.files[0];
                     lastSelectedFile = file;
@@ -233,6 +252,9 @@ $(function () {
                                 success: function (response) {
                                     totalSelectedAttachment--;
                                     totalUploadedAttachment--;
+                                    if (totalSelectedAttachment === 0) {
+                                        statusObj.isFilesAdded = false;
+                                    }
                                     closeButton.parent().remove();
                                 },
                                 error: function (xhr, status, error) {
@@ -285,6 +307,9 @@ $(function () {
                                             method: 'DELETE',
                                             data: { attachmentId: attachmentId },
                                             success: function (response) {
+                                                if (totalSelectedAttachment === 0) {
+                                                    statusObj.isFilesAdded = false;
+                                                }
                                                 totalSelectedAttachment--;
                                                 totalUploadedAttachment--;
                                                 closeButton.parent().remove();
@@ -313,6 +338,7 @@ $(function () {
                 // Handle remainder button click
                 remainderButton.addEventListener("click", function () {
                     if (datePicker.style.display === "none") {
+                        statusObj.isRemainderAdded = true;
                         datePicker.style.display = "block";
                         // Set default date and time one hour later
                         var currentDate = new Date();
@@ -322,6 +348,7 @@ $(function () {
                         note.IsRemainderAdded = true;
 
                     } else {
+                        statusObj.isRemainderAdded = false;
                         datePicker.style.display = "none";
                         note.IsRemainderAdded = false;
                     }
@@ -334,8 +361,8 @@ $(function () {
                     console.log(selectedDateTime);
                 });
 
-                // Saving the note
-                $('#save-button').off('click').on('click', function () {
+                // Saving the draft note 
+                $("#myModal").on("hide.bs.modal", function () {
                     if (totalSelectedAttachment === totalUploadedAttachment) {
                         note.Id = noteData.id;
                         note.AddedBy = noteData.authorId;
@@ -344,8 +371,63 @@ $(function () {
                         note.Description = noteDescription.value;
                         note.Labels = JSON.stringify(getLabelsInputs());
                         note.Type = null;
+
+
+                        if (note.Description !== '') {
+                            statusObj.isDescriptionAdded = true;
+                        } else {
+                            statusObj.isDescriptionAdded = false;
+                        }
+
+
+                        // remainder
+                        if (note.IsRemainderAdded) {
+                            note.RemainderDateTime = datePicker.value;
+                            console.log(note.RemainderDateTime);
+                        }
+
+                        if (!statusObj.isSaveClicked) {
+                            if (statusObj.isTitleAdded ||
+                                statusObj.isDescriptionAdded ||
+                                statusObj.isFilesAdded ||
+                                statusObj.isLabelAdded ||
+                                statusObj.isTodoAdded ||
+                                statusObj.isRemainderAdded
+                            ) {
+                                saveNote(note)
+                                    .then(function (addedNote) {
+                                        $('#myModal').modal('hide');
+                                    });
+                            } else {
+                                note.Status = 1; // status one means problemetic
+                                note.IsTrashed = true;
+                                saveNote(note)
+                                    .then(function (addedNote) {
+                                        $('#myModal').modal('hide');
+                                    });
+                            }
+                        } else {
+                            
+                        }
+
+                    } else {
+                        alert('Please wait.. Files uploading');
+                    }
+                });
+               
+                // Saving the note
+                $('#save-button').off('click').on('click', function () {
+                    if (totalSelectedAttachment === totalUploadedAttachment) {
+                        statusObj.isSaveClicked = true;
+                        note.Id = noteData.id;
+                        note.AddedBy = noteData.authorId;
+                        note.Todos = JSON.stringify(getTodoInputs());
+                        note.Title = noteTitle.value;
+                        note.Description = noteDescription.value;
+                        note.Labels = JSON.stringify(getLabelsInputs());
+                        note.Type = null;
                         note.IsDraft = false;
-                        note.IsDraft = false;
+
                         // remainder
                         if (note.IsRemainderAdded) {
                             note.RemainderDateTime = datePicker.value;
@@ -370,6 +452,7 @@ $(function () {
                     }
 
                 });
+                
             })
             .fail(function (error) {
                 console.error("Error in nested AJAX calls");
