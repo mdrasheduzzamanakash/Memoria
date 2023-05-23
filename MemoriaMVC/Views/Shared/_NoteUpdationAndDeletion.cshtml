@@ -65,14 +65,14 @@
     .file-details {
         margin-bottom: 10px;
         margin-left: 10px;
-        position:relative;
+        position: relative;
     }
 
     /* Styling for the file details container */
     #file-details-container {
         margin-top: 10px;
         display: flex;
-        flex-wrap:wrap;
+        flex-wrap: wrap;
     }
 
     .file-details p {
@@ -136,13 +136,13 @@
         height: 2px;
         background-color: #808090;
         transition: width 0.3s ease-in-out;
-        display:none;
+        display: none;
     }
 
     .no-box-shadow:focus + .underline {
         width: inherit;
         margin-left: 10px;
-        display:block;
+        display: block;
     }
 
     .no-pointer-cursor {
@@ -151,7 +151,7 @@
 </style>
 
 <div class="modal-header">
-    <h4 class="modal-title">Create Note</h4>
+    <h4 class="modal-title">Note Details</h4>
     <div class="options-container">
         <div class="options-container-item">
             <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
@@ -166,7 +166,6 @@
                 }
             </select>
         </div>
-
     </div>
 
     <div class="ramainder-container">
@@ -204,7 +203,9 @@
 
 </div>
 <div class="modal-footer">
-
+    <button type="button" class="btn btn-outline-danger" id="trash-button">
+        <i class="fas fa-trash"></i> Trash
+    </button>
     <button type="button" class="btn btn-outline-primary" id="authorization-button">
         <i class="fas fa-user-plus"></i> Collaborator
     </button>
@@ -215,8 +216,8 @@
     <button type="button" class="btn btn-outline-primary" id="attachment-button">
         <i class="fas fa-paperclip"></i>
     </button>
-    <button type="button" class="btn btn-outline-primary" id="save-button" disabled>
-        <i class="fas fa-save"></i> Save
+    <button type="button" class="btn btn-outline-primary" id="update-button" >
+        <i class="fas fa-save"></i> Update
     </button>
 
 </div>

@@ -18,12 +18,20 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<NoteSingleInDTO, Note>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
                 cfg.CreateMap<AttachmentSingleInDTO, Attachment>();
-                cfg.CreateMap<Attachment, AttachmentSingleOutDTO>();
+                cfg.CreateMap<Attachment, AttachmentSingleOutDTO>()
+                .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.file)));
             });
+
+            
 
             IMapper mapper = mapperConfiguration.CreateMapper();
 
             return mapper;
+        }
+
+        private static string ConvertToString(byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes);
         }
     }
 }

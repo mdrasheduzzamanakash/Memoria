@@ -3,23 +3,16 @@ using Memoria.DataService.IConfiguration;
 using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Newtonsoft.Json;
+using MemoriaMVC.ViewModel.HomePageViewModel;
 
 namespace MemoriaMVC.Controllers
 {
     public class NotesController : BaseController<NotesController>
     {
-        public NotesController(IUnitOfWork unitOfWork ,IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
+        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
         {
         }
 
-        // get all attachments previews 
-        [HttpGet]
-        public async Task<IActionResult> AllAttachmentPreview([FromQuery] string noteIds)
-        {
-            var noteIdsArray = JsonConvert.DeserializeObject<string[]>(noteIds);
-            var attchmentPreviews = await _unitOfWork.Attachments.GetFirstOneByIds(noteIdsArray);
-            return Json(attchmentPreviews);
-        }
 
         // get all the notes 
         [HttpGet]
@@ -29,6 +22,31 @@ namespace MemoriaMVC.Controllers
             return Json(notes);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AllTrashedNotes(string authorId)
+        {
+            var notes = await _unitOfWork.Notes.AllNotesTrashed(authorId);
+            return Json(notes);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(string noteId)
+        {
+            var note = await _unitOfWork.Notes.GetNoteById(noteId);
+            return Json(note);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PermanentlyDeleteAnItem(string noteId, string userId)
+        {
+            var statusOne = await _unitOfWork.Notes.DeleteAnItem(noteId);
+            var statusTwo = await _unitOfWork.Attachments.DeleteAllAttachmentOfANote(noteId, userId);
+            var staus = statusOne && statusTwo;
+            await _unitOfWork.CompleteAsync();
+            return Json(staus);
+        }
+        
+
         // get partial view        
         [HttpGet]
         public async Task<IActionResult> GetPartialViewAsync(string id)
@@ -36,13 +54,29 @@ namespace MemoriaMVC.Controllers
             // add labels to the viewbag
             var labels = await _unitOfWork.Labels.AllUserLabels(id);
             ViewBag.Labels = labels;
-
-            foreach (var label in labels)
-            {
-                await Console.Out.WriteLineAsync(label.Content);
-            }
             return PartialView("_NoteCreationModal");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartialViewUpdation(string id)
+        {
+            // add labels to the viewbag
+            var labels = await _unitOfWork.Labels.AllUserLabels(id);
+            ViewBag.Labels = labels;
+            return PartialView("_NoteUpdationAndDeletion");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartialViewTrash(string id)
+        {
+            // add labels to the viewbag
+            var labels = await _unitOfWork.Labels.AllUserLabels(id);
+            ViewBag.Labels = labels;
+            return PartialView("_NoteTrashModal");
+        }
+
+
+
 
         // create draft note from empty note
         [HttpPost]
@@ -52,7 +86,7 @@ namespace MemoriaMVC.Controllers
             await _unitOfWork.CompleteAsync();
             return Json(draftNote);
         }
-        
+
         // Save note using updated note
         [HttpPost]
         public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
@@ -62,144 +96,29 @@ namespace MemoriaMVC.Controllers
             return Json(finalNote);
         }
 
-
-
-
-        
-        /*
-        // GET: Notes/Details/5
-        public async Task<IActionResult> Details(string id)
+        [HttpGet]
+        public async Task<IActionResult> SearchedByTitleAndDescription([FromQuery] string searchText, [FromQuery] string userId)
         {
-            if (id == null || _unitOfWork.Notes == null)
-            {
-                return NotFound();
-            }
-
-            var note = await _unitOfWork.Notes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (note == null)
-            {
-                return NotFound();
-            }
-
-            return View(note);
+            var searchedNotes = await _unitOfWork.Notes.SearchByTitleAndDescription(searchText, userId);
+            return Json(searchedNotes);
         }
 
-        // GET: Notes/Create
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> SearchedByTitleAndDescriptionTrash([FromQuery] string searchText, [FromQuery] string userId)
         {
-            return View();
+            var searchedNotes = await _unitOfWork.Notes.SearchByTitleAndDescriptionTrash(searchText, userId);
+            return Json(searchedNotes);
         }
 
-        // POST: Notes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Type,Title,Description,Todos,TrashingDate,BgColor,IsHidden,IsTrashed,IsArchived,IsPinned,IsMarked,IsRemainderAdded,RemainderDateTime,Id,Status,AddedDateAndTime,UpdatedDateAndTime,UpdatedBy,AddedBy,FileFormat")] Note note)
+
+
+        [HttpGet]
+        public async Task<IActionResult> Trash()
         {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Add(note);
-                await _unitOfWork.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(note);
+            ViewBag.Title = "Trash Page";
+            var user = await _unitOfWork.Users.GetById("1ff4e1cd-6081-450d-abef-5c1667daf7f7");
+            var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+            return View(userViewModel);
         }
-
-        // GET: Notes/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null || _unitOfWork.Notes == null)
-            {
-                return NotFound();
-            }
-
-            var note = await _unitOfWork.Notes.FindAsync(id);
-            if (note == null)
-            {
-                return NotFound();
-            }
-            return View(note);
-        }
-
-        // POST: Notes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Type,Title,Description,Todos,TrashingDate,BgColor,IsHidden,IsTrashed,IsArchived,IsPinned,IsMarked,IsRemainderAdded,RemainderDateTime,Id,Status,AddedDateAndTime,UpdatedDateAndTime,UpdatedBy,AddedBy,FileFormat")] Note note)
-        {
-            if (id != note.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _unitOfWork.Update(note);
-                    await _unitOfWork.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NoteExists(note.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(note);
-        }
-
-        // GET: Notes/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null || _unitOfWork.Notes == null)
-            {
-                return NotFound();
-            }
-
-            var note = await _unitOfWork.Notes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (note == null)
-            {
-                return NotFound();
-            }
-
-            return View(note);
-        }
-
-        // POST: Notes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            if (_unitOfWork.Notes == null)
-            {
-                return Problem("Entity set 'AppDbContext.Notes'  is null.");
-            }
-            var note = await _unitOfWork.Notes.FindAsync(id);
-            if (note != null)
-            {
-                _unitOfWork.Notes.Remove(note);
-            }
-            
-            await _unitOfWork.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool NoteExists(string id)
-        {
-          return (_unitOfWork.Notes?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        */
     }
 }

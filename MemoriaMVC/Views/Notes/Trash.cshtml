@@ -26,7 +26,6 @@
         align-items: stretch;
         justify-content: center;
         padding: 10px;
-        
     }
 
     .flex-note-container-item {
@@ -37,12 +36,12 @@
         align-self: flex-start;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease-in-out;
-        flex-grow:1;
+        flex-grow: 1;
     }
 
-    .flex-note-container-item:hover {
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.2);
-    }
+        .flex-note-container-item:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.2);
+        }
 
     .image-preview-in-note {
         width: inherit;
@@ -52,12 +51,12 @@
     .pdf-preview-in-note {
         width: inherit;
         height: 200px;
-        scroll-behavior:unset;
+        scroll-behavior: unset;
     }
 
     .note-link-container {
-        display:flex;
-        flex-direction:column;
+        display: flex;
+        flex-direction: column;
     }
 
 </style>
@@ -84,20 +83,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
 <script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
 <script src="~/js/_sharedScript.js"></script>
-<script src="~/js//noteCreationModalScript.js"></script>
-<script src="~/js/noteUpdationModal.js"></script>
+<script src="~/js/noteTrashModalScript.js"></script>
 
 <script>
     // home page functionality
     $(function () {
-
+        const newNoteButton = document.getElementById('btnAddNewNote');
+        newNoteButton.style.display = 'none';
+        const informText = document.getElementById('inform-text');
+        
+        informText.innerHTML = `
+                                    <span>"Warning!!! Notes in the trash box will be deleted automatically after 30 days "</span>
+                                    <span style="color: red; cursor: pointer; margin - left: 5px; " id="inform-close">&times;</span>
+                                `
+        informText.style.display = 'block';
+        const informClose = document.getElementById('inform-close');
+        informClose.addEventListener('click', function() {
+            informText.style.display = 'none';
+        })
         const searchBar = document.getElementById('searchBar');
         let timeout;
 
         searchBar.addEventListener('input', function (event) {
             clearTimeout(timeout);
             timeout = setTimeout(function () {
-               if(searchBar.value !== '') {
+                if (searchBar.value !== '') {
                     // Perform search here
                     var searchedNotesIds = [];
                     var searchedNotes = [];
@@ -110,12 +120,12 @@
                     }
                     var cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = '';
-                    
+
                     showRawCard(searchedNotes);
                     showLinksPerNote(searchedNotes);
                     showAttachmentPreviewToEachCard(attachments);
-                    
-                    fetchSearchedNotes(searchBar.value, userData.id)
+
+                    fetchSearchedNotesTrash(searchBar.value, userData.id)
                         .then(function (fetchedSearchedNotes) {
                             fetchedSearchedNotes = fetchedSearchedNotes.filter(function (note) {
                                 return !searchedNotesIds.includes(note.id);
@@ -123,17 +133,17 @@
                             showRawCard(fetchedSearchedNotes);
                             showLinksPerNote(fetchedSearchedNotes);
                             fetchAttachmentPreview(fetchedSearchedNotes)
-                            .then(function(fetchedAttachments) {
-                                showAttachmentPreviewToEachCard(fetchedAttachments);
-                            })
+                                .then(function (fetchedAttachments) {
+                                    showAttachmentPreviewToEachCard(fetchedAttachments);
+                                })
                         });
-               } else {
+                } else {
                     var cardContainer = document.getElementById('card-container');
                     cardContainer.innerHTML = '';
                     showRawCard(nonDraftNotes);
                     showAttachmentPreviewToEachCard(attachments);
                     showLinksPerNote(nonDraftNotes);
-               }
+                }
 
             }, 500); // Delay in milliseconds
         });
@@ -143,16 +153,16 @@
             try {
                 var alreadyDone = [];
                 for (var i = 0; i < attachments.length; i++) {
-                    if(!alreadyDone.includes(attachments[i].noteId))showAttachmentPreviewToEachCardSingle(attachments[i]);
+                    if (!alreadyDone.includes(attachments[i].noteId)) showAttachmentPreviewToEachCardSingle(attachments[i]);
                     alreadyDone.push(attachments[i].noteId);
                 }
-            } catch(ex) {
+            } catch (ex) {
                 console.log(ex);
             }
         }
 
         function showRawCard(nonDraftNotes) {
-            for(let i = 0;i < nonDraftNotes.length;i++) {
+            for (let i = 0; i < nonDraftNotes.length; i++) {
                 showRawCardSingle(nonDraftNotes[i]);
             }
             var noteTitles = document.getElementsByClassName('note-title');
@@ -162,22 +172,22 @@
         }
 
         function showLinksPerNote(nonDraftNotes) {
-            for(let i = 0;i < nonDraftNotes.length;i++) {
+            for (let i = 0; i < nonDraftNotes.length; i++) {
                 showLinksPerNoteSingle(nonDraftNotes[i]);
             }
         }
 
-        fetchNonDraftNotes()
-        .then(function(data) {
-            nonDraftNotes = data;
-            return fetchAttachmentPreview(nonDraftNotes);
-        })
-        .then(function(data) {
-            attachments = data;
-            showRawCard(nonDraftNotes);
-            showAttachmentPreviewToEachCard(attachments);
-            showLinksPerNote(nonDraftNotes);
-        })
+        fetchTrashedNotes()
+            .then(function (data) {
+                nonDraftNotes = data;
+                return fetchAttachmentPreview(nonDraftNotes);
+            })
+            .then(function (data) {
+                attachments = data;
+                showRawCard(nonDraftNotes);
+                showAttachmentPreviewToEachCard(attachments);
+                showLinksPerNote(nonDraftNotes);
+            })
     })
 </script>
 
