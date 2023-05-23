@@ -399,9 +399,7 @@ $(function () {
                                         $('#myModal').modal('hide');
                                     });
                             } else {
-                                note.Status = 1; // status one means problemetic
-                                note.IsTrashed = true;
-                                saveNote(note)
+                                deleteNote(note.Id, note.AuthorId)
                                     .then(function (addedNote) {
                                         $('#myModal').modal('hide');
                                     });

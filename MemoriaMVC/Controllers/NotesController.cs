@@ -103,6 +103,13 @@ namespace MemoriaMVC.Controllers
             return Json(searchedNotes);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchedByTitleAndDescriptionTrash([FromQuery] string searchText, [FromQuery] string userId)
+        {
+            var searchedNotes = await _unitOfWork.Notes.SearchByTitleAndDescriptionTrash(searchText, userId);
+            return Json(searchedNotes);
+        }
+
 
 
         [HttpGet]

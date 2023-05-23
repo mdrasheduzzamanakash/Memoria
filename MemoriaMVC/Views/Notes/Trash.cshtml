@@ -125,7 +125,7 @@
                     showLinksPerNote(searchedNotes);
                     showAttachmentPreviewToEachCard(attachments);
 
-                    fetchSearchedNotes(searchBar.value, userData.id)
+                    fetchSearchedNotesTrash(searchBar.value, userData.id)
                         .then(function (fetchedSearchedNotes) {
                             fetchedSearchedNotes = fetchedSearchedNotes.filter(function (note) {
                                 return !searchedNotesIds.includes(note.id);

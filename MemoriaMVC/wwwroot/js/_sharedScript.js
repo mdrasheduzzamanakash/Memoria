@@ -443,3 +443,26 @@ function fetchSearchedNotes(searchBarText, userId) {
 
     return deferred.promise();
 }
+
+
+function fetchSearchedNotesTrash(searchBarText, userId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/SearchedByTitleAndDescriptionTrash/",
+        data: {
+            searchText: searchBarText,
+            userId: userId
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in fetchSearchedNotes");
+        }
+    });
+
+    return deferred.promise();
+}
+
+

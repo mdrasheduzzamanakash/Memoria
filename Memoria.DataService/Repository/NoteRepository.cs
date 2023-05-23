@@ -101,6 +101,28 @@ namespace Memoria.DataService.Repository
 
             return searchedNotesDtos;
         }
+        
+        public async Task<List<NoteSingleOutDTO>> SearchByTitleAndDescriptionTrash(string searchText, string userId)
+        {
+            var searchWords = searchText.ToLower().Split(' ');
+
+            var searchedNote = await _dbSet.Where(x =>
+                x.AuthorId == userId &&
+                x.IsDraft == false &&
+                x.IsTrashed == true
+            ).ToListAsync();
+
+            var filteredNotes = searchedNote.Where(x =>
+                searchWords.Any(y =>
+                    (x.Title != null && x.Title.ToLower().Contains(y)) ||
+                    (x.Description != null && x.Description.ToLower().Contains(y))
+                )
+            ).ToList();
+
+            var searchedNotesDtos = filteredNotes.Select(note => _mapper.Map<NoteSingleOutDTO>(note)).ToList();
+
+            return searchedNotesDtos;
+        }
 
         public async Task<List<NoteSingleOutDTO>> AllNotesTrashed(string id)
         {

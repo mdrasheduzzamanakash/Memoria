@@ -25,6 +25,8 @@ namespace Memoria.DataService.IRepository
 
         Task<List<NoteSingleOutDTO>> SearchByTitleAndDescription(string searchText, string userId);
 
+        Task<List<NoteSingleOutDTO>> SearchByTitleAndDescriptionTrash(string searchText, string userId);
+
         Task<bool> DeleteAnItem(string noteId);
     }
 }
