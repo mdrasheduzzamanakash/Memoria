@@ -82,9 +82,9 @@ namespace MemoriaMVC.Controllers
 
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAllAttachmentOfANote([FromQuery]string id)
+        public async Task<IActionResult> DeleteAllAttachmentOfANote([FromQuery]string noteId, [FromQuery] string userId)
         {
-            return Json(await _unitOfWork.Attachments.DeleteAllAttachmentOfANote(id));
+            return Json(await _unitOfWork.Attachments.DeleteAllAttachmentOfANote(noteId, userId));
         }
     }
 }

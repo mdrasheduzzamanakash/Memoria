@@ -19,8 +19,12 @@ namespace Memoria.DataService.IRepository
 
         Task<List<NoteSingleOutDTO>> AllNotesWithOutDraft(string id);
 
+        Task<List<NoteSingleOutDTO>> AllNotesTrashed(string id);
+
         Task<NoteSingleOutDTO> GetNoteById(string id);
 
         Task<List<NoteSingleOutDTO>> SearchByTitleAndDescription(string searchText, string userId);
+
+        Task<bool> DeleteAnItem(string noteId);
     }
 }

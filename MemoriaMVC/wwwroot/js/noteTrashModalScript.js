@@ -1,6 +1,6 @@
 ﻿function handleNoteTitleClick(event) {
     var noteId = event.target.id.replace('title-', '');
-    fetchNoteUpdationModal()
+    fetchTrashModal()
         .then(function () {
             return fetchNoteById(noteId);
         })
@@ -369,52 +369,28 @@
             // populate already saved data to the modal
 
             // Saving the note
-            $('#update-button').off('click').on('click', function () {
-                if (totalSelectedAttachment === totalUploadedAttachment) {
-                    noteData.Id = noteData.id;
-                    noteData.AddedBy = noteData.authorId;
-                    noteData.Todos = JSON.stringify(getTodoInputs());
-                    noteData.Title = noteTitle.value;
-                    noteData.Description = noteDescription.value;
-                    noteData.Labels = JSON.stringify(getLabelsInputs());
-                    noteData.Type = null;
-                    noteData.IsDraft = false;
-                    // remainder
-                    if (noteData.IsRemainderAdded) {
-                        noteData.RemainderDateTime = datePicker.value;
-                    }
+            $('#update-button').off('click').on('click', function () { // this is restore button
+                try {
+                    noteData.isTrashed = false;
                     saveNote(noteData)
                         .then(function (addedNote) {
                             var previousElement = document.getElementById(addedNote.id);
                             previousElement.remove();
                             $('#myModal').modal('hide');
-                            showSingleRawCardTop(addedNote);
-                            showLinksPerNoteSingle(addedNote);
-
-                            fetchAttachmentAllForANote(addedNote.id)
-                                .then(function (attachments) {
-                                    if (attachments.length > 0) {
-                                        showAttachmentPreviewToEachCardSingle(attachments[0]);
-                                    }
-                                })
-                       
-                            var noteTitle = document.getElementById(`title-${addedNote.id}`);
-                            noteTitle.addEventListener('click', handleNoteTitleClick);
                         });
-                } else {
-                    alert('Please wait.. Files uploading');
+                } catch (ex) {
+                    console.log(ex);
                 }
-
             });
 
-            trashButton.addEventListener('click', function () {
-                noteData.isTrashed = true;
-                saveNote(noteData)
+            trashButton.addEventListener('click', function () { // this is delete button
+
+                deleteNote(noteData.id, noteData.authorId)
                     .then(function (status) {
                         if (status) {
                             var noteElement = document.getElementById(noteData.id);
-                            $('#myModal').modal('hide');
                             noteElement.remove();
+                            $('#myModal').modal('hide');
                         } else {
                             alert('Error in trashing');
                         }

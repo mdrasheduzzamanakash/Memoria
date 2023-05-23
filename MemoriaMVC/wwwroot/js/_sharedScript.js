@@ -178,6 +178,25 @@ function fetchNoteUpdationModal() {
     return deferred.promise();
 }
 
+function fetchTrashModal() {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: '/Notes/GetPartialViewTrash/' + userData.id,
+        type: 'GET',
+        success: function (result) {
+            $('#myModal').find('.modal-content').html(result);
+            $('#myModal').modal('show');
+            deferred.resolve(result);
+        },
+        error: function () {
+            alert('Error loading partial view');
+        }
+    });
+
+    return deferred.promise();
+}
+
 
 function fetchUserData(dataFromPrevious) {
     var deferred = $.Deferred();
@@ -305,6 +324,25 @@ function fetchNonDraftNotes() {
     return deferred.promise();
 }
 
+function fetchTrashedNotes() {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/AllTrashedNotes/",
+        data: {
+            authorId: userData.id
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchTrashedNotes");
+        }
+    });
+
+    return deferred.promise();
+}
+
 function fetchAttachmentPreview(nonDraftNotes) {
     var deferred = $.Deferred();
 
@@ -329,26 +367,6 @@ function fetchAttachmentPreview(nonDraftNotes) {
     return deferred.promise();
 }
 
-function deleteAllAttachments(noteId) {
-    var deferred = $.Deferred();
-
-    $.ajax({
-        url: "/Attachments/DeleteAllAttachmentOfANote/",
-        type:"DELETE",
-        data: {
-            noteId: noteId
-        },
-        success: function (response) {
-            deferred.resolve(response);
-        },
-        error: function (xhr, status, error) {
-            console.log("error in deleteAllAttachmentOfANote");
-        }
-    });
-
-    return deferred.promise();
-}
-
 function fetchAttachmentAllForANote(noteId) {
     var deferred = $.Deferred();
     $.ajax({
@@ -361,6 +379,26 @@ function fetchAttachmentAllForANote(noteId) {
         },
         error: function (xhr, status, error) {
             console.log("error in fetchAttachmentPreview");
+        }
+    });
+
+    return deferred.promise();
+}
+
+function deleteNote(noteId, userId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Notes/PermanentlyDeleteAnItem/",
+        data: {
+            noteId: noteId, 
+            userId: userId
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in delete note");
         }
     });
 

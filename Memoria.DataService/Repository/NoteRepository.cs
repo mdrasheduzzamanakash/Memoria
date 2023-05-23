@@ -102,5 +102,21 @@ namespace Memoria.DataService.Repository
             return searchedNotesDtos;
         }
 
+        public async Task<List<NoteSingleOutDTO>> AllNotesTrashed(string id)
+        {
+            var notes = await _dbSet.Where(x => x.AuthorId == id && x.IsTrashed == true && x.IsDraft == false).ToListAsync();
+            var notesDto = new List<NoteSingleOutDTO>();
+            foreach (var note in notes)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                notesDto.Add(noteDto);
+            }
+            return notesDto;
+        }
+
+        public async Task<bool> DeleteAnItem(string noteId)
+        {
+            return await base.Delete(noteId);
+        }
     }
 }
