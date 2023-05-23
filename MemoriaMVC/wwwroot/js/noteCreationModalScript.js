@@ -1,4 +1,11 @@
-﻿// ajax function for partial note-creation-modal fetching 
+﻿/*
+    this file requires _shared.js file as dependency
+    this file also take jquery.min.js as dependency
+*/
+
+
+
+// ajax function for partial note-creation-modal fetching 
 $(function () {
     // creating new note functionality
     $('#btnAddNewNote').off('click').on('click', function () {
@@ -27,40 +34,19 @@ $(function () {
             IsRemainderAdded: false,
             RemainderDateTime: null,
         };
-        function fetchNoteCreationModal() {
-            var deferred = $.Deferred();
 
-            $.ajax({
-                url: '/Notes/GetPartialView/' + userData.id,
-                type: 'GET',
-                success: function (result) {
-                    $('#myModal').find('.modal-content').html(result);
-                    $('#myModal').modal('show');
-                    deferred.resolve(result);
-                },
-                error: function () {
-                    alert('Error loading partial view');
-                }
-            });
+        var statusObj = {
+            isSaveClicked: false,
+            isTodoAdded: false,
+            isLabelAdded: false,
+            isTitleAdded: false,
+            isDescriptionAdded: false,
+            isFilesAdded: false,
+            isRemainderAdded: false,
+            isCollaboratorAdded: false
+        };
 
-            return deferred.promise();
-        }
-
-        function fetchUserData(dataFromPrevious) {
-            var deferred = $.Deferred();
-            $.ajax({
-                url: '/Users/GetById/' + userData.id,
-                type: 'GET',
-                success: function (user) {
-                    deferred.resolve(user);
-                },
-                error: function () {
-                    alert('Error loading user data');
-                }
-            });
-            return deferred.promise();
-        }
-
+       
         function createDraftNote(userData) {
             var deferred = $.Deferred();
             note.AuthorId = userData.id;
@@ -81,76 +67,6 @@ $(function () {
             return deferred.promise();
         }
 
-        function saveNote(finalNote) {
-            var deferred = $.Deferred();
-            var noteString = JSON.stringify(finalNote);
-            $.ajax({
-                url: '/Notes/SaveNote/',
-                type: 'POST',
-                contentType: 'application/json',
-                data: noteString,
-                success: function (noteData) {
-                    deferred.resolve(noteData);
-                },
-                error: function () {
-                    alert('Error loading user data');
-                }
-            });
-            return deferred.promise();
-        }
-
-        function UploadAttachment(noteData, file) {
-            var deferred = $.Deferred();
-            var formData = new FormData();
-            formData.append("file", file);
-
-            formData.append('attachmentMetaData', JSON.stringify({
-                NoteId: noteData.id,
-                FileType: file.type,
-                ContentSize: file.size,
-                OwnerId: noteData.authorId
-            }));
-
-            $.ajax({
-                url: "/Attachments/AddAttachment",
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-
-                success: function (response) {
-                    deferred.resolve(response);
-                },
-                error: function () {
-                    alert('Error uploading attachment');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function DeleteAttachment(attachmentId) {
-            var deferred = $.Deferred();
-
-            $.ajax({
-                url: "/Attachments/DeleteAttachment/" + attachmentId,
-                type: "DELETE",
-                success: function (response) {
-                    deferred.resolve(response);
-                },
-                error: function () {
-                    alert('Error deleting attachment');
-                }
-            });
-
-            return deferred.promise();
-        }
-
-        function AddAuthorizer() { }
-
-        function DeleteAuthorizer() { }
-
-
         fetchNoteCreationModal()
             .then(function (data) {
                 return fetchUserData(data);
@@ -164,36 +80,38 @@ $(function () {
                 // modal handling code
                 var labelSelect = document.getElementById('labelsSelect');
                 var labelsContainer = document.getElementById('labelsContainer');
-                const todoContainer = document.getElementById('todo-container');
-                const addTodoButton = document.getElementById('add-todo');
                 const todoToggle = document.querySelector('#myCheckbox');
                 const todoSection = document.getElementById('todo-section');
                 const noteTitle = document.getElementById('note-title');
                 const noteDescription = document.getElementById('note-description');
-                const closeButton = document.querySelector('#myModal .modal-header .btn-close');
-
-                // getting all the buttons
                 const saveButton = document.getElementById('save-button');
-                const attachmentButton = document.getElementById('attachment-button');
                 const remainderButton = document.getElementById('remainder-button');
                 const authorizationButton = document.getElementById('authorization-button');
+                const todoInput = document.getElementById('todo-input');
 
                 // date picking 
                 const datePicker = document.getElementById("reminder-datepicker");
 
                 // data containers 
-                const todoInputs = []; // Array to store the todo input elements
                 const labelsInputs = []; // Array to store the label input elements
 
                 // Function to retrieve all the todo inputs
                 function getTodoInputs() {
+                    const todoItems = document.querySelectorAll('#added-todos .todo-item');
                     const todoValues = [];
-                    for (let i = 0; i < todoInputs.length; i++) {
-                        const todoInput = todoInputs[i];
-                        const todoValue = todoInput.value.trim();
+                    todoItems.forEach(function (todoItem) {
+                        const todoInput = todoItem.querySelector('span');
+                        const todoValue = todoInput.textContent.trim();
                         if (todoValue !== '') {
-                            todoValues.push(todoValue);
+                            var obj = {
+                                value: todoValue,
+                                state: false
+                            };
+                            todoValues.push(obj);
                         }
+                    });
+                    if (todoValues.length > 0) {
+                        statusObj.isTodoAdded = true;
                     }
                     return todoValues;
                 }
@@ -208,99 +126,34 @@ $(function () {
                             labelsValues.push(labelValue);
                         }
                     }
+                    if (labelsValues.length > 0) {
+                        statusObj.isLabelAdded = true;
+                    }
                     return labelsValues;
+                    
                 }
 
                 // label selecting code
+                var labelsValues = [];
                 function insertANewLabel () {
                     var selectedLabel = labelSelect.value;
-                    var labelElement = document.createElement('p');
-                    labelElement.classList.add('labels-container-item');
-                    labelElement.textContent = selectedLabel;
-                    labelsContainer.appendChild(labelElement);
-                    labelsInputs.push(labelElement);
-                }
-
-                // Function to create a new todo element
-                function createTodoElement() {
-                    const todoElement = document.createElement('div');
-                    todoElement.classList.add('form-check');
-
-                    const checkboxElement = document.createElement('input');
-                    checkboxElement.classList.add('form-check-input');
-                    checkboxElement.type = 'checkbox';
-
-                    const inputElement = document.createElement('input');
-                    inputElement.classList.add('form-control');
-                    inputElement.placeholder = 'Enter todo';
-
-                    // Append the checkbox and input field to the todo element
-                    todoElement.appendChild(checkboxElement);
-                    todoElement.appendChild(inputElement);
-
-                    // Append the todo element to the todo container
-                    todoContainer.appendChild(todoElement);
-
-                    // Add the input element to the todoInputs array
-                    todoInputs.push(inputElement);
+                    if (!labelsValues.includes(selectedLabel)) {
+                        var labelElement = document.createElement('p');
+                        labelElement.textContent = '#' + selectedLabel;
+                        labelsContainer.appendChild(labelElement);
+                        labelsInputs.push(labelElement);
+                    }
                 }
 
                 function modifySaveButton (event) {
                     if (event.target.value.trim() == '') {
+                        statusObj.isTitleAdded = false;
                         saveButton.disabled = true;
                     } else {
+                        statusObj.isTitleAdded = true;
                         saveButton.disabled = false;
                     }
                 }
-
-                function showSingleRawCardTop(newNote) {
-                    var maxTitleLength = 50;
-                    var maxDescriptionLength = 100; // maximum length for description
-
-                    // Truncate the description if it exceeds the maximum length
-                    var truncatedDescription = newNote.description.length > maxDescriptionLength
-                        ? newNote.description.slice(0, maxDescriptionLength) + '...'
-                        : newNote.description;
-                    var truncatedTitle = newNote.title.length > maxTitleLength
-                        ? newNote.title.slice(0, maxTitleLength) + '...'
-                        : newNote.title;
-
-                    var todosArray = JSON.parse(newNote.todos);
-                    todosArray = todosArray.slice(0, 3).map(todo => {
-                        if (todo.length > 25) {
-                            console.log(todo.length);
-                            return todo.slice(0, 25) + '...';
-                        } else {
-                            return todo;
-                        }
-                    });
-
-
-                    // Create the card HTML using template literals
-                    var cardHTML = `
-                        <div class="flex-note-container-item" style=" width: 18rem;">
-                          <img src="..." class="" alt="...">
-                          <div class="">
-                            <h5 class="" style="cursor:pointer;">${truncatedTitle}</h5>
-                            <p class="">${truncatedDescription}</p>
-                          </div>
-                          <ul class="">
-                            ${todosArray
-                                    .map(item => `<li class="">${item}</li>`)
-                                    .join('')}
-                          </ul>
-                          <div class="">
-                            <a href="#" class="">Card link</a>
-                            <a href="#" class="">Another link</a>
-                          </div>
-                        </div>
-                      `;
-
-                    // Append the new note HTML at the top of the card container
-                    var cardContainer = document.getElementById('card-container');
-                    cardContainer.insertAdjacentHTML('afterbegin', cardHTML);
-                }
-
 
                 // Adding event listeners 
                 labelSelect.addEventListener('change', insertANewLabel);
@@ -311,7 +164,36 @@ $(function () {
                         todoSection.style.display = 'none'; // Hide the todo container
                     }
                 });
-                addTodoButton.addEventListener('click', createTodoElement);
+                todoInput.addEventListener('keypress', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+
+                        var todoText = this.value.trim();
+                        if (todoText !== '') {
+                            var todoItem = document.createElement('div');
+                            todoItem.classList.add('todo-item');
+                            var todoTextElement = document.createElement('span');
+                            todoTextElement.textContent = todoText;
+                            var removeButton = document.createElement('button');
+                            removeButton.classList.add('btn', 'remove-todo');
+                            removeButton.innerHTML = '<i class="fas fa-times"></i>';
+
+                            todoItem.appendChild(removeButton);
+                            todoItem.appendChild(todoTextElement);
+                            var addedTodos = document.getElementById('added-todos');
+                            addedTodos.appendChild(todoItem);
+                            this.value = '';
+                            this.focus();
+                            this.focus();
+                        }
+                    }
+                })
+                document.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('remove-todo')) {
+                        var todoItem = event.target.closest('.todo-item');
+                        todoItem.remove();
+                    }
+                });
                 remainderButton.addEventListener('click', function () { })
                 authorizationButton.addEventListener('click', AddAuthorizer);
                 noteTitle.addEventListener('input', modifySaveButton);
@@ -323,8 +205,10 @@ $(function () {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js';
 
                 $("#file-input").change(function () {
+                    statusObj.isFilesAdded = true;
                     totalSelectedAttachment++;
                     var file = this.files[0];
+                    lastSelectedFile = file;
                     // Check the file type
                     if (file.type.startsWith("image/")) {
                         // Upload the image to the database
@@ -368,6 +252,9 @@ $(function () {
                                 success: function (response) {
                                     totalSelectedAttachment--;
                                     totalUploadedAttachment--;
+                                    if (totalSelectedAttachment === 0) {
+                                        statusObj.isFilesAdded = false;
+                                    }
                                     closeButton.parent().remove();
                                 },
                                 error: function (xhr, status, error) {
@@ -420,6 +307,9 @@ $(function () {
                                             method: 'DELETE',
                                             data: { attachmentId: attachmentId },
                                             success: function (response) {
+                                                if (totalSelectedAttachment === 0) {
+                                                    statusObj.isFilesAdded = false;
+                                                }
                                                 totalSelectedAttachment--;
                                                 totalUploadedAttachment--;
                                                 closeButton.parent().remove();
@@ -448,6 +338,7 @@ $(function () {
                 // Handle remainder button click
                 remainderButton.addEventListener("click", function () {
                     if (datePicker.style.display === "none") {
+                        statusObj.isRemainderAdded = true;
                         datePicker.style.display = "block";
                         // Set default date and time one hour later
                         var currentDate = new Date();
@@ -457,6 +348,7 @@ $(function () {
                         note.IsRemainderAdded = true;
 
                     } else {
+                        statusObj.isRemainderAdded = false;
                         datePicker.style.display = "none";
                         note.IsRemainderAdded = false;
                     }
@@ -469,9 +361,8 @@ $(function () {
                     console.log(selectedDateTime);
                 });
 
-
-                // Saving the note
-                $('#save-button').off('click').on('click', function () {
+                // Saving the draft note 
+                $("#myModal").on("hide.bs.modal", function () {
                     if (totalSelectedAttachment === totalUploadedAttachment) {
                         note.Id = noteData.id;
                         note.AddedBy = noteData.authorId;
@@ -480,8 +371,61 @@ $(function () {
                         note.Description = noteDescription.value;
                         note.Labels = JSON.stringify(getLabelsInputs());
                         note.Type = null;
+
+
+                        if (note.Description !== '') {
+                            statusObj.isDescriptionAdded = true;
+                        } else {
+                            statusObj.isDescriptionAdded = false;
+                        }
+
+
+                        // remainder
+                        if (note.IsRemainderAdded) {
+                            note.RemainderDateTime = datePicker.value;
+                            console.log(note.RemainderDateTime);
+                        }
+
+                        if (!statusObj.isSaveClicked) {
+                            if (statusObj.isTitleAdded ||
+                                statusObj.isDescriptionAdded ||
+                                statusObj.isFilesAdded ||
+                                statusObj.isLabelAdded ||
+                                statusObj.isTodoAdded ||
+                                statusObj.isRemainderAdded
+                            ) {
+                                saveNote(note)
+                                    .then(function (addedNote) {
+                                        $('#myModal').modal('hide');
+                                    });
+                            } else {
+                                deleteNote(note.Id, note.AuthorId)
+                                    .then(function (addedNote) {
+                                        $('#myModal').modal('hide');
+                                    });
+                            }
+                        } else {
+                            
+                        }
+
+                    } else {
+                        alert('Please wait.. Files uploading');
+                    }
+                });
+               
+                // Saving the note
+                $('#save-button').off('click').on('click', function () {
+                    if (totalSelectedAttachment === totalUploadedAttachment) {
+                        statusObj.isSaveClicked = true;
+                        note.Id = noteData.id;
+                        note.AddedBy = noteData.authorId;
+                        note.Todos = JSON.stringify(getTodoInputs());
+                        note.Title = noteTitle.value;
+                        note.Description = noteDescription.value;
+                        note.Labels = JSON.stringify(getLabelsInputs());
+                        note.Type = null;
                         note.IsDraft = false;
-                        note.IsDraft = false;
+
                         // remainder
                         if (note.IsRemainderAdded) {
                             note.RemainderDateTime = datePicker.value;
@@ -490,14 +434,23 @@ $(function () {
                         saveNote(note)
                             .then(function (addedNote) {
                                 $('#myModal').modal('hide');
-                                console.log('---',addedNote)
                                 showSingleRawCardTop(addedNote);
+                                showLinksPerNoteSingle(addedNote);
+                                fetchAttachmentAllForANote(addedNote.id)
+                                    .then(function (attachments) {
+                                        if (attachments.length > 0) {
+                                            showAttachmentPreviewToEachCardSingle(attachments[0]);
+                                        }
+                                    })
+                                var noteTitle = document.getElementById(`title-${addedNote.id}`);
+                                noteTitle.addEventListener('click', handleNoteTitleClick);
                             });
                     } else {
                         alert('Please wait.. Files uploading');
                     }
 
                 });
+                
             })
             .fail(function (error) {
                 console.error("Error in nested AJAX calls");

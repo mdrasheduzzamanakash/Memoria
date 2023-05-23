@@ -27,7 +27,7 @@ namespace Memoria.DataService.Repository
             var note = new Note();
             note.IsRemainderAdded = false;
             var status = await base.Add(note);
-            if(status)
+            if (status)
             {
                 var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
                 return noteDto;
@@ -59,9 +59,11 @@ namespace Memoria.DataService.Repository
             return finalNoteOutDto;
         }
 
+
+
         public async Task<List<NoteSingleOutDTO>> AllNotesWithOutDraft(string authorId)
         {
-            var notes = await _dbSet.Where(x => x.AuthorId == authorId && x.IsDraft == false).ToListAsync();
+            var notes = await _dbSet.Where(x => x.AuthorId == authorId && x.IsDraft == false && x.IsTrashed == false).ToListAsync();
             var notesDto = new List<NoteSingleOutDTO>();
             foreach (var note in notes)
             {
@@ -69,6 +71,74 @@ namespace Memoria.DataService.Repository
                 notesDto.Add(noteDto);
             }
             return notesDto;
+        }
+
+        public async Task<NoteSingleOutDTO> GetNoteById(string id)
+        {
+            var note = await base.GetById(id);
+            var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+            return noteDto;
+        }
+
+        public async Task<List<NoteSingleOutDTO>> SearchByTitleAndDescription(string searchText, string userId)
+        {
+            var searchWords = searchText.ToLower().Split(' ');
+
+            var searchedNote = await _dbSet.Where(x =>
+                x.AuthorId == userId &&
+                x.IsDraft == false &&
+                x.IsTrashed == false
+            ).ToListAsync();
+
+            var filteredNotes = searchedNote.Where(x =>
+                searchWords.Any(y =>
+                    (x.Title != null && x.Title.ToLower().Contains(y)) ||
+                    (x.Description != null && x.Description.ToLower().Contains(y))
+                )
+            ).ToList();
+
+            var searchedNotesDtos = filteredNotes.Select(note => _mapper.Map<NoteSingleOutDTO>(note)).ToList();
+
+            return searchedNotesDtos;
+        }
+        
+        public async Task<List<NoteSingleOutDTO>> SearchByTitleAndDescriptionTrash(string searchText, string userId)
+        {
+            var searchWords = searchText.ToLower().Split(' ');
+
+            var searchedNote = await _dbSet.Where(x =>
+                x.AuthorId == userId &&
+                x.IsDraft == false &&
+                x.IsTrashed == true
+            ).ToListAsync();
+
+            var filteredNotes = searchedNote.Where(x =>
+                searchWords.Any(y =>
+                    (x.Title != null && x.Title.ToLower().Contains(y)) ||
+                    (x.Description != null && x.Description.ToLower().Contains(y))
+                )
+            ).ToList();
+
+            var searchedNotesDtos = filteredNotes.Select(note => _mapper.Map<NoteSingleOutDTO>(note)).ToList();
+
+            return searchedNotesDtos;
+        }
+
+        public async Task<List<NoteSingleOutDTO>> AllNotesTrashed(string id)
+        {
+            var notes = await _dbSet.Where(x => x.AuthorId == id && x.IsTrashed == true && x.IsDraft == false).ToListAsync();
+            var notesDto = new List<NoteSingleOutDTO>();
+            foreach (var note in notes)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                notesDto.Add(noteDto);
+            }
+            return notesDto;
+        }
+
+        public async Task<bool> DeleteAnItem(string noteId)
+        {
+            return await base.Delete(noteId);
         }
     }
 }

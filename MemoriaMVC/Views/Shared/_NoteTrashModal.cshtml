@@ -65,14 +65,14 @@
     .file-details {
         margin-bottom: 10px;
         margin-left: 10px;
-        position:relative;
+        position: relative;
     }
 
     /* Styling for the file details container */
     #file-details-container {
         margin-top: 10px;
         display: flex;
-        flex-wrap:wrap;
+        flex-wrap: wrap;
     }
 
     .file-details p {
@@ -136,13 +136,13 @@
         height: 2px;
         background-color: #808090;
         transition: width 0.3s ease-in-out;
-        display:none;
+        display: none;
     }
 
     .no-box-shadow:focus + .underline {
         width: inherit;
         margin-left: 10px;
-        display:block;
+        display: block;
     }
 
     .no-pointer-cursor {
@@ -151,13 +151,13 @@
 </style>
 
 <div class="modal-header">
-    <h4 class="modal-title">Create Note</h4>
+    <h4 class="modal-title">Note Details</h4>
     <div class="options-container">
         <div class="options-container-item">
             <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
             <label class="form-check-label" for="myCheckbox" id="toggle-todo">Todo</label>
         </div>
-        <div class="options-container-item">
+        <div class="options-container-item" style="display:none">
             <select class="form-select" id="labelsSelect">
                 <option selected>Labels</option>
                 @foreach (var label in ViewBag.Labels)
@@ -166,7 +166,6 @@
                 }
             </select>
         </div>
-
     </div>
 
     <div class="ramainder-container">
@@ -188,13 +187,13 @@
         <textarea class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
     </div>
     <!--for the todo sections-->
-    <div class="form-group" id="todo-section" style="display:none">
+    <div class="form-group" id="todo-section" >
         <label for="note-todos">Todos</label>
         <div id="todo-container">
             <div id="added-todos">
                 <!-- dynamically created todos will be added here -->
             </div>
-            <input type="text" class="form-control no-box-shadow" id="todo-input">
+            <input type="text" class="form-control no-box-shadow" id="todo-input" style="display:none" disabled>
             <div class="underline"></div>
         </div>
     </div>
@@ -204,19 +203,21 @@
 
 </div>
 <div class="modal-footer">
-
-    <button type="button" class="btn btn-outline-primary" id="authorization-button">
+    <button type="button" class="btn btn-outline-primary" id="authorization-button" disabled style="display:none">
         <i class="fas fa-user-plus"></i> Collaborator
     </button>
-    <button type="button" class="btn btn-outline-primary" id="remainder-button">
+    <button type="button" class="btn btn-outline-primary" id="remainder-button" disabled style="display:none">
         <i class="fas fa-clock"></i> Remainder
     </button>
 
-    <button type="button" class="btn btn-outline-primary" id="attachment-button">
+    <button type="button" class="btn btn-outline-primary" id="attachment-button" disabled style="display:none">
         <i class="fas fa-paperclip"></i>
     </button>
-    <button type="button" class="btn btn-outline-primary" id="save-button" disabled>
-        <i class="fas fa-save"></i> Save
+    <button type="button" class="btn btn-outline-danger" id="trash-button">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+    <button type="button" class="btn btn-outline-primary" id="update-button">
+        <i class="fas fa-undo-alt"></i> Restore
     </button>
 
 </div>

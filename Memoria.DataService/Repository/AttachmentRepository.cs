@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Memoria.DataService.Repository
 {
+
     internal class AttachmentRepository : GenericRepository<Attachment>, IAttachmentRepository
     {
         public AttachmentRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
@@ -28,6 +29,35 @@ namespace Memoria.DataService.Repository
         public override async Task<bool> Delete(string id)
         {
             return await base.Delete(id);
+        }
+
+        public async Task<bool> DeleteAllAttachmentOfANote(string noteId, string userId)
+        {
+            try
+            {
+                var attachments = await _dbSet.Where(x => x.NoteId == noteId && x.OwnerId == userId).ToListAsync();
+
+                await Console.Out.WriteLineAsync('h');
+                foreach (var attachment in attachments)
+                {
+                    await base.Delete(attachment.Id); 
+                }
+
+                return true; 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while deleting attachments: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        public async Task<List<AttachmentSingleOutDTO>> GetAllAttachmentForANote(string noteId)
+        {
+            var attachments = await _dbSet.Where(x => x.NoteId == noteId).ToListAsync();
+            var attachmentDtos = attachments.Select(_mapper.Map<AttachmentSingleOutDTO>).ToList();
+            return attachmentDtos;
         }
 
         public async Task<List<AttachmentSingleOutDTO>> GetFirstOneByIds(string[] noteIds)

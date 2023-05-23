@@ -1,7 +1,7 @@
 :root {
     --primary-color: #007bff;
     --secondary-color: #6c757d;
-    --body-bg-color: #ffffff;
+    --body-bg-color: #f5f7fa;
     --body-text-color: #212529;
     --navbar-bg-color: var(--primary-color);
     --navbar-text-color: #fff;

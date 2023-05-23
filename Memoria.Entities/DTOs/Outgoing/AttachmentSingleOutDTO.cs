@@ -23,6 +23,8 @@ namespace Memoria.Entities.DTOs.Outgoing
 
         public byte[] file { get; set; }
 
+        public string fileBase64 { get; set; }
+
         public string OwnerId { get; set; }
     }
 }
