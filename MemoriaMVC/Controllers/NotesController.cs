@@ -91,6 +91,7 @@ namespace MemoriaMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
         {
+            finalNoteDto.UpdatedDateAndTime = DateTime.UtcNow;
             var finalNote = await _unitOfWork.Notes.AddFinalNote(finalNoteDto);
             await _unitOfWork.CompleteAsync();
             return Json(finalNote);
@@ -120,5 +121,6 @@ namespace MemoriaMVC.Controllers
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
             return View(userViewModel);
         }
+
     }
 }

@@ -372,7 +372,7 @@
             $('#update-button').off('click').on('click', function () {
                 if (totalSelectedAttachment === totalUploadedAttachment) {
                     noteData.Id = noteData.id;
-                    noteData.AddedBy = noteData.authorId;
+                    noteData.UpdatedBy = userData.id;
                     noteData.Todos = JSON.stringify(getTodoInputs());
                     noteData.Title = noteTitle.value;
                     noteData.Description = noteDescription.value;
@@ -409,6 +409,7 @@
 
             trashButton.addEventListener('click', function () {
                 noteData.isTrashed = true;
+                noteData.trashingDate = new Date();
                 saveNote(noteData)
                     .then(function (status) {
                         if (status) {

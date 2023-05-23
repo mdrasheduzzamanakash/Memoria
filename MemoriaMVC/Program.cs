@@ -1,6 +1,7 @@
 using AutoMapper;
 using Memoria.DataService.Data;
 using Memoria.DataService.IConfiguration;
+using MemoriaMVC.BackgroudTask;
 using MemoriaMVC.Mapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MemoriaDefaultConnection")));
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddHostedService<TrashCleanupTask>();
 
 // Adding the automapper in the DI box
 var config = new MapperConfiguration(cfg =>

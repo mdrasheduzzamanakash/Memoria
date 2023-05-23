@@ -28,5 +28,9 @@ namespace Memoria.DataService.IRepository
         Task<List<NoteSingleOutDTO>> SearchByTitleAndDescriptionTrash(string searchText, string userId);
 
         Task<bool> DeleteAnItem(string noteId);
+
+        Task<List<NoteSingleOutDTO>> TrashedNotesOlderThan30Days();
+
+        Task RemoveRange(List<NoteSingleOutDTO> notes);
     }
 }
