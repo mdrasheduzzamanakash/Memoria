@@ -59,6 +59,13 @@
         flex-direction: column;
     }
 
+    .count-down-element {
+        color: blue;
+        text-align: right;
+        padding: 3px;
+    }
+
+
 </style>
 
 <!--global datastructures-->
@@ -187,6 +194,11 @@
                 showRawCard(nonDraftNotes);
                 showAttachmentPreviewToEachCard(attachments);
                 showLinksPerNote(nonDraftNotes);
+                for(let i = 0;i < nonDraftNotes.length;i++) {
+                    if (nonDraftNotes[i].isRemainderAdded) {
+                        showRemainderCountDown(nonDraftNotes[i]);
+                    }
+                }
             })
     })
 </script>

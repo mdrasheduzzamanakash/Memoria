@@ -58,6 +58,12 @@
         flex-direction:column;
     }
 
+    .count-down-element {
+        color: blue;
+        text-align:right;
+        padding: 3px;
+    }
+
 </style>
 
 <!--global datastructures-->
@@ -65,6 +71,7 @@
     var nonDraftNotes = [];
     var attachments = []; // only one attachment per note is here
 </script>
+
 
 <!--Notes container-->
 <div class="flex-note-container" id="card-container"></div>
@@ -136,7 +143,6 @@
             }, 500); // Delay in milliseconds
         });
 
-
         function showAttachmentPreviewToEachCard(attachments) {
             try {
                 var alreadyDone = [];
@@ -175,6 +181,11 @@
             showRawCard(nonDraftNotes);
             showAttachmentPreviewToEachCard(attachments);
             showLinksPerNote(nonDraftNotes);
+            for(let i = 0;i < nonDraftNotes.length;i++) {
+               if (nonDraftNotes[i].isRemainderAdded) {
+                   showRemainderCountDown(nonDraftNotes[i]);
+               }
+            }
         })
     })
 </script>

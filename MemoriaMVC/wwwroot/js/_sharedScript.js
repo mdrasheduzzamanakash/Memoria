@@ -22,7 +22,7 @@
 
     // Create the card HTML using template literals
     var cardHTML = `
-                        <div class="flex-note-container-item" style=" width: 18rem;" id="${cardData.id}">
+                        <div class="flex-note-container-item" style=" width: 19rem;" id="${cardData.id}">
                             <div style="padding:10px;">
                                 <div class="">
                                     <h5 class="note-title" style="cursor:pointer; word-break: break-word;" id="title-${cardData.id}">${truncatedTitle}</h5>
@@ -139,6 +139,51 @@ function showAttachmentPreviewToEachCardSingle(attachment) {
         console.log(e);
     }
 }
+
+
+function showRemainderCountDown(nonDraftNote) {
+    try {
+        var noteElement = document.getElementById(nonDraftNote.id);
+        var countDownElement = document.createElement('p');
+        countDownElement.classList.add("count-down-element");
+
+        var currentTime = new Date().getTime();
+        var remainderTime = new Date(nonDraftNote.remainderDateTime);
+        var remainingTime = Math.floor((remainderTime - currentTime) / 1000);
+
+        countDownElement.innerText = formatTime(remainingTime);
+        noteElement.insertBefore(countDownElement, noteElement.firstChild);
+
+        var countDownInterval = setInterval(function () {
+            remainingTime--;
+            countDownElement.innerText = formatTime(remainingTime);
+            console.log(remainingTime);
+            if (remainingTime <= 0) {
+                countDownElement.style.color = "red";
+                countDownElement.innerText = "time-over";
+                clearInterval(countDownInterval);
+            }
+        }, 1000);
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+function formatTime(timeInSeconds) {
+    var days = Math.floor(timeInSeconds / (24 * 60 * 60));
+    var hours = Math.floor((timeInSeconds % (24 * 60 * 60)) / (60 * 60));
+    var minutes = Math.floor((timeInSeconds % (60 * 60)) / 60);
+    var seconds = timeInSeconds % 60;
+
+    // Add leading zeros if necessary
+    var formattedDays = String(days).padStart(2, "0");
+    var formattedHours = String(hours).padStart(2, "0");
+    var formattedMinutes = String(minutes).padStart(2, "0");
+    var formattedSeconds = String(seconds).padStart(2, "0");
+
+    return formattedDays + "d " + formattedHours + "h " + formattedMinutes + "m " + formattedSeconds + "s";
+}
+
 
 function fetchNoteCreationModal() {
     var deferred = $.Deferred();

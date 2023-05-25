@@ -363,13 +363,12 @@
             // Handle date and time selection
             datePicker.addEventListener("changeDate", function (event) {
                 var selectedDateTime = event.target.value;
-                console.log(selectedDateTime);
             });
 
             // populate already saved data to the modal
 
             // Saving the note
-            $('#update-button').off('click').on('click', function () {
+            saveButton.addEventListener('click', function () {
                 if (totalSelectedAttachment === totalUploadedAttachment) {
                     noteData.Id = noteData.id;
                     noteData.UpdatedBy = userData.id;
@@ -380,7 +379,7 @@
                     noteData.Type = null;
                     noteData.IsDraft = false;
                     // remainder
-                    if (noteData.IsRemainderAdded) {
+                    if (noteData.isRemainderAdded) {
                         noteData.RemainderDateTime = datePicker.value;
                     }
                     saveNote(noteData)
@@ -396,15 +395,17 @@
                                     if (attachments.length > 0) {
                                         showAttachmentPreviewToEachCardSingle(attachments[0]);
                                     }
+                                    if (addedNote.isRemainderAdded) {
+                                        showRemainderCountDown(addedNote);
+                                    }
                                 })
-                       
+
                             var noteTitle = document.getElementById(`title-${addedNote.id}`);
                             noteTitle.addEventListener('click', handleNoteTitleClick);
                         });
                 } else {
                     alert('Please wait.. Files uploading');
                 }
-
             });
 
             trashButton.addEventListener('click', function () {
