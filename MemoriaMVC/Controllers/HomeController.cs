@@ -1,20 +1,24 @@
-﻿using AutoMapper;
+﻿using Authentication.Configuration;
+using AutoMapper;
 using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Outgoing;
 using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace MemoriaMVC.Controllers
 {
     public class HomeController : BaseController<HomeController>
     {
-        public HomeController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<HomeController> logger) : base(unitOfWork, mapper, logger)
+        public HomeController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<HomeController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
         {
         }
 
-        
+
+
         // GET: HomeController
         public async Task<IActionResult> Index()
         {

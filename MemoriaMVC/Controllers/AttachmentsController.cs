@@ -13,12 +13,15 @@ using Newtonsoft.Json;
 using Memoria.Entities.DTOs.Outgoing;
 using Memoria.Entities.DTOs.Incomming;
 using MemoriaMVC.ViewModel.Attachment;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
 
 namespace MemoriaMVC.Controllers
 {
     public class AttachmentsController : BaseController<AttachmentsController>
     {
-        public AttachmentsController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttachmentsController> logger) : base(unitOfWork, mapper, logger)
+        public AttachmentsController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttachmentsController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
         {
         }
 

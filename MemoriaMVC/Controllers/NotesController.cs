@@ -4,14 +4,18 @@ using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Newtonsoft.Json;
 using MemoriaMVC.ViewModel.HomePageViewModel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
 
 namespace MemoriaMVC.Controllers
 {
     public class NotesController : BaseController<NotesController>
     {
-        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
+        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
         {
         }
+
 
 
         // get all the notes 

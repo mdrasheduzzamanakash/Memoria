@@ -12,12 +12,15 @@ using Memoria.DataService.IConfiguration;
 using AutoMapper;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 using Memoria.Entities.DTOs.Incomming;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
 
 namespace MemoriaMVC.Controllers
 {
     public class UsersController : BaseController<UsersController>
     {
-        public UsersController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UsersController> logger) : base(unitOfWork, mapper, logger)
+        public UsersController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UsersController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
         {
         }
 
