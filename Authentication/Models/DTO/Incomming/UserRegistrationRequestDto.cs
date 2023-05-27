@@ -21,7 +21,6 @@ namespace Authentication.Models.DTO.Incomming
         [Required]
         public string Password { get; set; }
 
-        [Required]
-        public byte[] Image { get; set; }
+        public byte[]? Image { get; set; }
     }
 }

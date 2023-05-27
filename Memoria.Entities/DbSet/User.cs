@@ -18,6 +18,8 @@ namespace Memoria.Entities.DbSet
 
         public string Password { get; set; }
         
-        public byte[] Image { get; set; }
+        public byte[]? Image { get; set; }
+
+        public Guid IdentityId { get; set; }
     }
 }
