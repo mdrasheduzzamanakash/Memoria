@@ -13,15 +13,11 @@ namespace MemoriaMVC.Controllers
         public IUnitOfWork _unitOfWork;
         public IMapper _mapper;
         protected readonly ILogger<T> _logger;
-        protected readonly UserManager<IdentityUser> _userManager;
-        protected readonly JwtConfig _jwtConfig;
-        public BaseController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<T> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor)
+        public BaseController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<T> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
-            _userManager = userManager;
-            _jwtConfig = optionMonitor.CurrentValue;
         }
     }
 }

@@ -32,6 +32,8 @@ namespace Memoria.DataService.Data
         public INoteRepository Notes { get; private set; }
         public INoteLabelRepository NoteLabels { get; private set; }
         public ITrashRepository Trashes { get; private set; }
+        public IRefreshTokenRepository RefreshTokens { get; private set; }
+
         public UnitOfWork(AppDbContext context, ILoggerFactory loggerFactory)
         {
             _context = context;
@@ -47,6 +49,7 @@ namespace Memoria.DataService.Data
             Notes = new NoteRepository(context, _logger, mapper);
             NoteLabels = new NoteLabelRepository(context, _logger, mapper);
             Trashes = new TrashRepository(context, _logger, mapper);
+            RefreshTokens = new RefreshTokenRepository(context, _logger, mapper);
         }
 
 
@@ -54,7 +57,7 @@ namespace Memoria.DataService.Data
 
         // some custom methods that is inconvenient to implement inner side
         // here i am implementing them for avoiding parallel execution of trackign of entities and avoiding possible errors
-        // specially those methods who requires immediate data retrival after being added should be implemented here 
+        // specially those methods who requires immediate data retrival after being added should be implemented here
         public async Task<string> AddAttachmentAsync(AttachmentSingleInDTO attachmentDto)
         {
             IMapper mapper = AutoMapperConfig.Configure();

@@ -3,6 +3,7 @@ using Authentication.Models.DTO.Incomming;
 using Authentication.Models.DTO.Outgoing;
 using AutoMapper;
 using Memoria.DataService.IConfiguration;
+using Memoria.Entities.DTOs.Incomming;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -15,8 +16,22 @@ namespace MemoriaMVC.Controllers
 {
     public class AccountsController : BaseController<AccountsController>
     {
-        public AccountsController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AccountsController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
+        private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly JwtConfig _jwtConfig;
+
+        public AccountsController(
+            IUnitOfWork unitOfWork,
+            IMapper mapper, 
+            ILogger<AccountsController> logger, 
+            TokenValidationParameters tokenValidationParameters, 
+            IOptionsMonitor<JwtConfig> optionMonitor, 
+            UserManager<IdentityUser> userManager
+            ) : base(unitOfWork, mapper, logger)
         {
+            _tokenValidationParameters = tokenValidationParameters;
+            _userManager = userManager;
+            _jwtConfig = optionMonitor.CurrentValue;
         }
 
         [HttpPost]
@@ -56,6 +71,19 @@ namespace MemoriaMVC.Controllers
                     });
                 }
 
+                // save the user to User table
+                var userSingleInDto = new UserSingleInDTO
+                {
+                    FirstName = userRegistrationRequestDto.FirstName,
+                    LastName = userRegistrationRequestDto.LastName,
+                    Email = userRegistrationRequestDto.Email,
+                    Password = userRegistrationRequestDto.Password,
+                    IdentityId = new Guid(newUser.Id)
+                };
+
+                await _unitOfWork.Users.Add(userSingleInDto);
+                await _unitOfWork.CompleteAsync();
+
                 // create jwt token
 
                 var token = GenerateJwtToken(newUser);
@@ -69,6 +97,62 @@ namespace MemoriaMVC.Controllers
             else
             {
                 return BadRequest(new UserRegistrationResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>()
+                    {
+                        "Invalid payload"
+                    }
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto loginRequestDto)
+        {
+            if(ModelState.IsValid)
+            {
+                var userExist = await _userManager.FindByEmailAsync(loginRequestDto.Email);
+
+                if(userExist == null)
+                {
+                    return BadRequest(new UserRegistrationResponseDto()
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid authentication request"
+                        }
+                    });
+                }
+
+                var isCorrect = await _userManager.CheckPasswordAsync(userExist, loginRequestDto.Password);
+
+                if(isCorrect)
+                {
+                    var jwtToken = GenerateJwtToken(userExist);
+
+                    return Ok(new UserLoginResponseDto()
+                    {
+                        Success = true,
+                        Token = jwtToken
+                    });
+                } 
+                else
+                {
+                    return BadRequest(new UserRegistrationResponseDto()
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid authentication request"
+                        }
+                    });
+                }
+            }
+            else
+            {
+                return BadRequest(new UserLoginResponseDto()
                 {
                     Success = false,
                     Errors = new List<string>()
@@ -94,7 +178,7 @@ namespace MemoriaMVC.Controllers
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(3), // todo add the expiration times a shorter 
+                Expires = DateTime.UtcNow.Add(_jwtConfig.ExpiryTimeFrame), // todo add the expiration times a shorter 
                 SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature
                 )

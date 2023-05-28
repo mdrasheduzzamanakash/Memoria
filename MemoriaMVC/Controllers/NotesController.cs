@@ -12,11 +12,9 @@ namespace MemoriaMVC.Controllers
 {
     public class NotesController : BaseController<NotesController>
     {
-        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
+        public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
         {
         }
-
-
 
         // get all the notes 
         [HttpGet]

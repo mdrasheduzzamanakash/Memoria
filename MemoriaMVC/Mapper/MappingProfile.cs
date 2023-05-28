@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using Authentication.Models.DTO.Incomming;
+using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
 using MemoriaMVC.ViewModel.Attachment;
 using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace MemoriaMVC.Mapper
 {
@@ -33,6 +35,7 @@ namespace MemoriaMVC.Mapper
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
 
             CreateMap<AttachmentViewModel, AttachmentSingleInDTO>();
+
 
         }
 

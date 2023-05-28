@@ -13,9 +13,10 @@ namespace MemoriaMVC.Controllers
 {
     public class HomeController : BaseController<HomeController>
     {
-        public HomeController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<HomeController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
+        public HomeController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<HomeController> logger) : base(unitOfWork, mapper, logger)
         {
         }
+
 
 
 

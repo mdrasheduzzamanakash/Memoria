@@ -21,7 +21,7 @@ namespace MemoriaMVC.Controllers
 {
     public class AttachmentsController : BaseController<AttachmentsController>
     {
-        public AttachmentsController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttachmentsController> logger, UserManager<IdentityUser> userManager, IOptionsMonitor<JwtConfig> optionMonitor) : base(unitOfWork, mapper, logger, userManager, optionMonitor)
+        public AttachmentsController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<AttachmentsController> logger) : base(unitOfWork, mapper, logger)
         {
         }
 
