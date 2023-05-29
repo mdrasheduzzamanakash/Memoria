@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Memoria.Entities.DTOs.Incomming;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Memoria.DataService.IRepository
 {
     public interface IRefreshTokenRepository
     {
-
+        Task<bool> Add(RefreshTokenSingleInDTO refreshTokenSingleDTO);
     }
 }

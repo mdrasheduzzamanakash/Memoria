@@ -1,4 +1,5 @@
 ﻿using Authentication.Configuration;
+using Authentication.Models.DTO.Generic;
 using Authentication.Models.DTO.Incomming;
 using Authentication.Models.DTO.Outgoing;
 using AutoMapper;
@@ -86,12 +87,13 @@ namespace MemoriaMVC.Controllers
 
                 // create jwt token
 
-                var token = GenerateJwtToken(newUser);
+                var token = await GenerateJwtToken(newUser);
 
                 return Ok(new UserRegistrationResponseDto()
                 {
                     Success = true,
-                    Token = token
+                    Token = token.JwtToken, 
+                    RefreshToken = token.RefreshToken
                 });
             }
             else
@@ -130,15 +132,16 @@ namespace MemoriaMVC.Controllers
 
                 if(isCorrect)
                 {
-                    var jwtToken = GenerateJwtToken(userExist);
+                    var jwtToken = await GenerateJwtToken(userExist);
 
                     return Ok(new UserLoginResponseDto()
                     {
                         Success = true,
-                        Token = jwtToken
+                        Token = jwtToken.JwtToken,
+                        RefreshToken = jwtToken.RefreshToken
                     });
                 } 
-                else
+                else        
                 {
                     return BadRequest(new UserRegistrationResponseDto()
                     {
@@ -163,7 +166,7 @@ namespace MemoriaMVC.Controllers
             }
         }
 
-        private string GenerateJwtToken(IdentityUser user)
+        private async Task<TokenData> GenerateJwtToken(IdentityUser user)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
 
@@ -188,7 +191,36 @@ namespace MemoriaMVC.Controllers
 
             var jwtToken = jwtHandler.WriteToken(token);
 
-            return jwtToken;
+            var refreshToken = new RefreshTokenSingleInDTO
+            {
+                Token = $"{RandomStringGenerator(25)}_{Guid.NewGuid()}",
+                UserId = user.Id,
+                IsRevoked = false,
+                IsUsed = false,
+                Status = 1,
+                JwtId = token.Id,
+                ExpiryDate = DateTime.UtcNow.AddMonths(6)
+            };
+
+
+            await _unitOfWork.RefreshTokens.Add(refreshToken);
+            await _unitOfWork.CompleteAsync();
+
+            var tokenData = new TokenData
+            {
+                JwtToken = jwtToken,
+                RefreshToken = refreshToken.Token
+            };
+
+            return tokenData;
+        }
+
+        private string RandomStringGenerator(int length)
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

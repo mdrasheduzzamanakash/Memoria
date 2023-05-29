@@ -36,7 +36,6 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<AttachmentViewModel, AttachmentSingleInDTO>();
 
-
         }
 
         private static string ConvertToString(byte[] bytes)
