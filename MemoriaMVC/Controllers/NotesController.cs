@@ -4,6 +4,9 @@ using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Newtonsoft.Json;
 using MemoriaMVC.ViewModel.HomePageViewModel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
 
 namespace MemoriaMVC.Controllers
 {
@@ -12,7 +15,6 @@ namespace MemoriaMVC.Controllers
         public NotesController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<NotesController> logger) : base(unitOfWork, mapper, logger)
         {
         }
-
 
         // get all the notes 
         [HttpGet]
@@ -91,6 +93,7 @@ namespace MemoriaMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
         {
+            finalNoteDto.UpdatedDateAndTime = DateTime.UtcNow;
             var finalNote = await _unitOfWork.Notes.AddFinalNote(finalNoteDto);
             await _unitOfWork.CompleteAsync();
             return Json(finalNote);
@@ -120,5 +123,6 @@ namespace MemoriaMVC.Controllers
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
             return View(userViewModel);
         }
+
     }
 }

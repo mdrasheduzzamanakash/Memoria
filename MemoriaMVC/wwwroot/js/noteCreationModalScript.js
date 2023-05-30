@@ -441,6 +441,9 @@ $(function () {
                                         if (attachments.length > 0) {
                                             showAttachmentPreviewToEachCardSingle(attachments[0]);
                                         }
+                                        if (addedNote.isRemainderAdded) {
+                                            showRemainderCountDown(addedNote);
+                                        }
                                     })
                                 var noteTitle = document.getElementById(`title-${addedNote.id}`);
                                 noteTitle.addEventListener('click', handleNoteTitleClick);

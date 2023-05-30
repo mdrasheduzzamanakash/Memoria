@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 using Memoria.Entities.DTOs.Outgoing;
 using Memoria.Entities.DTOs.Incomming;
 using MemoriaMVC.ViewModel.Attachment;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
 
 namespace MemoriaMVC.Controllers
 {

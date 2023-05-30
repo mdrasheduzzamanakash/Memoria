@@ -21,6 +21,7 @@ namespace Memoria.DataService.IConfiguration
         IAttachmentRepository Attachments { get; }
         IAuthorizationRepository Authorizations { get; }
         ICommentRepository Comments { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
 
         Task<string> AddAttachmentAsync(AttachmentSingleInDTO attachment);
         Task CompleteAsync();

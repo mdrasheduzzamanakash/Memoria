@@ -12,13 +12,28 @@ using Memoria.DataService.IConfiguration;
 using AutoMapper;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 using Memoria.Entities.DTOs.Incomming;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MemoriaMVC.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : BaseController<UsersController>
     {
         public UsersController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UsersController> logger) : base(unitOfWork, mapper, logger)
         {
+        }
+
+
+        // GET all users 
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _unitOfWork.Users.All();
+            return Json(users);
         }
 
 

@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using Authentication.Configuration;
+using AutoMapper;
 using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Outgoing;
 using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace MemoriaMVC.Controllers
 {
@@ -14,7 +17,9 @@ namespace MemoriaMVC.Controllers
         {
         }
 
-        
+
+
+
         // GET: HomeController
         public async Task<IActionResult> Index()
         {

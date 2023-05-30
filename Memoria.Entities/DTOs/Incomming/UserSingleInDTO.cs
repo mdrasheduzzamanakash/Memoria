@@ -3,6 +3,7 @@
     public class UserSingleInDTO
     {
         public string Id { get; set; }
+        public Guid? IdentityId { get; set; }
         public int? Status { get; set; }
         public System.DateTime? UpdatedDateAndTime { get; set; }
         public string? UpdatedBy { get; set; }

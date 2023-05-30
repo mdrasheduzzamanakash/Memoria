@@ -363,16 +363,15 @@
             // Handle date and time selection
             datePicker.addEventListener("changeDate", function (event) {
                 var selectedDateTime = event.target.value;
-                console.log(selectedDateTime);
             });
 
             // populate already saved data to the modal
 
             // Saving the note
-            $('#update-button').off('click').on('click', function () {
+            saveButton.addEventListener('click', function () {
                 if (totalSelectedAttachment === totalUploadedAttachment) {
                     noteData.Id = noteData.id;
-                    noteData.AddedBy = noteData.authorId;
+                    noteData.UpdatedBy = userData.id;
                     noteData.Todos = JSON.stringify(getTodoInputs());
                     noteData.Title = noteTitle.value;
                     noteData.Description = noteDescription.value;
@@ -380,7 +379,7 @@
                     noteData.Type = null;
                     noteData.IsDraft = false;
                     // remainder
-                    if (noteData.IsRemainderAdded) {
+                    if (noteData.isRemainderAdded) {
                         noteData.RemainderDateTime = datePicker.value;
                     }
                     saveNote(noteData)
@@ -396,19 +395,22 @@
                                     if (attachments.length > 0) {
                                         showAttachmentPreviewToEachCardSingle(attachments[0]);
                                     }
+                                    if (addedNote.isRemainderAdded) {
+                                        showRemainderCountDown(addedNote);
+                                    }
                                 })
-                       
+
                             var noteTitle = document.getElementById(`title-${addedNote.id}`);
                             noteTitle.addEventListener('click', handleNoteTitleClick);
                         });
                 } else {
                     alert('Please wait.. Files uploading');
                 }
-
             });
 
             trashButton.addEventListener('click', function () {
                 noteData.isTrashed = true;
+                noteData.trashingDate = new Date();
                 saveNote(noteData)
                     .then(function (status) {
                         if (status) {

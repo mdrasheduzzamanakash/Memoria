@@ -20,6 +20,7 @@ namespace Memoria.DataService.Data
         public virtual DbSet<Note> Notes { get; set; }  
         public virtual DbSet<NoteLabel> NoteLabels { get; set; }
         public virtual DbSet<Trash> Trashs { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         
     }
