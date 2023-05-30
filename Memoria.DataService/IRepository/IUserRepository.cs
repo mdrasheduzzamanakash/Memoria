@@ -18,6 +18,6 @@ namespace Memoria.DataService.IRepository
         Task<IEnumerable<UserSingleOutDTO>> All();
         Task<bool> Delete(string id);
         Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId);
-
+        Task<UserSingleOutDTO> GetByIdentityId(Guid identityId);
     }
 }

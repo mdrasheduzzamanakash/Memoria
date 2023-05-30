@@ -21,6 +21,8 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<Attachment, AttachmentSingleOutDTO>()
                 .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.file)));
                 cfg.CreateMap<RefreshTokenSingleInDTO, RefreshToken>();
+                cfg.CreateMap<RefreshToken, RefreshTokenSingleOutDTO>();
+                cfg.CreateMap<RefreshTokenSingleOutDTO, RefreshToken>();
             });
 
             

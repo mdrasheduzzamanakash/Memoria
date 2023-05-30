@@ -85,6 +85,23 @@ namespace Memoria.DataService.Repository
         {
             return await base.Delete(id);
         }
+
+        public async Task<UserSingleOutDTO> GetByIdentityId(Guid identityId)
+        {
+            try
+            {
+                var user = await _dbSet.Where(x => x.IdentityId == identityId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+                var userDto = _mapper.Map<UserSingleOutDTO>(user);
+
+                return userDto;
+            } 
+            catch (Exception ex) { }
+            {
+                return null;
+            }
+        }
     }
 }
 
