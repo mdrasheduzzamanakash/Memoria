@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MemoriaMVC.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,8 @@ var tokenValidationParameters = new TokenValidationParameters
     ValidateIssuer = false,
     ValidateAudience = false,
     RequireExpirationTime = true,
-    ValidateLifetime = true
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero
 };
 
 builder.Services.AddSingleton(tokenValidationParameters);
@@ -74,6 +76,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseMiddleware<HeaderDecorationMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -7,6 +7,7 @@ using MemoriaMVC.ViewModel.HomePageViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Authentication.Configuration;
+using System.Security.Claims;
 
 namespace MemoriaMVC.Controllers
 {
@@ -119,7 +120,8 @@ namespace MemoriaMVC.Controllers
         public async Task<IActionResult> Trash()
         {
             ViewBag.Title = "Trash Page";
-            var user = await _unitOfWork.Users.GetById("1ff4e1cd-6081-450d-abef-5c1667daf7f7");
+            var identityId = User.FindFirst("Id")?.Value;
+            var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
             return View(userViewModel);
         }
