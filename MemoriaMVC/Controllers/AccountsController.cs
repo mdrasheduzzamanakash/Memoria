@@ -6,6 +6,7 @@ using AutoMapper;
 using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.ViewModel.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Extensions;
@@ -38,17 +39,198 @@ namespace MemoriaMVC.Controllers
             _jwtConfig = optionMonitor.CurrentValue;
         }
 
-        
+  
+
+        [HttpGet]
+        public async Task<IActionResult> Register()
+        {
+            return View();
+        }
 
         [HttpPost]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenRequestDto tokenRequestDto)
+        public async Task<IActionResult> Register(UserRegistrationViewModel userRegistrationViewModel)
         {
-            if(ModelState.IsValid)
+            var userRegistrationRequestDto = _mapper.Map<UserRegistrationRequestDto>(userRegistrationViewModel);
+
+            if (ModelState.IsValid)
+            {
+                var userExists = await _userManager.FindByEmailAsync(userRegistrationRequestDto.Email);
+
+                if (userExists != null)
+                {
+                    return BadRequest(new UserRegistrationResponseDto
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Email is already in use"
+                        }
+                    });
+                }
+
+                var newUser = new IdentityUser()
+                {
+                    Email = userRegistrationRequestDto.Email,
+                    UserName = userRegistrationRequestDto.Email,
+                    EmailConfirmed = true // todo to add the functionality to send the email to the user to confirm the email
+                };
+
+                var isCreated = await _userManager.CreateAsync(newUser, userRegistrationRequestDto.Password);
+
+                if (!isCreated.Succeeded)
+                {
+                    return BadRequest(new UserRegistrationResponseDto()
+                    {
+                        Success = false,
+                        Errors = isCreated.Errors.Select(x => x.Description).ToList()
+                    });
+                }
+
+                // save the user to User table
+                var userSingleInDto = new UserSingleInDTO
+                {
+                    FirstName = userRegistrationRequestDto.FirstName,
+                    LastName = userRegistrationRequestDto.LastName,
+                    Email = userRegistrationRequestDto.Email,
+                    Password = userRegistrationRequestDto.Password,
+                    IdentityId = new Guid(newUser.Id),
+                    Image = userRegistrationRequestDto.Image
+                };
+
+                await _unitOfWork.Users.Add(userSingleInDto);
+                await _unitOfWork.CompleteAsync();
+
+                // create jwt token
+
+                var token = await GenerateJwtToken(newUser);
+
+
+                var jwtTokenCookieOptions = new CookieOptions
+                {
+                    HttpOnly = false,
+                    Expires = DateTime.UtcNow.Add(_jwtConfig.ExpiryTimeFrame)
+                };
+                Response.Cookies.Append("jwt", token.JwtToken, jwtTokenCookieOptions);
+
+                var refreshTokenCookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTime.UtcNow.AddMonths(1)
+                };
+                Response.Cookies.Append("refresh", token.RefreshToken, refreshTokenCookieOptions);
+
+                return View("EmailConfirmation");
+            }
+            else
+            {
+                return BadRequest(new UserRegistrationResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string>()
+                    {
+                        "Invalid payload"
+                    }
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel)
+        {
+
+            var loginRequestDto = _mapper.Map<UserLoginRequestDto>(userLoginViewModel);
+
+            if (ModelState.IsValid)
+            {
+                var userExist = await _userManager.FindByEmailAsync(loginRequestDto.Email);
+
+                if (userExist == null)
+                {
+                    return BadRequest(new UserRegistrationResponseDto()
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid authentication request"
+                        }
+                    });
+                }
+
+                var isCorrect = await _userManager.CheckPasswordAsync(userExist, loginRequestDto.Password);
+
+                if (isCorrect)
+                {
+                    var jwtToken = await GenerateJwtToken(userExist);
+
+                    var jwtTokenCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = false
+                    };
+                    Response.Cookies.Append("jwt", jwtToken.JwtToken, jwtTokenCookieOptions);
+
+                    var refreshTokenCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = true
+                    };
+                    Response.Cookies.Append("refresh", jwtToken.RefreshToken, refreshTokenCookieOptions);
+
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    return BadRequest(new UserRegistrationResponseDto()
+                    {
+                        Success = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid authentication request"
+                        }
+                    });
+                }
+            }
+            else
+            {
+                return BadRequest(new UserLoginResponseDto()
+                {
+                    Success = false,
+                    Errors = new List<string>()
+                    {
+                        "Invalid payload"
+                    }
+                });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> RefreshToken(string retController, string retAction)
+        {
+            string jwt = Request.Cookies["jwt"];
+            string refresh = Request.Cookies["refresh"];
+
+            if(jwt == null || refresh == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var tokenRequestDto = new TokenRequestDto()
+            {
+                Token = jwt,
+                RefreshToken = refresh
+            };
+
+            if (ModelState.IsValid)
             {
                 // check if the token is valid
                 var result = await VerifyToken(tokenRequestDto);
 
-                if(result == null)
+                if (result == null)
                 {
                     return BadRequest(new UserLoginResponseDto()
                     {
@@ -60,7 +242,9 @@ namespace MemoriaMVC.Controllers
                     });
                 }
 
-                return Ok(result);
+                Response.Cookies.Append("jwt", result.Token);
+                Response.Cookies.Append("refresh", result.RefreshToken);
+                return RedirectToAction(retAction, retController);
             }
             else
             {
@@ -80,16 +264,28 @@ namespace MemoriaMVC.Controllers
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
+            var _tokenValidationParametersForRefreshToken = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = true,
+                ValidateLifetime = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
             try
             {
-                var principal = tokenHandler.ValidateToken(tokenRequestDto.Token, _tokenValidationParameters, out var validatedToken);
+                var principal = tokenHandler.ValidateToken(tokenRequestDto.Token, _tokenValidationParametersForRefreshToken, out var validatedToken);
 
                 // check if the token is actually a jwt token
-                if(validatedToken is JwtSecurityToken jwtSecurityToken)
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
                 {
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-                    
-                    if(!result)
+
+                    if (!result)
                     {
                         return null;
                     }
@@ -99,7 +295,7 @@ namespace MemoriaMVC.Controllers
                     var expiryDate = UnixTimeStampToDate(utcExpiryDate);
 
                     // check the exiry date of the token 
-                    if(expiryDate > DateTime.UtcNow)
+                    if (expiryDate > DateTime.UtcNow)
                     {
                         return new AuthResult()
                         {
@@ -114,11 +310,11 @@ namespace MemoriaMVC.Controllers
                     // check if the token exist 
                     var refreshTokenExist = await _unitOfWork.RefreshTokens.GetByRefreshToken(tokenRequestDto.RefreshToken);
 
-                    if(refreshTokenExist == null)
+                    if (refreshTokenExist == null)
                     {
                         return new AuthResult()
                         {
-                            Success = false, 
+                            Success = false,
                             Errors = new List<string>()
                             {
                                 "Invalid refresh token"
@@ -127,7 +323,7 @@ namespace MemoriaMVC.Controllers
                     }
 
                     // check the expiry date of the refresh token 
-                    if(refreshTokenExist.ExpiryDate <  DateTime.UtcNow)
+                    if (refreshTokenExist.ExpiryDate < DateTime.UtcNow)
                     {
                         return new AuthResult()
                         {
@@ -140,7 +336,7 @@ namespace MemoriaMVC.Controllers
                     }
 
                     // check if the refresh token is used or not 
-                    if(refreshTokenExist.IsUsed)
+                    if (refreshTokenExist.IsUsed)
                     {
                         return new AuthResult()
                         {
@@ -166,9 +362,9 @@ namespace MemoriaMVC.Controllers
                     }
 
                     var jti = principal.Claims.SingleOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-                    
+
                     // match the jwt refrence of the refresh token 
-                    if(refreshTokenExist.JwtId != jti)
+                    if (refreshTokenExist.JwtId != jti)
                     {
                         return new AuthResult()
                         {
@@ -224,14 +420,15 @@ namespace MemoriaMVC.Controllers
                                 "Error processing request"
                             }
                     };
-                } 
+                }
                 else
                 {
                     return null;
                 }
-            } 
+            }
             catch (Exception ex)
             {
+                await Console.Out.WriteLineAsync(ex.Message);
                 return null;
             }
         }
@@ -244,136 +441,6 @@ namespace MemoriaMVC.Controllers
             return dateTime;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationRequestDto userRegistrationRequestDto)
-        {
-            if (ModelState.IsValid)
-            {
-                var userExists = await _userManager.FindByEmailAsync(userRegistrationRequestDto.Email);
-
-                if(userExists != null)
-                {
-                    return BadRequest(new UserRegistrationResponseDto
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Email is already in use"
-                        }
-                    });
-                }
-
-                var newUser = new IdentityUser()
-                {
-                    Email = userRegistrationRequestDto.Email,
-                    UserName = userRegistrationRequestDto.Email,
-                    EmailConfirmed = true // todo to add the functionality to send the email to the user to confirm the email
-                };
-
-                var isCreated = await _userManager.CreateAsync(newUser, userRegistrationRequestDto.Password);
-
-                if(!isCreated.Succeeded)
-                {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = isCreated.Errors.Select(x => x.Description).ToList()
-                    });
-                }
-
-                // save the user to User table
-                var userSingleInDto = new UserSingleInDTO
-                {
-                    FirstName = userRegistrationRequestDto.FirstName,
-                    LastName = userRegistrationRequestDto.LastName,
-                    Email = userRegistrationRequestDto.Email,
-                    Password = userRegistrationRequestDto.Password,
-                    IdentityId = new Guid(newUser.Id)
-                };
-
-                await _unitOfWork.Users.Add(userSingleInDto);
-                await _unitOfWork.CompleteAsync();
-
-                // create jwt token
-
-                var token = await GenerateJwtToken(newUser);
-
-                return Ok(new UserRegistrationResponseDto()
-                {
-                    Success = true,
-                    Token = token.JwtToken, 
-                    RefreshToken = token.RefreshToken
-                });
-            }
-            else
-            {
-                return BadRequest(new UserRegistrationResponseDto
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Invalid payload"
-                    }
-                });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto loginRequestDto)
-        {
-            if(ModelState.IsValid)
-            {
-                var userExist = await _userManager.FindByEmailAsync(loginRequestDto.Email);
-
-                if(userExist == null)
-                {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Invalid authentication request"
-                        }
-                    });
-                }
-
-                var isCorrect = await _userManager.CheckPasswordAsync(userExist, loginRequestDto.Password);
-
-                if(isCorrect)
-                {
-                    var jwtToken = await GenerateJwtToken(userExist);
-
-                    return Ok(new UserLoginResponseDto()
-                    {
-                        Success = true,
-                        Token = jwtToken.JwtToken,
-                        RefreshToken = jwtToken.RefreshToken
-                    });
-                } 
-                else        
-                {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Invalid authentication request"
-                        }
-                    });
-                }
-            }
-            else
-            {
-                return BadRequest(new UserLoginResponseDto()
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Invalid payload"
-                    }
-                });
-            }
-        }
 
         private async Task<TokenData> GenerateJwtToken(IdentityUser user)
         {

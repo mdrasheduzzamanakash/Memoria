@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomValidation\**" />
+    <Compile Remove="ViewModel\Shared\**" />
+    <Content Remove="CustomValidation\**" />
+    <Content Remove="ViewModel\Shared\**" />
+    <EmbeddedResource Remove="CustomValidation\**" />
+    <EmbeddedResource Remove="ViewModel\Shared\**" />
+    <None Remove="CustomValidation\**" />
+    <None Remove="ViewModel\Shared\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
@@ -26,11 +37,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Authentication\Authentication.csproj" />
     <ProjectReference Include="..\Memoria.DataService\Memoria.DataService.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CustomValidation\" />
-    <Folder Include="ViewModel\Shared\" />
   </ItemGroup>
 
 </Project>
