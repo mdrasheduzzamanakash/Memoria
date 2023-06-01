@@ -3,6 +3,12 @@
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css'>
 
+<style>
+    .dropdown-toggle::after {
+        display: none;
+    }
+</style>
+
 <nav id="main-nav-bar" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container-fluid">
         <!-- Navbar brand -->
@@ -45,10 +51,15 @@
                         <i class="fas fa-trash fa-lg"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="cogDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog fa-lg"></i>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cogDropdown">
+                        <li><a class="dropdown-item" id="theme-toggle-cog" style="cursor:pointer" >Toggle Theme</a></li>
+                        <li><a class="dropdown-item" id="my-profile-cog" style="cursor:pointer">My Profile</a></li>
+                        <li><a class="dropdown-item" id="logout-cog" style="cursor:pointer">Logout</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>
