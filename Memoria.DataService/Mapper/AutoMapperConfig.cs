@@ -20,12 +20,13 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<AttachmentSingleInDTO, Attachment>();
                 cfg.CreateMap<Attachment, AttachmentSingleOutDTO>()
                 .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.file)));
+                cfg.CreateMap<User, UserCollaboratorSearchResultDto>()
+                .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.Image)));
                 cfg.CreateMap<RefreshTokenSingleInDTO, RefreshToken>();
                 cfg.CreateMap<RefreshToken, RefreshTokenSingleOutDTO>();
                 cfg.CreateMap<RefreshTokenSingleOutDTO, RefreshToken>();
+                cfg.CreateMap<AuthorizationSingleInDTO, Authorization>();
             });
-
-            
 
             IMapper mapper = mapperConfiguration.CreateMapper();
 

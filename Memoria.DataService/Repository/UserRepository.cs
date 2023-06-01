@@ -103,7 +103,7 @@ namespace Memoria.DataService.Repository
             }
         }
 
-        public async Task<IEnumerable<UserSingleOutDTO>> SearchByEmail(string searchText)
+        public async Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText)
         {
             try
             {
@@ -111,10 +111,10 @@ namespace Memoria.DataService.Repository
                                        .AsNoTracking()
                                        .ToListAsync();
 
-                var resultDtos = new List<UserSingleOutDTO>();
+                var resultDtos = new List<UserCollaboratorSearchResultDto>();
                 foreach (var user in users)
                 {
-                    var userDto = _mapper.Map<UserSingleOutDTO>(user);
+                    var userDto = _mapper.Map<UserCollaboratorSearchResultDto>(user);
                     resultDtos.Add(userDto);
                 }
                 return resultDtos;
@@ -123,7 +123,7 @@ namespace Memoria.DataService.Repository
             {
                 // Handle the exception or log the error
                 _logger.LogError(ex, "An error occurred while searching users by email.");
-                return Enumerable.Empty<UserSingleOutDTO>();
+                return Enumerable.Empty<UserCollaboratorSearchResultDto>();
             }
         }
 

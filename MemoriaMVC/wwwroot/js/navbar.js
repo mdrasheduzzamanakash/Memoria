@@ -1,4 +1,5 @@
-﻿$(function () {
+﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+$(function () {
     const logoutElement = document.getElementById('logout-cog');
     logoutElement.addEventListener('click', function () {
         // TODO: remove refresh token

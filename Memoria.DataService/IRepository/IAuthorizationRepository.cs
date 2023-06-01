@@ -1,4 +1,5 @@
 ﻿using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,8 @@ namespace Memoria.DataService.IRepository
 {
     public interface IAuthorizationRepository
     {
+        Task<bool> AddAuthorization(AuthorizationSingleInDTO authorizationSingleInDTO);
+
+        Task<bool> RemoveAuthorization(AuthorizationSingleInDTO authorizationSingleInDTO);
     }
 }

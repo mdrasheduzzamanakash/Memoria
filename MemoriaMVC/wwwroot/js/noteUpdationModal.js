@@ -438,6 +438,15 @@
                 collaboratorModalFooter.style.display = "block";
                 collaboratorModalFooter.style.display = "block";
 
+                const collaboratorDoneButton = document.getElementById('collaborator-done-button');
+                collaboratorDoneButton.addEventListener('click', function () {
+                    updateModalBody.style.display = "block";
+                    updateModalFooter.style.display = "block";
+                    collaboratorModalBody.style.display = "none";
+                    collaboratorModalFooter.style.display = "none";
+                    collaboratorModalFooter.style.display = "none";
+                })
+
                 // perform search and append view with click listener
                 const collaboratorSearchBar = document.getElementById('collaborator-search');
                 const collaboratorContainer = document.getElementById('collaborator-container');
@@ -451,24 +460,7 @@
                             fetchCollaborators(collaboratorSearchBar.value)
                                 .then(function (fetchedCollaborators) {
                                     renderCollaboratorSearchResults(fetchedCollaborators, collaboratorContainer);
-                                    
-                                    // add listener to each view
-                                    const searchResultElements = collaboratorContainer.querySelectorAll('.search-result');
-                                    searchResultElements.forEach(function (searchResultElement) {
-                                        const viewerButton = searchResultElement.querySelector('.viewer-button');
-                                        const writterButton = searchResultElement.querySelector('.writer-button');
-                                        const searchResultId = searchResultElement.id.split('-').slice(2).join('-');
-
-                                        viewerButton.addEventListener('click', function () {
-                                            console.log('Viewer button clicked for search result ID:', searchResultId);
-                                        });
-
-                                        writterButton.addEventListener('click', function () {
-                                            console.log('Writer button clicked for search result ID:', searchResultId);
-                                        });
-                                    });
-                                    // append the collaborator
-                                    console.log(fetchedCollaborators);
+                                    addEventListenerToAllSearchedResult(collaboratorContainer, noteData);
                                 });
                         } else {
                             collaboratorContainer.innerHTML = '<p style="text-align:center;">Nothing to show<p>';
@@ -476,9 +468,6 @@
 
                     }, 500); // Delay in milliseconds
                 });
-                // upon click to each user add them as authorizer
-
-                // upon clicking done retrive the previous view and show some authorized person on the header 
             });
         })
     

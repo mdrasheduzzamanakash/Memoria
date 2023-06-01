@@ -142,7 +142,6 @@ function showAttachmentPreviewToEachCardSingle(attachment) {
     }
 }
 
-
 function showRemainderCountDown(nonDraftNote) {
     try {
         var noteElement = document.getElementById(nonDraftNote.id);
@@ -184,7 +183,6 @@ function formatTime(timeInSeconds) {
 
     return formattedDays + "d " + formattedHours + "h " + formattedMinutes + "m " + formattedSeconds + "s";
 }
-
 
 function fetchNoteCreationModal() {
     var deferred = $.Deferred();
@@ -243,7 +241,6 @@ function fetchTrashModal() {
     return deferred.promise();
 }
 
-
 function fetchUserData(dataFromPrevious) {
     var deferred = $.Deferred();
     $.ajax({
@@ -296,7 +293,6 @@ function saveNote(finalNote) {
     });
     return deferred.promise();
 }
-
 
 function UploadAttachment(noteData, file) {
     var deferred = $.Deferred();
@@ -507,8 +503,6 @@ function fetchCollaborators(searchBarText) {
     return deferred.promise();
 }
 
-
-
 function fetchSearchedNotesTrash(searchBarText, userId) {
     var deferred = $.Deferred();
 
@@ -529,8 +523,6 @@ function fetchSearchedNotesTrash(searchBarText, userId) {
     return deferred.promise();
 }
 
-
-
 function renderCollaboratorSearchResults(searchResults, container) {
     container.innerHTML = '';
     searchResults.forEach(function (result) {
@@ -546,7 +538,7 @@ function createSearchResultElement(result) {
 
     const profilePictureElement = document.createElement('img');
     profilePictureElement.classList.add('profile-picture');
-    profilePictureElement.src = result.profilePictureUrl;
+    profilePictureElement.src = 'data:' + result.fileFormat + ';base64,' + result.fileBase64;
     searchResultElement.appendChild(profilePictureElement);
 
     const emailElement = document.createElement('span');
@@ -575,3 +567,108 @@ function createSearchResultElement(result) {
     return searchResultElement;
 }
 
+function addAuthorization(noteId, authorizerId, authorizedUserId, authType) {
+    var deferred = $.Deferred();
+    var authorizationObj = {
+        NoteId: noteId, 
+        IsValid : true,
+        ModeOfAuthorization: authType,
+        AuthorizerId: authorizerId,
+        AuthorizedUserId: authorizedUserId
+    };
+    var authorizationObjString = JSON.stringify(authorizationObj);
+    $.ajax({
+        url: '/Authorizations/AddAuthorization/',
+        type: 'POST',
+        contentType: 'application/json',
+        data: authorizationObjString,
+        success: function (status) {
+            deferred.resolve(status);
+        },
+        error: function () {
+            alert('Error adding authorization');
+        }
+    });
+
+    return deferred.promise();
+}
+
+
+function RemoveAuthorization(noteId, authorizerId, authorizedUserId, authType) {
+    var deferred = $.Deferred();
+    var authorizationObj = {
+        NoteId: noteId,
+        IsValid: true,
+        ModeOfAuthorization: authType,
+        AuthorizerId: authorizerId,
+        AuthorizedUserId: authorizedUserId
+    };
+    var authorizationObjString = JSON.stringify(authorizationObj);
+    $.ajax({
+        url: '/Authorizations/RemoveAuthorization/',
+        type: 'DELETE',
+        contentType: 'application/json',
+        data: authorizationObjString,
+        success: function (status) {
+            deferred.resolve(status);
+        },
+        error: function () {
+            alert('Error adding authorization');
+        }
+    });
+
+    return deferred.promise();
+}
+
+function addEventListenerToAllSearchedResult(collaboratorContainer, noteData) {
+    const searchResultElements = collaboratorContainer.querySelectorAll('.search-result');
+    searchResultElements.forEach(function (searchResultElement) {
+        const viewerButton = searchResultElement.querySelector('.viewer-button');
+        const writerButton = searchResultElement.querySelector('.writer-button');
+        const searchResultId = searchResultElement.id.split('-').slice(2).join('-');
+
+        viewerButton.addEventListener('click', function () {
+            addAuthorization(noteData.id, noteData.authorId, searchResultId, 'viewer')
+                .then(function (staus) {
+                    replaceButtonWithText(searchResultElement, 'Viewer', noteData.id, noteData.authorId, searchResultId, 'viewer');
+                });
+        });
+
+        writerButton.addEventListener('click', function () {
+            addAuthorization(noteData.id, noteData.authorId, searchResultId, 'writer')
+                .then(function () {
+                    replaceButtonWithText(searchResultElement, 'Writer', noteData.id, noteData.authorId, searchResultId, 'writer');
+                })
+        });
+    });
+}
+
+function replaceButtonWithText(searchResultElement, buttonText, noteId, authorizerId, authorizedUserId, authType) {
+    // Create new element with text
+    const newTextElement = document.createElement('div');
+    newTextElement.classList.add('viewer-writer-text');
+    newTextElement.textContent = buttonText;
+
+    // Create cross button
+    const crossButton = document.createElement('button');
+    crossButton.classList.add('cross-button');
+    crossButton.innerHTML = '<i class="fas fa-times"></i>';
+
+    // Add event listener to cross button
+    crossButton.addEventListener('click', function () {
+        // Restore previous state
+        RemoveAuthorization(noteId, authorizerId, authorizedUserId, authType)
+            .then(function () {
+                newTextElement.remove();
+                crossButton.remove();
+                searchResultElement.querySelector('.buttons-container').style.display = 'flex';
+            })
+        
+    });
+
+    // Replace buttons with new elements
+    const buttonsContainer = searchResultElement.querySelector('.buttons-container');
+    buttonsContainer.style.display = 'none';
+    searchResultElement.appendChild(newTextElement);
+    searchResultElement.appendChild(crossButton);
+}

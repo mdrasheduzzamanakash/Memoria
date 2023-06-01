@@ -195,7 +195,6 @@ $(function () {
                     }
                 });
                 remainderButton.addEventListener('click', function () { })
-                authorizationButton.addEventListener('click', AddAuthorizer);
                 noteTitle.addEventListener('input', modifySaveButton);
 
                 // attachment related code
@@ -453,7 +452,55 @@ $(function () {
                     }
 
                 });
-                
+
+                authorizationButton.addEventListener('click', function () {
+                    // clear the view and add the necessary view
+                    const modalHeaderElements = document.getElementById('modal-header-element');
+                    const updateModalBody = document.getElementById('update-modal-body');
+                    const collaboratorModalBody = document.getElementById('collaborator-modal-body');
+                    const updateModalFooter = document.getElementById('update-modal-footer');
+                    const collaboratorModalFooter = document.getElementById('collaborator-modal-footer');
+
+                    //modalHeaderElements.style.display = "none";
+                    updateModalBody.style.display = "none";
+                    updateModalFooter.style.display = "none";
+                    collaboratorModalBody.style.display = "block";
+                    collaboratorModalFooter.style.display = "block";
+                    collaboratorModalFooter.style.display = "block";
+
+                    const collaboratorDoneButton = document.getElementById('collaborator-done-button');
+                    collaboratorDoneButton.addEventListener('click', function () {
+                        updateModalBody.style.display = "block";
+                        updateModalFooter.style.display = "block";
+                        collaboratorModalBody.style.display = "none";
+                        collaboratorModalFooter.style.display = "none";
+                        collaboratorModalFooter.style.display = "none";
+                    })
+
+                    // perform search and append view with click listener
+                    const collaboratorSearchBar = document.getElementById('collaborator-search');
+                    const collaboratorContainer = document.getElementById('collaborator-container');
+                    const selectedCollaboratorsContainer = document.getElementById('selected-collaborators-container');
+
+                    let timeout;
+                    collaboratorSearchBar.addEventListener('input', function (event) {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(function () {
+                            if (collaboratorSearchBar.value !== '') {
+                                fetchCollaborators(collaboratorSearchBar.value)
+                                    .then(function (fetchedCollaborators) {
+                                        renderCollaboratorSearchResults(fetchedCollaborators, collaboratorContainer);
+                                        addEventListenerToAllSearchedResult(collaboratorContainer, noteData);
+                                    });
+                            } else {
+                                collaboratorContainer.innerHTML = '<p style="text-align:center;">Nothing to show<p>';
+                            }
+
+                        }, 500); // Delay in milliseconds
+                    });
+                });
+
+
             })
             .fail(function (error) {
                 console.error("Error in nested AJAX calls");
