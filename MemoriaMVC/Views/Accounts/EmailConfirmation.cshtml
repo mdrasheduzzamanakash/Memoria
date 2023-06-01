@@ -5,3 +5,8 @@
     <p style="text-align:center; ">Please chack <b><i>Spam Folder</i></b> as well.</p>
 
 </div>
+
+<script>
+    var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+    localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
+</script>

@@ -157,7 +157,6 @@ function showRemainderCountDown(nonDraftNote) {
         var countDownInterval = setInterval(function () {
             remainingTime--;
             countDownElement.innerText = formatTime(remainingTime);
-            console.log(remainingTime);
             if (remainingTime <= 0) {
                 countDownElement.style.color = "red";
                 countDownElement.innerText = "time-over";

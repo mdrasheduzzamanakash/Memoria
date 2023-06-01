@@ -95,6 +95,9 @@
 <script>
     // home page functionality
     $(function () {
+        // saving login state to the localstorage
+        var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+        localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
 
         const searchBar = document.getElementById('searchBar');
         let timeout;
