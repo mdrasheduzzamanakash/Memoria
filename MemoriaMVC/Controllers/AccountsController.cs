@@ -7,6 +7,8 @@ using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
 using MemoriaMVC.ViewModel.Authentication;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Extensions;
@@ -38,8 +40,6 @@ namespace MemoriaMVC.Controllers
             _userManager = userManager;
             _jwtConfig = optionMonitor.CurrentValue;
         }
-
-  
 
         [HttpGet]
         public async Task<IActionResult> Register()
