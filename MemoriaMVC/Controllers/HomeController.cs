@@ -24,6 +24,8 @@ namespace MemoriaMVC.Controllers
             if(User.Identity.IsAuthenticated == true)
             {
                 ViewBag.Title = "Home Page";
+                var isUserLoggedIn = true;
+                ViewData["IsUserLoggedIn"] = isUserLoggedIn;
 
                 var identityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));

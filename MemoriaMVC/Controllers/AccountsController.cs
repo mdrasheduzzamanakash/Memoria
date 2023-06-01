@@ -119,6 +119,9 @@ namespace MemoriaMVC.Controllers
                 };
                 Response.Cookies.Append("refresh", token.RefreshToken, refreshTokenCookieOptions);
 
+                // view data 
+                ViewData["IsUserLoggedIn"] = true;
+
                 return View("EmailConfirmation");
             }
             else
@@ -180,6 +183,8 @@ namespace MemoriaMVC.Controllers
                     };
                     Response.Cookies.Append("refresh", jwtToken.RefreshToken, refreshTokenCookieOptions);
 
+                    TempData["IsUserLoggedIn"] = true;
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -232,15 +237,11 @@ namespace MemoriaMVC.Controllers
 
                 if (result == null)
                 {
-                    return BadRequest(new UserLoginResponseDto()
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Token validation failed"
-                        }
-                    });
+                    _logger.LogError("the refresh token expired");
+                    return RedirectToAction("Login", "Accounts");
                 }
+
+
 
                 Response.Cookies.Append("jwt", result.Token);
                 Response.Cookies.Append("refresh", result.RefreshToken);
