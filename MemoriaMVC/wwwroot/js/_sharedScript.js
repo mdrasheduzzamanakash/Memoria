@@ -1,4 +1,6 @@
-﻿function showRawCardSingle(cardData) {
+﻿
+
+function showRawCardSingle(cardData) {
     var maxTitleLength = 50;
     var maxDescriptionLength = 100; // maximum length for description
 
@@ -488,6 +490,24 @@ function fetchSearchedNotes(searchBarText, userId) {
     return deferred.promise();
 }
 
+function fetchCollaborators(searchBarText) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Users/SearchCollaboratorsByEmail/",
+        data: { searchBarText: searchBarText },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in fetchCollaborators");
+        }
+    });
+
+    return deferred.promise();
+}
+
+
 
 function fetchSearchedNotesTrash(searchBarText, userId) {
     var deferred = $.Deferred();
@@ -509,4 +529,49 @@ function fetchSearchedNotesTrash(searchBarText, userId) {
     return deferred.promise();
 }
 
+
+
+function renderCollaboratorSearchResults(searchResults, container) {
+    container.innerHTML = '';
+    searchResults.forEach(function (result) {
+        const searchResultElement = createSearchResultElement(result);
+        container.appendChild(searchResultElement);
+    });
+}
+
+function createSearchResultElement(result) {
+    const searchResultElement = document.createElement('div');
+    searchResultElement.classList.add('search-result');
+    searchResultElement.id = `search-result-${result.id}`;
+
+    const profilePictureElement = document.createElement('img');
+    profilePictureElement.classList.add('profile-picture');
+    profilePictureElement.src = result.profilePictureUrl;
+    searchResultElement.appendChild(profilePictureElement);
+
+    const emailElement = document.createElement('span');
+    emailElement.classList.add('email');
+    emailElement.textContent = result.email;
+    searchResultElement.appendChild(emailElement);
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.classList.add('buttons-container');
+
+    const viewerButton = document.createElement('button');
+    viewerButton.innerHTML = '<i class="fas fa-eye">';
+    viewerButton.classList.add('viewer-button');
+    viewerButton.id = `search-result-${result.id}`;
+    buttonsContainer.appendChild(viewerButton);
+    
+
+    const writerButton = document.createElement('button');
+    writerButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+    writerButton.classList.add('writer-button');
+    writerButton.id = `search-result-${result.id}`;
+    buttonsContainer.appendChild(writerButton);
+
+    searchResultElement.appendChild(buttonsContainer);
+
+    return searchResultElement;
+}
 

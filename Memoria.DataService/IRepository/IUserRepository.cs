@@ -19,5 +19,7 @@ namespace Memoria.DataService.IRepository
         Task<bool> Delete(string id);
         Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId);
         Task<UserSingleOutDTO> GetByIdentityId(Guid identityId);
+
+        Task<IEnumerable<UserSingleOutDTO>> SearchByEmail(string searchText);
     }
 }

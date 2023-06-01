@@ -102,6 +102,31 @@ namespace Memoria.DataService.Repository
                 return null;
             }
         }
+
+        public async Task<IEnumerable<UserSingleOutDTO>> SearchByEmail(string searchText)
+        {
+            try
+            {
+                var users = await _dbSet.Where(x => x.Email.ToLower().StartsWith(searchText.ToLower()))
+                                       .AsNoTracking()
+                                       .ToListAsync();
+
+                var resultDtos = new List<UserSingleOutDTO>();
+                foreach (var user in users)
+                {
+                    var userDto = _mapper.Map<UserSingleOutDTO>(user);
+                    resultDtos.Add(userDto);
+                }
+                return resultDtos;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception or log the error
+                _logger.LogError(ex, "An error occurred while searching users by email.");
+                return Enumerable.Empty<UserSingleOutDTO>();
+            }
+        }
+
     }
 }
 

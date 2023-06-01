@@ -27,6 +27,13 @@ namespace MemoriaMVC.Controllers
         {
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchCollaboratorsByEmail(string searchBarText)
+        {
+            var searchedCollaborators = await _unitOfWork.Users.SearchByEmail(searchBarText);
+            return Json(searchedCollaborators);
+        }
+
 
         // GET all users 
         [HttpGet]
