@@ -1,0 +1,192 @@
+﻿@model MemoriaMVC.ViewModel.HomePageViewModel.HomeIndexViewModel
+
+<style>
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-create-note {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 700px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-note-container {
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .flex-note-container-item {
+        margin: 10px;
+        box-sizing: border-box;
+        background-color: #fff;
+        border-radius: 8px;
+        align-self: flex-start;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+        .flex-note-container-item:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 12px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .image-preview-in-note {
+        width: inherit;
+        height: inherit;
+    }
+
+    .pdf-preview-in-note {
+        width: inherit;
+        height: 200px;
+        scroll-behavior: unset;
+    }
+
+    .note-link-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .count-down-element {
+        color: blue;
+        text-align: right;
+        padding: 3px;
+    }
+
+</style>
+
+<!--global datastructures-->
+<script>
+    var nonDraftNotes = [];
+    var attachments = []; // only one attachment per note is here
+</script>
+
+
+<!--Notes container-->
+<div class="flex-note-container" id="card-container"></div>
+
+<!--Note creation modal-->
+<div id="myModal" class="modal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- modal content goes here -->
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+<script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
+<script src="~/js/_sharedScript.js"></script>
+<script src="~/js//noteCreationModalScript.js"></script>
+<script src="~/js/noteShareModalScript.js"></script>
+
+<script>
+    // share page functionality
+    $(function () {
+        // saving login state to the localstorage
+        
+        const searchBar = document.getElementById('searchBar');
+        let timeout;
+
+        searchBar.addEventListener('input', function (event) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                if (searchBar.value !== '') {
+                    // Perform search here
+                    var searchedNotesIds = [];
+                    var searchedNotes = [];
+                    for (let i = 0; i < nonDraftNotes.length; i++) {
+                        if (nonDraftNotes[i].title.toLowerCase().includes(searchBar.value.toLowerCase()) ||
+                            nonDraftNotes[i].description.toLowerCase().includes(searchBar.value.toLowerCase())) {
+                            searchedNotes.push(nonDraftNotes[i]);
+                            searchedNotesIds.push(nonDraftNotes[i].id);
+                        }
+                    }
+                    var cardContainer = document.getElementById('card-container');
+                    cardContainer.innerHTML = '';
+
+                    showRawCard(searchedNotes);
+                    showLinksPerNote(searchedNotes);
+                    showAttachmentPreviewToEachCard(attachments);
+
+                    fetchSearchedNotesShared(searchBar.value, userData.id)
+                        .then(function (fetchedSearchedNotes) {
+                            fetchedSearchedNotes = fetchedSearchedNotes.filter(function (note) {
+                                return !searchedNotesIds.includes(note.id);
+                            });
+                            showRawCard(fetchedSearchedNotes);
+                            showLinksPerNote(fetchedSearchedNotes);
+                            fetchAttachmentPreview(fetchedSearchedNotes)
+                                .then(function (fetchedAttachments) {
+                                    showAttachmentPreviewToEachCard(fetchedAttachments);
+                                })
+                        });
+                } else {
+                    var cardContainer = document.getElementById('card-container');
+                    cardContainer.innerHTML = '';
+                    showRawCard(nonDraftNotes);
+                    showAttachmentPreviewToEachCard(attachments);
+                    showLinksPerNote(nonDraftNotes);
+                }
+
+            }, 500); // Delay in milliseconds
+        });
+
+        function showAttachmentPreviewToEachCard(attachments) {
+            try {
+                var alreadyDone = [];
+                for (var i = 0; i < attachments.length; i++) {
+                    if (!alreadyDone.includes(attachments[i].noteId)) showAttachmentPreviewToEachCardSingle(attachments[i]);
+                    alreadyDone.push(attachments[i].noteId);
+                }
+            } catch (ex) {
+                console.log(ex);
+            }
+        }
+
+        function showRawCard(nonDraftNotes) {
+            for (let i = 0; i < nonDraftNotes.length; i++) {
+                showRawCardSingle(nonDraftNotes[i]);
+            }
+            var noteTitles = document.getElementsByClassName('note-title');
+            for (var i = 0; i < noteTitles.length; i++) {
+                noteTitles[i].addEventListener('click', handleNoteTitleClick);
+            }
+        }
+
+        function showLinksPerNote(nonDraftNotes) {
+            for (let i = 0; i < nonDraftNotes.length; i++) {
+                showLinksPerNoteSingle(nonDraftNotes[i]);
+            }
+        }
+
+        fetchNonDraftNotesShared()
+            .then(function (data) {
+                nonDraftNotes = data;
+                return fetchAttachmentPreview(nonDraftNotes);
+            })
+            .then(function (data) {
+                attachments = data;
+                showRawCard(nonDraftNotes);
+                showAttachmentPreviewToEachCard(attachments);
+                showLinksPerNote(nonDraftNotes);
+                for (let i = 0; i < nonDraftNotes.length; i++) {
+                    if (nonDraftNotes[i].isRemainderAdded) {
+                        showRemainderCountDown(nonDraftNotes[i]);
+                    }
+                }
+            })
+    })
+</script>
+

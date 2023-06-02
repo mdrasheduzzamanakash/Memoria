@@ -103,11 +103,11 @@ namespace Memoria.DataService.Repository
             }
         }
 
-        public async Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText)
+        public async Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText, string userId)
         {
             try
             {
-                var users = await _dbSet.Where(x => x.Email.ToLower().StartsWith(searchText.ToLower()))
+                var users = await _dbSet.Where(x => x.Email.ToLower().StartsWith(searchText.ToLower()) && x.Id != userId)
                                        .AsNoTracking()
                                        .ToListAsync();
 

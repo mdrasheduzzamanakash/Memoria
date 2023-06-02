@@ -28,9 +28,9 @@ namespace MemoriaMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchCollaboratorsByEmail(string searchBarText)
+        public async Task<IActionResult> SearchCollaboratorsByEmail(string searchBarText, string userId)
         {
-            var searchedCollaborators = await _unitOfWork.Users.SearchByEmail(searchBarText);
+            var searchedCollaborators = await _unitOfWork.Users.SearchByEmail(searchBarText, userId);
             return Json(searchedCollaborators);
         }
 

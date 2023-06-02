@@ -65,14 +65,14 @@
     .file-details {
         margin-bottom: 10px;
         margin-left: 10px;
-        position:relative;
+        position: relative;
     }
 
     /* Styling for the file details container */
     #file-details-container {
         margin-top: 10px;
         display: flex;
-        flex-wrap:wrap;
+        flex-wrap: wrap;
     }
 
     .file-details p {
@@ -136,13 +136,13 @@
         height: 2px;
         background-color: #808090;
         transition: width 0.3s ease-in-out;
-        display:none;
+        display: none;
     }
 
     .no-box-shadow:focus + .underline {
         width: inherit;
         margin-left: 10px;
-        display:block;
+        display: block;
     }
 
     .no-pointer-cursor {
@@ -156,7 +156,6 @@
     .display-block-element {
         display: block;
     }
-
 
     .collaborator-container {
         display: flex;
@@ -236,9 +235,9 @@
 
 </style>
 
-<div class="modal-header">
-    <h4 class="modal-title">Create Note</h4>
-    <div class="options-container">
+<div class="modal-header" id="modal-header-element">
+    <h4 class="modal-title" id="modal-title-text">Note Details</h4>
+    <div class="options-container" id="modal-options-container">
         <div class="options-container-item">
             <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
             <label class="form-check-label" for="myCheckbox" id="toggle-todo">Todo</label>
@@ -250,12 +249,7 @@
                 {
                     <option value="@label.Content">@label.Content</option>
                 }
-                <option value="create-new" id="createNewLabel">Create new &#x2B;</option>
             </select>
-        </div>
-
-        <div id="nestedInputContainer" style="display: none;">
-            <input placeholder="Add new label" class="form-control" type="text" id="newLabelInput">
         </div>
     </div>
 
@@ -272,11 +266,11 @@
         </div>
         <div class="form-group">
             <label for="note-title">Title</label>
-            <input type="text" class="form-control" id="note-title" placeholder="Enter note title">
+            <input disabled type="text" class="form-control" id="note-title" placeholder="Enter note title">
         </div>
         <div class="form-group">
             <label for="note-description">Description</label>
-            <textarea class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
+            <textarea disabled class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
         </div>
         <!--for the todo sections-->
         <div class="form-group" id="todo-section" style="display:none">
@@ -306,10 +300,9 @@
 
 </div>
 <div class="modal-footer">
-
     <div id="update-modal-footer">
-        <button type="button" class="btn btn-outline-primary" id="authorization-button">
-            <i class="fas fa-user-plus"></i> Collaborator
+        <button type="button" class="btn btn-outline-primary" id="write-button">
+            <i class="fas fa-users fa-lg"></i> Write
         </button>
         <button type="button" class="btn btn-outline-primary" id="remainder-button">
             <i class="fas fa-clock"></i> Remainder
@@ -318,14 +311,10 @@
         <button type="button" class="btn btn-outline-primary" id="attachment-button">
             <i class="fas fa-paperclip"></i>
         </button>
-        <button type="button" class="btn btn-outline-primary" id="save-button" disabled>
-            <i class="fas fa-save"></i> Save
-        </button>
-    </div>
-    <div id="collaborator-modal-footer" style="display:none">
-        <button type="button" class="btn btn-outline-primary" id="collaborator-done-button">
-            <i class="fas fa-save"></i> Done
-        </button>
-    </div>
 
+        <button type="button" class="btn btn-outline-primary" id="update-button">
+            <i class="fas fa-save"></i> Update
+        </button>
+
+    </div>
 </div>

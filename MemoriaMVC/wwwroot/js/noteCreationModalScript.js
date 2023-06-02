@@ -133,17 +133,61 @@ $(function () {
                     
                 }
 
+                // handling the new label creation 
+                const createNewLabelOption = document.getElementById('createNewLabel');
+                const nestedInputContainer = document.getElementById('nestedInputContainer');
+                const newLabelInput = document.getElementById('newLabelInput');
+
+
                 // label selecting code
-                var labelsValues = [];
+                var labelsValues = []; // to maintain unique labels 
                 function insertANewLabel () {
                     var selectedLabel = labelSelect.value;
-                    if (!labelsValues.includes(selectedLabel)) {
+                    if (!labelsValues.includes(selectedLabel) && selectedLabel !== 'create-new') {
                         var labelElement = document.createElement('p');
                         labelElement.textContent = '#' + selectedLabel;
+                        labelElement.id = selectedLabel;
+
+                        var crossButton = document.createElement('button');
+                        crossButton.classList.add('cross-button');
+                        crossButton.innerHTML = '<i class="fas fa-times"></i>';
+                        crossButton.id = selectedLabel;
+
+                        // Add event listener to cross button
+                        crossButton.addEventListener('click', function (event) {
+                            labelElement.remove(); // Remove the label element
+                            labelsValues = labelsValues.filter(value => value !== selectedLabel); // Remove the value from the array
+                            labelsInputs = labelsInputs.filter(element => element.id !== event.target.id);
+                        });
+
+                        labelElement.appendChild(crossButton);
                         labelsContainer.appendChild(labelElement);
                         labelsInputs.push(labelElement);
+                        
+                    } else if(selectedLabel === 'create-new'){ 
+                        nestedInputContainer.style.display = 'block';
                     }
                 }
+
+
+                newLabelInput.addEventListener('keypress', function (event) {
+                    if(event.key === 'Enter') {
+                        const newLabel = newLabelInput.value;
+                        if (newLabel) {
+                            addNewLabel(newLabel, userData.id)
+                                .then(function (status) {
+                                    newLabelInput.value = '';
+                                    nestedInputContainer.style.display = 'none';
+                                    var newLabelElement = document.createElement('option');
+                                    newLabelElement.value = newLabel;
+                                    newLabelElement.innerText = newLabel;
+                                    var labelsSelect = document.getElementById('labelsSelect');
+                                    var lastOptionElement = labelSelect.lastElementChild;
+                                    labelsSelect.insertBefore(newLabelElement, lastOptionElement);
+                                });
+                        }
+                    }
+                });
 
                 function modifySaveButton (event) {
                     if (event.target.value.trim() == '') {
@@ -157,6 +201,7 @@ $(function () {
 
                 // Adding event listeners 
                 labelSelect.addEventListener('change', insertANewLabel);
+
                 todoToggle.addEventListener('change', function () {
                     if (this.checked) {
                         todoSection.style.display = 'block'; // Show the todo container
@@ -499,8 +544,6 @@ $(function () {
                         }, 500); // Delay in milliseconds
                     });
                 });
-
-
             })
             .fail(function (error) {
                 console.error("Error in nested AJAX calls");

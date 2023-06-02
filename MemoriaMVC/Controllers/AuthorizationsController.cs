@@ -11,6 +11,22 @@ namespace MemoriaMVC.Controllers
         {
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAuthorization(string noteId, string userId)
+        {
+            var authorizedEntities = await _unitOfWork.Authorizations.GetAuthorization(noteId, userId);
+
+            return Json(authorizedEntities);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> fetchAuthorizedUsersOfANote(string noteId)
+        {
+            var authorizedUsers = await _unitOfWork.Authorizations.GetAllAuthorizationsOfANote(noteId);
+            return Json(authorizedUsers);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> AddAuthorization([FromBody] AuthorizationSingleInDTO authorizationSingleInDTO)
         {

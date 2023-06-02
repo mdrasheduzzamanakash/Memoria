@@ -13,6 +13,7 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<UserSingleInDTO, User>();
                 cfg.CreateMap<User, UserSingleOutDTO>();
                 cfg.CreateMap<Label, LabelSingleOutDTO>();
+                cfg.CreateMap<LabelSingleInDTO, Label>();
                 cfg.CreateMap<UserSingleOutDTO, User>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
                 cfg.CreateMap<NoteSingleInDTO, Note>();
@@ -26,6 +27,7 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<RefreshToken, RefreshTokenSingleOutDTO>();
                 cfg.CreateMap<RefreshTokenSingleOutDTO, RefreshToken>();
                 cfg.CreateMap<AuthorizationSingleInDTO, Authorization>();
+                cfg.CreateMap<Authorization, AuthorizationSingleOutDTO>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();
