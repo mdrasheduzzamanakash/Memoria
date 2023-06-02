@@ -11,10 +11,7 @@ namespace Memoria.Entities.DbSet
     public class Label : BaseEntity
     {
         public string Content {  get; set; }
-
-        [ForeignKey("User")]
         public string LabelerId { get; set; }
-        public virtual User User { get; set; }
 
     }
 }

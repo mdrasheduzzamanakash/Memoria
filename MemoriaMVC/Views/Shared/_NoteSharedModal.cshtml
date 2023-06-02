@@ -151,19 +151,20 @@
 
     .display-none-element {
         display: none;
-    } 
+    }
+
     .display-block-element {
         display: block;
     }
 
     .collaborator-container {
-        display:flex;
-        flex-direction:column;
-        margin-top:10px;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
     }
 
     .collaborator-container-item {
-        flex:1;
+        flex: 1;
     }
 
     .search-result {
@@ -206,15 +207,15 @@
         transition: color 0.3s;
     }
 
-    .viewer-button i,
-    .writer-button i {
-        margin-right: 5px;
-    }
+        .viewer-button i,
+        .writer-button i {
+            margin-right: 5px;
+        }
 
-    .viewer-button:hover,
-    .writer-button:hover {
-        color: #007bff;
-    }
+        .viewer-button:hover,
+        .writer-button:hover {
+            color: #007bff;
+        }
 
     .viewer-writer-text {
         font-weight: bold;
@@ -228,10 +229,9 @@
         color: red;
     }
 
-    .cross-button:hover {
-        color: darkred;
-    }
-
+        .cross-button:hover {
+            color: darkred;
+        }
 
 </style>
 
@@ -301,14 +301,8 @@
 </div>
 <div class="modal-footer">
     <div id="update-modal-footer">
-        <button type="button" class="btn btn-outline-danger" id="trash-button">
-            <i class="fas fa-trash"></i> Trash
-        </button>
         <button type="button" class="btn btn-outline-primary" id="write-button">
             <i class="fas fa-users fa-lg"></i> Write
-        </button>
-        <button type="button" class="btn btn-outline-primary" id="authorization-button">
-            <i class="fas fa-user-plus"></i> Collaborator
         </button>
         <button type="button" class="btn btn-outline-primary" id="remainder-button">
             <i class="fas fa-clock"></i> Remainder
@@ -322,10 +316,5 @@
             <i class="fas fa-save"></i> Update
         </button>
 
-    </div>
-    <div id="collaborator-modal-footer" style="display:none">
-        <button type="button" class="btn btn-outline-primary" id="collaborator-done-button">
-            <i class="fas fa-save"></i> Done
-        </button>
     </div>
 </div>

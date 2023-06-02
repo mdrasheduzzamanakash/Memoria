@@ -94,7 +94,9 @@ namespace MemoriaMVC.Controllers
                     Email = userRegistrationRequestDto.Email,
                     Password = userRegistrationRequestDto.Password,
                     IdentityId = new Guid(newUser.Id),
-                    Image = userRegistrationRequestDto.Image
+                    Image = userRegistrationRequestDto.Image,
+                    Status = 1,
+                    FileFormat = userRegistrationViewModel.Image.ContentType
                 };
 
                 await _unitOfWork.Users.Add(userSingleInDto);

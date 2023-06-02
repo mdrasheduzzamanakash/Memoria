@@ -4,6 +4,7 @@ using Memoria.DataService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memoria.DataService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230601190502_initial-migration-7")]
+    partial class initialmigration7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,7 +188,7 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<string>("LabelerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -197,6 +200,8 @@ namespace Memoria.DataService.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LabelerId");
 
                     b.ToTable("Labels");
                 });
@@ -728,6 +733,17 @@ namespace Memoria.DataService.Migrations
                         .IsRequired();
 
                     b.Navigation("Commenter");
+                });
+
+            modelBuilder.Entity("Memoria.Entities.DbSet.Label", b =>
+                {
+                    b.HasOne("Memoria.Entities.DbSet.User", "User")
+                        .WithMany()
+                        .HasForeignKey("LabelerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Memoria.Entities.DbSet.NoteLabel", b =>

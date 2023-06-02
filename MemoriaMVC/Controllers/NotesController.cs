@@ -26,6 +26,23 @@ namespace MemoriaMVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> AllSharedNotes(string authorId)
+        {
+
+            var authorizedEntities = await _unitOfWork.Authorizations.GetAllAuthorizationsOfUser(authorId);
+
+            var uniqueIds = new HashSet<string>(authorizedEntities.Select(x => x.NoteId));
+            var uniqueIdsList = uniqueIds.ToList();
+
+            var sharedNotes = await _unitOfWork.Notes.GetNotesWithIds(uniqueIdsList);
+
+            return Json(sharedNotes);
+        }
+
+
+
+
+        [HttpGet]
         public async Task<IActionResult> AllTrashedNotes(string authorId)
         {
             var notes = await _unitOfWork.Notes.AllNotesTrashed(authorId);
@@ -68,6 +85,18 @@ namespace MemoriaMVC.Controllers
             ViewBag.Labels = labels;
             return PartialView("_NoteUpdationAndDeletion");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartialViewShared(string id)
+        {
+            // add labels to the viewbag
+            var labels = await _unitOfWork.Labels.AllUserLabels(id);
+            ViewBag.Labels = labels;
+            return PartialView("_NoteSharedModal");
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetPartialViewTrash(string id)
@@ -120,6 +149,16 @@ namespace MemoriaMVC.Controllers
         public async Task<IActionResult> Trash()
         {
             ViewBag.Title = "Trash Page";
+            var identityId = User.FindFirst("Id")?.Value;
+            var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
+            var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+            return View(userViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Share()
+        {
+            ViewBag.Title = "Share Page";
             var identityId = User.FindFirst("Id")?.Value;
             var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);

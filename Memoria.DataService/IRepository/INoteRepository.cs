@@ -23,6 +23,8 @@ namespace Memoria.DataService.IRepository
 
         Task<NoteSingleOutDTO> GetNoteById(string id);
 
+        Task<List<NoteSingleOutDTO>> GetNotesWithIds(List<string> ids);
+
         Task<List<NoteSingleOutDTO>> SearchByTitleAndDescription(string searchText, string userId);
 
         Task<List<NoteSingleOutDTO>> SearchByTitleAndDescriptionTrash(string searchText, string userId);

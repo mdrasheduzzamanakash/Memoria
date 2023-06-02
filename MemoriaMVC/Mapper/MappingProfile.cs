@@ -45,6 +45,8 @@ namespace MemoriaMVC.Mapper
             CreateMap<UserLoginViewModel, UserLoginRequestDto>();
 
 
+
+
         }
 
         private static string ConvertToString(byte[] bytes)

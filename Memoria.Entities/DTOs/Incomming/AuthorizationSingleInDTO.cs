@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Memoria.Entities.DbSet
+namespace Memoria.Entities.DTOs.Incomming
 {
-    public class Authorization : BaseEntity
+    public class AuthorizationSingleInDTO
     {
         public string NoteId { get; set; }
 
@@ -17,6 +15,6 @@ namespace Memoria.Entities.DbSet
         public string ModeOfAuthorization { get; set; }
 
         public string AuthorizerId { get; set; }
-        public string  AuthorizedUserId { get; set; }
+        public string AuthorizedUserId { get; set; }
     }
 }

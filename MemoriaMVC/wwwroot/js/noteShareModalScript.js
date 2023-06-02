@@ -1,6 +1,6 @@
 ﻿function handleNoteTitleClick(event) {
     var noteId = event.target.id.replace('title-', '');
-    fetchNoteUpdationModal()
+    fetchNoteSharedModal()
         .then(function () {
             return fetchNoteById(noteId);
         })
@@ -16,9 +16,7 @@
             const closeButton = document.querySelector('#myModal .modal-header .btn-close');
             const saveButton = document.getElementById('update-button');
             const attachmentButton = document.getElementById('attachment-button');
-            const authorizationButton = document.getElementById('authorization-button');
             const todoInput = document.getElementById('todo-input');
-            const trashButton = document.getElementById('trash-button');
 
 
             // Set note title and description
@@ -89,7 +87,7 @@
                     console.log(attachments);
                     for (let i = 0; i < attachments.length; i++) {
                         var currentAttachment = attachments[i];
-                        if (currentAttachment.fileType.startsWith("image/") ) {
+                        if (currentAttachment.fileType.startsWith("image/")) {
                             var img = $("<img>").attr("src", 'data:' + currentAttachment.fileType + ';base64,' + currentAttachment.fileBase64);
                             // Append the image to the file details container
                             var fileDetails = $("<div>")
@@ -101,7 +99,7 @@
                             var iframeElement = document.createElement('iframe');
                             iframeElement.src = 'data:' + currentAttachment.fileType + ';base64,' + currentAttachment.fileBase64;
                             iframeElement.classList.add('pdf-preview-in-note');
-                            
+
                             var fileDetails = $("<div>")
                                 .addClass(["file-details"])
                                 .data('attachment-id', currentAttachment.id)
@@ -147,7 +145,7 @@
                 var selectedLabel = labelSelect.value;
 
                 var labelElement = document.createElement('p');
-                labelElement.textContent = '#'+selectedLabel;
+                labelElement.textContent = '#' + selectedLabel;
 
                 if (!labelsValuesTemp.includes(labelElement.textContent)) {
                     labelsContainer.appendChild(labelElement);
@@ -209,7 +207,6 @@
 
 
             remainderButton.addEventListener('click', function () { })
-            authorizationButton.addEventListener('click', AddAuthorizer);
             noteTitle.addEventListener('input', modifySaveButton);
 
             // attachment related code
@@ -365,114 +362,56 @@
                 var selectedDateTime = event.target.value;
             });
 
-            // populate already saved data to the modal
+            fetchNoteAuthorization(noteData.id, userData.id)
+                .then(function (authorization) {
+                    if (authorization.modeOfAuthorization == 'writer') {
+                        // Saving the note
+                        saveButton.addEventListener('click', function () {
+                            if (totalSelectedAttachment === totalUploadedAttachment) {
+                                noteData.Id = noteData.id;
+                                noteData.UpdatedBy = userData.id;
+                                noteData.Todos = JSON.stringify(getTodoInputs());
+                                noteData.Title = noteTitle.value;
+                                noteData.Description = noteDescription.value;
+                                noteData.Labels = JSON.stringify(getLabelsInputs());
+                                noteData.Type = null;
+                                noteData.IsDraft = false;
+                                // remainder
+                                if (noteData.isRemainderAdded) {
+                                    noteData.RemainderDateTime = datePicker.value;
+                                }
+                                saveNote(noteData)
+                                    .then(function (addedNote) {
+                                        var previousElement = document.getElementById(addedNote.id);
+                                        previousElement.remove();
+                                        $('#myModal').modal('hide');
+                                        showSingleRawCardTop(addedNote);
+                                        showLinksPerNoteSingle(addedNote);
 
-            // Saving the note
-            saveButton.addEventListener('click', function () {
-                if (totalSelectedAttachment === totalUploadedAttachment) {
-                    noteData.Id = noteData.id;
-                    noteData.UpdatedBy = userData.id;
-                    noteData.Todos = JSON.stringify(getTodoInputs());
-                    noteData.Title = noteTitle.value;
-                    noteData.Description = noteDescription.value;
-                    noteData.Labels = JSON.stringify(getLabelsInputs());
-                    noteData.Type = null;
-                    noteData.IsDraft = false;
-                    // remainder
-                    if (noteData.isRemainderAdded) {
-                        noteData.RemainderDateTime = datePicker.value;
-                    }
-                    saveNote(noteData)
-                        .then(function (addedNote) {
-                            var previousElement = document.getElementById(addedNote.id);
-                            previousElement.remove();
-                            $('#myModal').modal('hide');
-                            showSingleRawCardTop(addedNote);
-                            showLinksPerNoteSingle(addedNote);
+                                        fetchAttachmentAllForANote(addedNote.id)
+                                            .then(function (attachments) {
+                                                if (attachments.length > 0) {
+                                                    showAttachmentPreviewToEachCardSingle(attachments[0]);
+                                                }
+                                                if (addedNote.isRemainderAdded) {
+                                                    showRemainderCountDown(addedNote);
+                                                }
+                                            })
 
-                            fetchAttachmentAllForANote(addedNote.id)
-                                .then(function (attachments) {
-                                    if (attachments.length > 0) {
-                                        showAttachmentPreviewToEachCardSingle(attachments[0]);
-                                    }
-                                    if (addedNote.isRemainderAdded) {
-                                        showRemainderCountDown(addedNote);
-                                    }
-                                })
-
-                            var noteTitle = document.getElementById(`title-${addedNote.id}`);
-                            noteTitle.addEventListener('click', handleNoteTitleClick);
+                                        var noteTitle = document.getElementById(`title-${addedNote.id}`);
+                                        noteTitle.addEventListener('click', handleNoteTitleClick);
+                                    });
+                            } else {
+                                alert('Please wait.. Files uploading');
+                            }
                         });
-                } else {
-                    alert('Please wait.. Files uploading');
-                }
-            });
-
-            trashButton.addEventListener('click', function () {
-                noteData.isTrashed = true;
-                noteData.trashingDate = new Date();
-                saveNote(noteData)
-                    .then(function (status) {
-                        if (status) {
-                            var noteElement = document.getElementById(noteData.id);
-                            $('#myModal').modal('hide');
-                            noteElement.remove();
-                        } else {
-                            alert('Error in trashing');
-                        }
-                    })
-            });
-
-            authorizationButton.addEventListener('click', function () {
-                // clear the view and add the necessary view
-                const modalHeaderElements = document.getElementById('modal-header-element');
-                const updateModalBody = document.getElementById('update-modal-body');
-                const collaboratorModalBody = document.getElementById('collaborator-modal-body');
-                const updateModalFooter = document.getElementById('update-modal-footer');
-                const collaboratorModalFooter = document.getElementById('collaborator-modal-footer');
-
-                //modalHeaderElements.style.display = "none";
-                updateModalBody.style.display = "none";
-                updateModalFooter.style.display = "none";
-                collaboratorModalBody.style.display = "block";
-                collaboratorModalFooter.style.display = "block";
-                collaboratorModalFooter.style.display = "block";
-
-                const collaboratorDoneButton = document.getElementById('collaborator-done-button');
-                collaboratorDoneButton.addEventListener('click', function () {
-                    updateModalBody.style.display = "block";
-                    updateModalFooter.style.display = "block";
-                    collaboratorModalBody.style.display = "none";
-                    collaboratorModalFooter.style.display = "none";
-                    collaboratorModalFooter.style.display = "none";
+                    } else {
+                        var modalHeader = document.getElementById('update-modal-footer');
+                        modalHeader.innerHTML = '<p><b>View Only </b><span style="color:red;margin-left=4px;">Modifications will not sustain</span></p>'
+                    }
                 })
+                
 
-                // perform search and append view with click listener
-                const collaboratorSearchBar = document.getElementById('collaborator-search');
-                const collaboratorContainer = document.getElementById('collaborator-container');
-                const selectedCollaboratorsContainer = document.getElementById('selected-collaborators-container');
-
-                let timeout;
-                collaboratorSearchBar.addEventListener('input', function (event) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(function () {
-                        if (collaboratorSearchBar.value !== '') {
-                            fetchCollaborators(collaboratorSearchBar.value, userData.id)
-                                .then(function (fetchedCollaborators) {
-                                    if (fetchedCollaborators.length === 0) {
-                                        collaboratorContainer.innerHTML = '<p style="text-align:center;">No Collaborators match this email<p>';
-                                    } else {
-                                        renderCollaboratorSearchResults(fetchedCollaborators, collaboratorContainer);
-                                        addEventListenerToAllSearchedResult(collaboratorContainer, noteData);
-                                    }
-                                });
-                        } else {
-                            collaboratorContainer.innerHTML = '<p style="text-align:center;">Nothing to show<p>';
-                        }
-
-                    }, 500); // Delay in milliseconds
-                });
-            });
         })
-    
+
 }

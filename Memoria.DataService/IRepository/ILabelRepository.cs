@@ -1,4 +1,5 @@
 ﻿using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,6 @@ namespace Memoria.DataService.IRepository
 
         Task<IEnumerable<LabelSingleOutDTO>> AllUserLabels(string id);
 
+        Task<bool> AddNewLabel(LabelSingleInDTO label);
     }
 }
