@@ -19,6 +19,20 @@
             const authorizationButton = document.getElementById('authorization-button');
             const todoInput = document.getElementById('todo-input');
             const trashButton = document.getElementById('trash-button');
+            const writeButton = document.getElementById('write-button');
+
+            writeButton.addEventListener('click', function (event) {
+                $.ajax({
+                    url: '/Notes/RedirectToWrite',
+                    data: {
+                        noteId: noteData.id
+                    },
+                    success: function (status) {
+                        window.location.href = '/GroupEditing/GroupEdit';
+                    }
+                })
+            })
+
 
 
             // Set note title and description
@@ -472,7 +486,12 @@
 
                     }, 500); // Delay in milliseconds
                 });
+
+                
+
             });
+
+            
         })
     
 }

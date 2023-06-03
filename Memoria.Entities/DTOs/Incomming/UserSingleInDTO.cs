@@ -18,5 +18,7 @@
         public string Password { get; set; }
 
         public byte[] Image { get; set; }
+
+        public string? ActiveEditingNote { get; set; }
     }
 }

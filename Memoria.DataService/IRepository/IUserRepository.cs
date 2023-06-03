@@ -20,6 +20,7 @@ namespace Memoria.DataService.IRepository
         Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId);
         Task<UserSingleOutDTO> GetByIdentityId(Guid identityId);
 
+        Task<bool> AddActiveNote(string userId,string noteId);
         Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText, string userId);
     }
 }

@@ -21,5 +21,7 @@ namespace Memoria.Entities.DbSet
         public byte[]? Image { get; set; }
 
         public Guid IdentityId { get; set; }
+
+        public string? ActiveEditingNote { get; set; }
     }
 }

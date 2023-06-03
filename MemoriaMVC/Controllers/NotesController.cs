@@ -26,6 +26,17 @@ namespace MemoriaMVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> RedirectToWrite(string noteId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _unitOfWork.Users.AddActiveNote(userId, noteId);
+            await _unitOfWork.CompleteAsync();
+            return RedirectToAction("GroupEdit", "GroupEditing");
+        }
+
+
+
+        [HttpGet]
         public async Task<IActionResult> AllSharedNotes(string authorId)
         {
 

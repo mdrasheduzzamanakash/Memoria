@@ -127,6 +127,20 @@ namespace Memoria.DataService.Repository
             }
         }
 
+        public async Task<bool> AddActiveNote(string userId,string noteId)
+        {
+            try
+            {
+                var user = await _dbSet.FirstOrDefaultAsync(x => x.IdentityId.ToString() == userId);
+                user.ActiveEditingNote = noteId;
+                return true;
+            } 
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return false;
+            }
+        }
     }
 }
 
