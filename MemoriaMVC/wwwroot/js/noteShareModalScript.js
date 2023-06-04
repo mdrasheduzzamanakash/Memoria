@@ -31,7 +31,6 @@
                 })
             })
 
-
             // Set note title and description
             const noteTitle = document.getElementById('note-title');
             const noteDescription = document.getElementById('note-description');
@@ -424,17 +423,7 @@
                     }
                 })
 
-            // Handle group editing 
-            const writeButton = document.getElementById('write-button');
-            writeButton.addEventListener('click', function () {
-                $.ajax({
-                    url: '/Notes/RedirectToWrite',
-                    data: noteData.id, 
-                    success: function (status) {
-                        console.log('redirection done');
-                    }
-                })
-            });
+           
 
         })
 

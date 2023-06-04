@@ -85,9 +85,6 @@
     }
 
 </style>
-
-<script>var pageData = @Html.Raw(Json.Serialize(@Model));</script>
-
 <div id="resizable-container">
     <div id="left-section">
         <div id="options">
@@ -108,16 +105,20 @@
     </div>
     <div id="column-seperator"></div>
     <div id="right-section">
-        <div id="rightSectionTitle" contenteditable="true" data-placeholder="Enter the title here"></div>
+        <div id="rightSectionTitle" contenteditable="false" data-placeholder="Enter the title here"></div>
         <hr/>
-        <div id="right-section-description" contenteditable="true" data-placeholder="Write description..."></div>
+        <div id="right-section-description" contenteditable="false" data-placeholder="Write description..."></div>
     </div>
 </div>
 
+
+<!--Scripts are here-->
+<script>var pageData = @Html.Raw(Json.Serialize(@Model));</script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<!-- UI related scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js" integrity="sha512-vco9RAxEuv4PQ+iTQyuKElwoUOcsVdp+WgU6Lgo82ASpDfF7vI66LlWz+CZc2lMdn52tjjLOuHvy8BQJFp8a1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="~/js//_sharedScript.js"></script>
 <script>
    $(function() {
         var divTitle = document.getElementById('rightSectionTitle');
@@ -202,7 +203,288 @@
     })
 </script>
 
+@*
+<script>
+    $(function () {
+        var noteData = null;
+        var userData = null;
+        var previousNoteTitle = '';
+        var previousNoteDescription = '';
+
+        const titleElement = document.getElementById('rightSectionTitle');
+        const descriptionElement = document.getElementById('right-section-description');
+
+        console.log(pageData);
+        const noteChangeConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/noteChangeHub")
+            .build();
+
+        noteChangeConnection.start()
+            .then(() => {
+                noteChangeConnection.invoke("JoinNoteGroup", pageData.noteId)
+                    .then(() => {
+                        // fetch note data
+                        fetchNoteById(pageData.noteId)
+                            .then(function (fetchedNote) {
+                                noteData = fetchedNote;
+                                previousNoteTitle = noteData.title;
+                                previousNoteDescription = noteData.description;
+                                if(noteData.title !== null && noteData.title !== ''){
+                                    titleElement.innerText = noteData.title;
+                                }
+                                if (noteData.description !== null && noteData.description !== '') {
+                                    descriptionElement.innerText = noteData.description;
+                                }
+                                return fetchUserById(pageData.writerId);
+                            })
+                            .then(function (fetchedUser) {
+                                userData = fetchedUser;
+                                titleElement.contentEditable = true;
+                                descriptionElement.contentEditable = true;
+
+                                console.log(noteData);
+                                console.log(userData);
+                            })
+                    })
+            })
+            .catch(error => {
+                console.error("SignalR connection error: ", error);
+            });
+
+        // Receiving function
+        noteChangeConnection.on("ReceiveNoteChanges", (noteChangeReceivedString) => {
+            var noteChangePayload = JSON.parse(noteChangeReceivedString);
+            console.log(noteChangePayload);
+
+            const isTitleInFocus = document.activeElement === titleElement;
+            const isDescriptionInFocus = document.activeElement === descriptionElement;
+
+            if (noteChangePayload.IsTitleChanged) {
+                if (isTitleInFocus) {
+                    var cursorRange = window.getSelection().getRangeAt(0);
+                    titleElement.contentEditable = false;
+                    titleElement.innerText = noteChangePayload.TitleChanges;
+                    titleElement.contentEditable = true;
+
+                    // position the cursor
+                    var selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(cursorRange);
+                    // make title focus
+                    titleElement.focus();
+                } else {
+                    titleElement.contentEditable = false;
+                    titleElement.innerText = noteChangePayload.TitleChanges;
+                    titleElement.contentEditable = true;
+                }
+            } else {
+
+            }
+
+        });
+
+
+        // add change tracking to the input field
+        var noteTitleChangeTimer;
+        titleElement.addEventListener('input', function (event) {
+            clearTimeout(noteTitleChangeTimer);
+            noteTitleChangeTimer = setTimeout((function (event) {
+                var currentTitle = titleElement.innerText;
+                var noteChangesPaylaodString = JSON.stringify({
+                    noteId: pageData.noteId,
+                    writerId: pageData.writerId,
+                    titleChanges: currentTitle,
+                    descriptionChanges: '',
+                    isTitleChanged: true,
+                    isDescriptionChanged: false
+                });
+                noteChangeConnection.invoke("BroadCastNoteChange", noteChangesPaylaodString);
+            }), 500);
+        });
+
+        var noteDescriptionTimer;
+        descriptionElement.addEventListener('input', function (event) {
+            clearTimeout(noteDescriptionTimer);
+            noteDescriptionTimer = setTimeout((function (event) {
+                var currentDescription = descriptionElement.innerHTML;
+                
+            }), 500);
+        });
+
+        function computeChange(previous, current) {
+            const diff = Diff.diffWordsWithSpace(previous, current);
+
+        }
+
+        // dispossable sectiton
+        window.addEventListener('beforeunload', function (event) {
+            noteChangeConnection.stop();
+            console.log('stopping the connection');
+        });
+
+    })
+
+//</script>
+*@
+
 
 <script>
-    console.log(pageData);
+    $(function () {
+        var noteData = null;
+        var userData = null;
+        var previousNoteTitle = '';
+        var previousNoteDescription = '';
+
+        const titleElement = document.getElementById('rightSectionTitle');
+        const descriptionElement = document.getElementById('right-section-description');
+
+        console.log(pageData);
+        const noteChangeConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/noteChangeHub")
+            .build();
+
+        noteChangeConnection.start()
+            .then(() => {
+                noteChangeConnection.invoke("JoinNoteGroup", pageData.noteId)
+                    .then(() => {
+                        // fetch note data
+                        fetchNoteById(pageData.noteId)
+                            .then(function (fetchedNote) {
+                                noteData = fetchedNote;
+                                previousNoteTitle = noteData.title;
+                                previousNoteDescription = noteData.description;
+                                if (noteData.title !== null && noteData.title !== '') {
+                                    titleElement.innerText = noteData.title;
+                                    previousNoteTitle = noteData.title;
+                                }
+                                if (noteData.description !== null && noteData.description !== '') {
+                                    descriptionElement.innerText = noteData.description;
+                                    previousNoteDescription = noteData.description;
+                                }
+                                return fetchUserById(pageData.writerId);
+                            })
+                            .then(function (fetchedUser) {
+                                userData = fetchedUser;
+                                titleElement.contentEditable = true;
+                                descriptionElement.contentEditable = true;
+
+                                console.log(noteData);
+                                console.log(userData);
+                            })
+                    })
+            })
+            .catch(error => {
+                console.error("SignalR connection error: ", error);
+            });
+
+        // Receiving function
+        noteChangeConnection.on("ReceiveNoteChanges", (noteChangeReceivedString) => {
+            var noteChangePayload = JSON.parse(noteChangeReceivedString);
+            console.log(noteChangePayload);
+
+            const isTitleInFocus = document.activeElement === titleElement;
+            const isDescriptionInFocus = document.activeElement === descriptionElement;
+
+            if (noteChangePayload.isTitleChanged) {
+                if (isTitleInFocus) {
+                    var cursorRange = window.getSelection().getRangeAt(0);
+                    titleElement.contentEditable = false;
+                    titleElement.innerText = noteChangePayload.titleChanges;
+                    previousNoteTitle = noteChangePayload.titleChanges;
+                    titleElement.contentEditable = true;
+
+                    // position the cursor
+                    var selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(cursorRange);
+                    // make title focus
+                    titleElement.focus();
+                } else {
+                    titleElement.contentEditable = false;
+                    titleElement.innerText = noteChangePayload.titleChanges;
+                    previousNoteTitle = noteChangePayload.titleChanges;
+                    titleElement.contentEditable = true;
+                }
+            } else {
+                if(isDescriptionInFocus) {
+                    var cursorRange = window.getSelection().getRangeAt(0);
+                    const appliedDescription = applyDiff(previousNoteDescription, noteChangePayload.descriptionChanges);
+                    descriptionElement.contentEditable = false;
+                    descriptionElement.innerHTML = appliedDescription;
+                    previousNoteDescription = appliedDescription;
+                    descriptionElement.contentEditable = true;
+
+                    // position the cursor
+                    var selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(cursorRange);
+                    // make description focus 
+                    descriptionElement.focus();
+                    
+                } else {
+                    descriptionElement.contentEditable = false;
+                    const appliedDescription = applyDiff(previousNoteDescription, noteChangePayload.descriptionChanges);
+                    previousNoteDescription = appliedDescription;
+                    descriptionElement.innerHTML = appliedDescription;
+                    previousNoteDescription = appliedDescription;
+                    descriptionElement.contentEditable = true;
+                }
+            }
+        });
+
+        // Add change tracking to the input field
+        var noteTitleChangeTimer;
+        titleElement.addEventListener('input', function (event) {
+            clearTimeout(noteTitleChangeTimer);
+            noteTitleChangeTimer = setTimeout(function () {
+                var currentTitle = titleElement.innerText;
+                var titleChanges = computeDiff(previousNoteTitle, currentTitle);
+                previousNoteTitle = currentTitle;
+                var noteChangesPayloadString = JSON.stringify({
+                    noteId: pageData.noteId,
+                    writerId: pageData.writerId,
+                    titleChanges: titleChanges,
+                    descriptionChanges: '',
+                    isTitleChanged: true,
+                    isDescriptionChanged: false
+                });
+                noteChangeConnection.invoke("BroadCastNoteChange", noteChangesPayloadString);
+            }, 500);
+        });
+
+        var noteDescriptionTimer;
+        descriptionElement.addEventListener('input', function (event) {
+            clearTimeout(noteDescriptionTimer);
+            noteDescriptionTimer = setTimeout(function () {
+                var currentDescription = descriptionElement.innerHTML;
+                var descriptionChanges = computeDiff(previousNoteDescription, currentDescription);
+                previousNoteDescription = currentDescription;
+                var noteChangesPayloadString = JSON.stringify({
+                    noteId: pageData.noteId,
+                    writerId: pageData.writerId,
+                    titleChanges: '',
+                    descriptionChanges: descriptionChanges,
+                    isTitleChanged: false,
+                    isDescriptionChanged: true
+                });
+                noteChangeConnection.invoke("BroadCastNoteChange", noteChangesPayloadString);
+            }, 500);
+        });
+
+        function computeDiff(previous, current) {
+            const diff = Diff.createPatch("", previous, current, "", "");
+            return diff;
+        }
+
+        function applyDiff(previous, diff) {
+            const modified = Diff.applyPatch(previous, diff);
+            return modified;
+        }
+
+        // Disposable section
+        window.addEventListener('beforeunload', function (event) {
+            noteChangeConnection.stop();
+            console.log('Stopping the connection');
+        });
+    });
 </script>

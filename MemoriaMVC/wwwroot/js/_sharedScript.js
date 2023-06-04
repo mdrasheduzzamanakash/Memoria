@@ -275,6 +275,21 @@ function fetchUserData(dataFromPrevious) {
     return deferred.promise();
 }
 
+function fetchUserById(id) {
+    var deferred = $.Deferred();
+    $.ajax({
+        url: '/Users/GetById/' + id,
+        type: 'GET',
+        success: function (user) {
+            deferred.resolve(user);
+        },
+        error: function () {
+            alert('Error loading user data');
+        }
+    });
+    return deferred.promise();
+}
+
 function createDraftNote(userData) {
     var deferred = $.Deferred();
     note.AuthorId = userData.id;

@@ -2,6 +2,8 @@
 using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.SocketConnections.Models.Incomming;
+using MemoriaMVC.SocketConnections.Models.Outgoing;
 using MemoriaMVC.ViewModel.Attachment;
 using MemoriaMVC.ViewModel.Authentication;
 using MemoriaMVC.ViewModel.HomePageViewModel;
@@ -44,7 +46,9 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<UserLoginViewModel, UserLoginRequestDto>();
 
+            CreateMap<NoteChangeSingleInModel, NoteChangeSingleOutModel>();
 
+            CreateMap<NoteChangeSingleOutModel, NoteChangeSingleInModel>();
 
 
         }

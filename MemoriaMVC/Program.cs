@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MemoriaMVC.Middleware;
+using MemoriaMVC.SocketConnections;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHostedService<TrashCleanupTask>();
+
+builder.Services.AddSignalR();
 
 // Adding the automapper in the DI box
 var config = new MapperConfiguration(cfg =>
@@ -87,6 +90,11 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<NoteChangeBroadCastHub>("/noteChangeHub");
+});
 
 app.MapControllerRoute(
     name: "default",

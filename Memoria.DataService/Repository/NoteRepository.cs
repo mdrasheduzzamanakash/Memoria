@@ -179,5 +179,18 @@ namespace Memoria.DataService.Repository
             }
             return notesDto;
         }
+
+        public async Task<bool> ModifyTitleOrDescription(string noteId, string title, string description, bool isTitle)
+        {
+            var note = await _dbSet.FirstOrDefaultAsync(x => x.Id == noteId);
+            if(isTitle)
+            {
+                note.Title = title;
+            } else
+            {
+                note.Description = description;
+            }
+            return true;
+        }
     }
 }
