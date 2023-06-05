@@ -5,6 +5,12 @@ using MemoriaMVC.SocketConnections.Models.Outgoing;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
+
+using System;
+using DiffPlex;
+using DiffPlex.DiffBuilder;
+using DiffPlex.DiffBuilder.Model;
+
 namespace MemoriaMVC.SocketConnections
 {
     public class NoteChangeBroadCastHub : Hub
@@ -57,12 +63,13 @@ namespace MemoriaMVC.SocketConnections
                 await ChangeTitleOfTheNote(noteChangeSingleInModel);
             } else
             {
-                
+                await ChangeDescriptionOfTheNote(noteChangeSingleInModel);
             }
-
             var noteChangeSingleOutModel = _mapper.Map<NoteChangeSingleOutModel>(noteChangeSingleInModel);
             var noteChnageSingleOutModelString = JsonConvert.SerializeObject(noteChangeSingleOutModel);
             await Clients.GroupExcept(noteChangeSingleInModel.NoteId, Context.ConnectionId).SendAsync("ReceiveNoteChanges", noteChnageSingleOutModelString);
         }
+
+
     }
 }

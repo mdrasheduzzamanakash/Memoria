@@ -169,7 +169,7 @@ namespace Memoria.DataService.Repository
 
         public async Task<List<NoteSingleOutDTO>> GetNotesWithIds(List<string> ids)
         {
-            var notes = await _dbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
+            var notes = await _dbSet.Where(x => ids.Contains(x.Id) && x.IsTrashed == false).ToListAsync();
             
             var notesDto = new List<NoteSingleOutDTO>();
             foreach ( var note in notes)
