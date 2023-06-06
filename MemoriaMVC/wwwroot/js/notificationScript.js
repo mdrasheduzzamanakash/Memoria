@@ -12,12 +12,36 @@ $(function () {
             console.error("SignalR connection error: ", error);
         });
 
+    
+
+    const notificationIcon = document.getElementById('notification-icon');
+    const notificationViewer = document.getElementById('notification-viewer');
+    
+
+    notificationIcon.addEventListener('click', () => {
+        notificationViewer.classList.toggle('show');
+    });
+
+    // Close the notification viewer when clicking outside of it
+    window.addEventListener('click', (event) => {
+        if (!event.target.matches('#notification-icon') && !event.target.closest('.notification-viewer')) {
+            notificationViewer.classList.remove('show');
+            notificationIcon.style.color = 'gray';
+        }
+    });
+
+
     notificationConnection.on("ReceiveNotification", (notificationPayloadString) => {
         var notificationPayload = JSON.parse(notificationPayloadString);
 
-        console.log(notificationPayload);
-        
+        const notificationElement = document.createElement('div');
+        notificationElement.classList.add('notification-item');
+        notificationElement.innerText = notificationPayload.Content;
+        notificationViewer.appendChild(notificationElement);
+        notificationIcon.style.color = 'red';
     });
+
+
 
     // dispossable sectiton
     window.addEventListener('beforeunload', function (event) {
