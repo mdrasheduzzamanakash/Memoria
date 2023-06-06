@@ -23,11 +23,17 @@ namespace Memoria.DataService.Mapper
                 .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.file)));
                 cfg.CreateMap<User, UserCollaboratorSearchResultDto>()
                 .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+                cfg.CreateMap<User, UserDetailsSingleOutDTO>()
+                .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.Image)));
                 cfg.CreateMap<RefreshTokenSingleInDTO, RefreshToken>();
                 cfg.CreateMap<RefreshToken, RefreshTokenSingleOutDTO>();
                 cfg.CreateMap<RefreshTokenSingleOutDTO, RefreshToken>();
                 cfg.CreateMap<AuthorizationSingleInDTO, Authorization>();
                 cfg.CreateMap<Authorization, AuthorizationSingleOutDTO>();
+                cfg.CreateMap<CommentSingleInDTO, Comment>();
+                cfg.CreateMap<Comment, CommentSingleOutDTO>();
+                cfg.CreateMap<Notification, NotificationSingleOutDTO>();
+                cfg.CreateMap<NotificationSIngleInDTO, Notification>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();

@@ -102,6 +102,8 @@ namespace MemoriaMVC.Controllers
                 await _unitOfWork.Users.Add(userSingleInDto);
                 await _unitOfWork.CompleteAsync();
 
+                var userJustRegisterd = await _unitOfWork.Users.GetByIdentityId(new Guid(newUser.Id));
+                await _unitOfWork.CompleteAsync();
                 // create jwt token
 
                 var token = await GenerateJwtToken(newUser);
@@ -123,6 +125,7 @@ namespace MemoriaMVC.Controllers
 
                 // view data 
                 ViewData["IsUserLoggedIn"] = true;
+                ViewData["loggedInUserId"] = userJustRegisterd.Id;
 
                 return View("EmailConfirmation");
             }

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Memoria.Entities.DbSet
+﻿namespace MemoriaMVC.SocketConnections.Models.Outgoing
 {
-    public class Comment : BaseEntity
+    public class NoteCommentSingleOutModel
     {
         public string NoteId { get; set; }
         public string CommenterId { get; set; }
@@ -17,5 +9,7 @@ namespace Memoria.Entities.DbSet
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Image { get; set; }
+        public string FileFormat { get; set; }
+        public DateTime AddedDateAndTime { get; set; }
     }
 }

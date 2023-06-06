@@ -17,7 +17,19 @@
             const saveButton = document.getElementById('update-button');
             const attachmentButton = document.getElementById('attachment-button');
             const todoInput = document.getElementById('todo-input');
+            const writeButton = document.getElementById('write-button');
 
+            writeButton.addEventListener('click', function (event) {
+                $.ajax({
+                    url: '/Notes/RedirectToWrite',
+                    data: {
+                        noteId: noteData.id
+                    },
+                    success: function (status) {
+                        window.location.href = '/GroupEditing/GroupEdit';
+                    }
+                })
+            })
 
             // Set note title and description
             const noteTitle = document.getElementById('note-title');
@@ -410,7 +422,8 @@
                         modalHeader.innerHTML = '<p><b>View Only </b><span style="color:red;margin-left=4px;">Modifications will not sustain</span></p>'
                     }
                 })
-                
+
+           
 
         })
 

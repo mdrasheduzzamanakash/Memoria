@@ -38,9 +38,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
-                        <i class="fas fa-bell fa-lg"></i>
+                        <i class="fas fa-bell fa-lg">
+                            <span id="notification-count" style="display: inline-block; vertical-align: middle; margin-bottom:4px;color:blue;">4</span>
+                        </i>
                     </a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Notes" asp-action="Share">
                         <i class="fas fa-share-alt fa-lg"></i>
@@ -69,3 +72,5 @@
 <p style="text-align:center;background-color:aqua;display:none" id="inform-text"> </p>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js//navbar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+<script src="~/js//notificationScript.js"></script>

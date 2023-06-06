@@ -8,5 +8,7 @@
 
 <script>
     var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+    var loggedInUserId = @Html.Raw(Json.Serialize(ViewData["loggedInUserId"]));
     localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
+    localStorage.setItem("loggedInUserId", loggedInUserId);
 </script>
