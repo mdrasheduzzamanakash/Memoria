@@ -4,6 +4,10 @@ using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Newtonsoft.Json;
 using MemoriaMVC.ViewModel.HomePageViewModel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Authentication.Configuration;
+using System.Security.Claims;
 
 namespace MemoriaMVC.Controllers
 {
@@ -13,7 +17,6 @@ namespace MemoriaMVC.Controllers
         {
         }
 
-
         // get all the notes 
         [HttpGet]
         public async Task<IActionResult> AllWithOutDraft(string authorId)
@@ -21,6 +24,34 @@ namespace MemoriaMVC.Controllers
             var notes = await _unitOfWork.Notes.AllNotesWithOutDraft(authorId);
             return Json(notes);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> RedirectToWrite(string noteId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _unitOfWork.Users.AddActiveNote(userId, noteId);
+            await _unitOfWork.CompleteAsync();
+            return RedirectToAction("GroupEdit", "GroupEditing");
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> AllSharedNotes(string authorId)
+        {
+
+            var authorizedEntities = await _unitOfWork.Authorizations.GetAllAuthorizationsOfUser(authorId);
+
+            var uniqueIds = new HashSet<string>(authorizedEntities.Select(x => x.NoteId));
+            var uniqueIdsList = uniqueIds.ToList();
+
+            var sharedNotes = await _unitOfWork.Notes.GetNotesWithIds(uniqueIdsList);
+
+            return Json(sharedNotes);
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> AllTrashedNotes(string authorId)
@@ -67,6 +98,18 @@ namespace MemoriaMVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetPartialViewShared(string id)
+        {
+            // add labels to the viewbag
+            var labels = await _unitOfWork.Labels.AllUserLabels(id);
+            ViewBag.Labels = labels;
+            return PartialView("_NoteSharedModal");
+        }
+
+
+
+
+        [HttpGet]
         public async Task<IActionResult> GetPartialViewTrash(string id)
         {
             // add labels to the viewbag
@@ -91,6 +134,7 @@ namespace MemoriaMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveNote([FromBody] NoteSingleInDTO finalNoteDto)
         {
+            finalNoteDto.UpdatedDateAndTime = DateTime.UtcNow;
             var finalNote = await _unitOfWork.Notes.AddFinalNote(finalNoteDto);
             await _unitOfWork.CompleteAsync();
             return Json(finalNote);
@@ -116,9 +160,21 @@ namespace MemoriaMVC.Controllers
         public async Task<IActionResult> Trash()
         {
             ViewBag.Title = "Trash Page";
-            var user = await _unitOfWork.Users.GetById("1ff4e1cd-6081-450d-abef-5c1667daf7f7");
+            var identityId = User.FindFirst("Id")?.Value;
+            var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
             return View(userViewModel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Share()
+        {
+            ViewBag.Title = "Share Page";
+            var identityId = User.FindFirst("Id")?.Value;
+            var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
+            var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+            return View(userViewModel);
+        }
+
     }
 }

@@ -13,6 +13,7 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<UserSingleInDTO, User>();
                 cfg.CreateMap<User, UserSingleOutDTO>();
                 cfg.CreateMap<Label, LabelSingleOutDTO>();
+                cfg.CreateMap<LabelSingleInDTO, Label>();
                 cfg.CreateMap<UserSingleOutDTO, User>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
                 cfg.CreateMap<NoteSingleInDTO, Note>();
@@ -20,9 +21,20 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<AttachmentSingleInDTO, Attachment>();
                 cfg.CreateMap<Attachment, AttachmentSingleOutDTO>()
                 .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.file)));
+                cfg.CreateMap<User, UserCollaboratorSearchResultDto>()
+                .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+                cfg.CreateMap<User, UserDetailsSingleOutDTO>()
+                .ForMember(dest => dest.fileBase64, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+                cfg.CreateMap<RefreshTokenSingleInDTO, RefreshToken>();
+                cfg.CreateMap<RefreshToken, RefreshTokenSingleOutDTO>();
+                cfg.CreateMap<RefreshTokenSingleOutDTO, RefreshToken>();
+                cfg.CreateMap<AuthorizationSingleInDTO, Authorization>();
+                cfg.CreateMap<Authorization, AuthorizationSingleOutDTO>();
+                cfg.CreateMap<CommentSingleInDTO, Comment>();
+                cfg.CreateMap<Comment, CommentSingleOutDTO>();
+                cfg.CreateMap<Notification, NotificationSingleOutDTO>();
+                cfg.CreateMap<NotificationSIngleInDTO, Notification>();
             });
-
-            
 
             IMapper mapper = mapperConfiguration.CreateMapper();
 

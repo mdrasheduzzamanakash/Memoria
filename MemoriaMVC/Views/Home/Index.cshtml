@@ -23,7 +23,6 @@
         display: flex;
         flex-wrap: wrap;
         display: flex;
-        align-items: stretch;
         justify-content: center;
         padding: 10px;
         
@@ -37,7 +36,6 @@
         align-self: flex-start;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease-in-out;
-        flex-grow:1;
     }
 
     .flex-note-container-item:hover {
@@ -60,6 +58,12 @@
         flex-direction:column;
     }
 
+    .count-down-element {
+        color: blue;
+        text-align:right;
+        padding: 3px;
+    }
+
 </style>
 
 <!--global datastructures-->
@@ -67,6 +71,7 @@
     var nonDraftNotes = [];
     var attachments = []; // only one attachment per note is here
 </script>
+
 
 <!--Notes container-->
 <div class="flex-note-container" id="card-container"></div>
@@ -86,10 +91,13 @@
 <script src="~/js/_sharedScript.js"></script>
 <script src="~/js//noteCreationModalScript.js"></script>
 <script src="~/js/noteUpdationModal.js"></script>
-
 <script>
     // home page functionality
     $(function () {
+        // saving login state to the localstorage
+        var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+        localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
+        localStorage.setItem("loggedInUserId", userData.id);
 
         const searchBar = document.getElementById('searchBar');
         let timeout;
@@ -138,7 +146,6 @@
             }, 500); // Delay in milliseconds
         });
 
-
         function showAttachmentPreviewToEachCard(attachments) {
             try {
                 var alreadyDone = [];
@@ -177,7 +184,11 @@
             showRawCard(nonDraftNotes);
             showAttachmentPreviewToEachCard(attachments);
             showLinksPerNote(nonDraftNotes);
+            for(let i = 0;i < nonDraftNotes.length;i++) {
+               if (nonDraftNotes[i].isRemainderAdded) {
+                   showRemainderCountDown(nonDraftNotes[i]);
+               }
+            }
         })
     })
 </script>
-

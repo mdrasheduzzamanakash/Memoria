@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Memoria - Todo App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #333333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+
+        
+        .feature {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+            .feature h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .feature p {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+
+            .feature img {
+                width: 200px;
+                height: 200px;
+                margin-bottom: 10px;
+            }
+
+        .colorful-text {
+            color: blue; /* Replace with your desired color */
+        }
+
+        .emphasized-text {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to <span class="colorful-text">Memoria!</span></h1>
+        <img src="~/images/notas.png" style="width:100px;height:100px;" />
+
+        <div class="feature">
+            <h2 class="emphasized-text">Note Taking</h2>
+            <p>Effortlessly capture your thoughts, ideas, and important information. Take notes in a clean and intuitive interface, allowing you to focus on your content.</p>
+        </div>
+
+        <div class="feature">
+            <h2>Adding Reminders</h2>
+            <p>Stay organized by setting reminders for important tasks and deadlines. Never miss a deadline again with customizable reminders that help you stay on top of your commitments.</p>
+        </div>
+
+        <div class="feature">
+            <h2 class="emphasized-text">Collaborative Writing</h2>
+            <p>Work together with your team or friends in real-time to create and edit notes. Collaborate effortlessly by inviting others to contribute and edit your notes, making it easy to collaborate on projects or share information.</p>
+        </div>
+
+        <div class="feature">
+            <h2>Sharing the Note</h2>
+            <p>Easily share your notes with others via email, social media, or direct links. Share your valuable information with others.</p>
+        </div>
+
+        <a asp-controller="Accounts" asp-action="Register" class="btn btn-outline-dark">Get Started</a>
+    </div>
+
+</body>
+</html>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(function() {
+        var navBar = document.getElementById('main-nav-bar');
+        navBar.style.display = "none";
+    })
+</script>

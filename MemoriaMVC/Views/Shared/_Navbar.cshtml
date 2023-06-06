@@ -3,7 +3,34 @@
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css'>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<style>
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .notification-viewer {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 400px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        padding: 10px;
+        display: none;
+    }
+
+    .notification-viewer.show {
+        display: block;
+    }
+
+    .notification-item {
+        padding: 5px;
+        border-bottom: 1px solid #ccc;
+    }
+</style>
+
+<nav id="main-nav-bar" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container-fluid">
         <!-- Navbar brand -->
         <a class="navbar-brand text-primary" asp-controller="Home" asp-action="Index"><b>Memoria</b></a>
@@ -30,30 +57,40 @@
                         <i class="fas fa-sticky-note fa-lg"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li id="notificationNavBarItem" class="nav-item">
+                    <a class="nav-link" href="#" id="notification-icon">
                         <i class="fas fa-bell fa-lg"></i>
                     </a>
+                    <div class="notification-viewer" id="notification-viewer"></div>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fi fi-ss-alarm-plus fa-lg"></i>
+                    <a class="nav-link" asp-controller="Notes" asp-action="Share">
+                        <i class="fas fa-share-alt fa-lg"></i>
                     </a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Notes" asp-action="Trash">
                         <i class="fas fa-trash fa-lg"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="cogDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog fa-lg"></i>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cogDropdown">
+                        <li><a class="dropdown-item" id="theme-toggle-cog" style="cursor:pointer" >Toggle Theme</a></li>
+                        <li><a class="dropdown-item" id="my-profile-cog" style="cursor:pointer">My Profile</a></li>
+                        <li><a class="dropdown-item" id="logout-cog" style="cursor:pointer">Logout</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 <p style="text-align:center;background-color:aqua;display:none" id="inform-text"> </p>
-
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js//navbar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+<script src="~/js//notificationScript.js"></script>

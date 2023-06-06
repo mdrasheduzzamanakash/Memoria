@@ -19,6 +19,20 @@
             const authorizationButton = document.getElementById('authorization-button');
             const todoInput = document.getElementById('todo-input');
             const trashButton = document.getElementById('trash-button');
+            const writeButton = document.getElementById('write-button');
+
+            writeButton.addEventListener('click', function (event) {
+                $.ajax({
+                    url: '/Notes/RedirectToWrite',
+                    data: {
+                        noteId: noteData.id
+                    },
+                    success: function (status) {
+                        window.location.href = '/GroupEditing/GroupEdit';
+                    }
+                })
+            })
+
 
 
             // Set note title and description
@@ -363,16 +377,15 @@
             // Handle date and time selection
             datePicker.addEventListener("changeDate", function (event) {
                 var selectedDateTime = event.target.value;
-                console.log(selectedDateTime);
             });
 
             // populate already saved data to the modal
 
             // Saving the note
-            $('#update-button').off('click').on('click', function () {
+            saveButton.addEventListener('click', function () {
                 if (totalSelectedAttachment === totalUploadedAttachment) {
                     noteData.Id = noteData.id;
-                    noteData.AddedBy = noteData.authorId;
+                    noteData.UpdatedBy = userData.id;
                     noteData.Todos = JSON.stringify(getTodoInputs());
                     noteData.Title = noteTitle.value;
                     noteData.Description = noteDescription.value;
@@ -380,7 +393,7 @@
                     noteData.Type = null;
                     noteData.IsDraft = false;
                     // remainder
-                    if (noteData.IsRemainderAdded) {
+                    if (noteData.isRemainderAdded) {
                         noteData.RemainderDateTime = datePicker.value;
                     }
                     saveNote(noteData)
@@ -396,19 +409,22 @@
                                     if (attachments.length > 0) {
                                         showAttachmentPreviewToEachCardSingle(attachments[0]);
                                     }
+                                    if (addedNote.isRemainderAdded) {
+                                        showRemainderCountDown(addedNote);
+                                    }
                                 })
-                       
+
                             var noteTitle = document.getElementById(`title-${addedNote.id}`);
                             noteTitle.addEventListener('click', handleNoteTitleClick);
                         });
                 } else {
                     alert('Please wait.. Files uploading');
                 }
-
             });
 
             trashButton.addEventListener('click', function () {
                 noteData.isTrashed = true;
+                noteData.trashingDate = new Date();
                 saveNote(noteData)
                     .then(function (status) {
                         if (status) {
@@ -420,6 +436,62 @@
                         }
                     })
             });
+
+            authorizationButton.addEventListener('click', function () {
+                // clear the view and add the necessary view
+                const modalHeaderElements = document.getElementById('modal-header-element');
+                const updateModalBody = document.getElementById('update-modal-body');
+                const collaboratorModalBody = document.getElementById('collaborator-modal-body');
+                const updateModalFooter = document.getElementById('update-modal-footer');
+                const collaboratorModalFooter = document.getElementById('collaborator-modal-footer');
+
+                //modalHeaderElements.style.display = "none";
+                updateModalBody.style.display = "none";
+                updateModalFooter.style.display = "none";
+                collaboratorModalBody.style.display = "block";
+                collaboratorModalFooter.style.display = "block";
+                collaboratorModalFooter.style.display = "block";
+
+                const collaboratorDoneButton = document.getElementById('collaborator-done-button');
+                collaboratorDoneButton.addEventListener('click', function () {
+                    updateModalBody.style.display = "block";
+                    updateModalFooter.style.display = "block";
+                    collaboratorModalBody.style.display = "none";
+                    collaboratorModalFooter.style.display = "none";
+                    collaboratorModalFooter.style.display = "none";
+                })
+
+                // perform search and append view with click listener
+                const collaboratorSearchBar = document.getElementById('collaborator-search');
+                const collaboratorContainer = document.getElementById('collaborator-container');
+                const selectedCollaboratorsContainer = document.getElementById('selected-collaborators-container');
+
+                let timeout;
+                collaboratorSearchBar.addEventListener('input', function (event) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        if (collaboratorSearchBar.value !== '') {
+                            fetchCollaborators(collaboratorSearchBar.value, userData.id)
+                                .then(function (fetchedCollaborators) {
+                                    if (fetchedCollaborators.length === 0) {
+                                        collaboratorContainer.innerHTML = '<p style="text-align:center;">No Collaborators match this email<p>';
+                                    } else {
+                                        renderCollaboratorSearchResults(fetchedCollaborators, collaboratorContainer);
+                                        addEventListenerToAllSearchedResult(collaboratorContainer, noteData);
+                                    }
+                                });
+                        } else {
+                            collaboratorContainer.innerHTML = '<p style="text-align:center;">Nothing to show<p>';
+                        }
+
+                    }, 500); // Delay in milliseconds
+                });
+
+                
+
+            });
+
+            
         })
     
 }

@@ -148,11 +148,96 @@
     .no-pointer-cursor {
         cursor: default;
     }
+
+    .display-none-element {
+        display: none;
+    } 
+    .display-block-element {
+        display: block;
+    }
+
+    .collaborator-container {
+        display:flex;
+        flex-direction:column;
+        margin-top:10px;
+    }
+
+    .collaborator-container-item {
+        flex:1;
+    }
+
+    .search-result {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        transition: box-shadow 0.3s;
+    }
+
+        .search-result:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+    .profile-picture {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .email {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+
+    .buttons-container {
+        display: flex;
+    }
+
+    .viewer-button,
+    .writer-button {
+        margin-left: 10px;
+        padding: 5px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .viewer-button i,
+    .writer-button i {
+        margin-right: 5px;
+    }
+
+    .viewer-button:hover,
+    .writer-button:hover {
+        color: #007bff;
+    }
+
+    .viewer-writer-text {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .cross-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: red;
+    }
+
+    .cross-button:hover {
+        color: darkred;
+    }
+
+
 </style>
 
-<div class="modal-header">
-    <h4 class="modal-title">Note Details</h4>
-    <div class="options-container">
+<div class="modal-header" id="modal-header-element">
+    <h4 class="modal-title" id="modal-title-text">Note Details</h4>
+    <div class="options-container" id="modal-options-container">
         <div class="options-container-item">
             <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
             <label class="form-check-label" for="myCheckbox" id="toggle-todo">Todo</label>
@@ -175,49 +260,72 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <div class="labels-container" id="labelsContainer">
-        <!--labels container-->
-    </div>
-    <div class="form-group">
-        <label for="note-title">Title</label>
-        <input type="text" class="form-control" id="note-title" placeholder="Enter note title">
-    </div>
-    <div class="form-group">
-        <label for="note-description">Description</label>
-        <textarea class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
-    </div>
-    <!--for the todo sections-->
-    <div class="form-group" id="todo-section" style="display:none">
-        <label for="note-todos">Todos</label>
-        <div id="todo-container">
-            <div id="added-todos">
-                <!-- dynamically created todos will be added here -->
+    <div id="update-modal-body">
+        <div class="labels-container" id="labelsContainer">
+            <!--labels container-->
+        </div>
+        <div class="form-group">
+            <label for="note-title">Title</label>
+            <input disabled type="text" class="form-control" id="note-title" placeholder="Enter note title">
+        </div>
+        <div class="form-group">
+            <label for="note-description">Description</label>
+            <textarea disabled class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
+        </div>
+        <!--for the todo sections-->
+        <div class="form-group" id="todo-section" style="display:none">
+            <label for="note-todos">Todos</label>
+            <div id="todo-container">
+                <div id="added-todos">
+                    <!-- dynamically created todos will be added here -->
+                </div>
+                <input type="text" class="form-control no-box-shadow" id="todo-input">
+                <div class="underline"></div>
             </div>
-            <input type="text" class="form-control no-box-shadow" id="todo-input">
-            <div class="underline"></div>
+        </div>
+        <!--for the attachment sections-->
+        <div id="file-details-container"></div>
+        <input type="file" id="file-input" style="display: none">
+    </div>
+    <div id="collaborator-modal-body" style="display:none">
+        <h4>Add Collaborators</h4><p style="color:red;font:italic;">Be carefull about giving permissions.</p>
+        <div style="display:flex" id="selected-collaborators-container"></div>
+        <div class="container-search-create mx-auto">
+            <input class="form-control" type="search" placeholder="Search Collaborators by Email" aria-label="Search" id="collaborator-search">
+        </div>
+        <div class="collaborator-container" id="collaborator-container">
+            <p style="text-align:center">Nothing to show</p>
         </div>
     </div>
-    <!--for the attachment sections-->
-    <div id="file-details-container"></div>
-    <input type="file" id="file-input" style="display: none">
 
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-outline-danger" id="trash-button">
-        <i class="fas fa-trash"></i> Trash
-    </button>
-    <button type="button" class="btn btn-outline-primary" id="authorization-button">
-        <i class="fas fa-user-plus"></i> Collaborator
-    </button>
-    <button type="button" class="btn btn-outline-primary" id="remainder-button">
-        <i class="fas fa-clock"></i> Remainder
-    </button>
+    <div id="update-modal-footer">
+        <button type="button" class="btn btn-outline-danger" id="trash-button">
+            <i class="fas fa-trash"></i> Trash
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="write-button">
+            <i class="fas fa-users fa-lg"></i> Write
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="authorization-button">
+            <i class="fas fa-user-plus"></i> Collaborator
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="remainder-button">
+            <i class="fas fa-clock"></i> Remainder
+        </button>
 
-    <button type="button" class="btn btn-outline-primary" id="attachment-button">
-        <i class="fas fa-paperclip"></i>
-    </button>
-    <button type="button" class="btn btn-outline-primary" id="update-button" >
-        <i class="fas fa-save"></i> Update
-    </button>
+        <button type="button" class="btn btn-outline-primary" id="attachment-button">
+            <i class="fas fa-paperclip"></i>
+        </button>
 
+        <button type="button" class="btn btn-outline-primary" id="update-button">
+            <i class="fas fa-save"></i> Update
+        </button>
+
+    </div>
+    <div id="collaborator-modal-footer" style="display:none">
+        <button type="button" class="btn btn-outline-primary" id="collaborator-done-button">
+            <i class="fas fa-save"></i> Done
+        </button>
+    </div>
 </div>

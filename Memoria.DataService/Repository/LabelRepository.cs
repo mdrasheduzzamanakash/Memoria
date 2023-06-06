@@ -2,6 +2,7 @@
 using Memoria.DataService.Data;
 using Memoria.DataService.IRepository;
 using Memoria.Entities.DbSet;
+using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,12 @@ namespace Memoria.DataService.Repository
     {
         public LabelRepository(AppDbContext context, ILogger logger, IMapper mapper) : base(context, logger, mapper)
         {
+        }
+
+        public async Task<bool> AddNewLabel(LabelSingleInDTO label)
+        {
+            var labelEntity = _mapper.Map<Label>(label);
+            return await base.Add(labelEntity);
         }
 
         public async Task<IEnumerable<LabelSingleOutDTO>> All()
@@ -46,5 +53,7 @@ namespace Memoria.DataService.Repository
             }
             return labelsDto;
         }
+
+        
     }
 }

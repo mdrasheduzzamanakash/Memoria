@@ -1,0 +1,320 @@
+﻿<style>
+    .modal-dialog {
+        max-width: 800px;
+    }
+
+    .modal-body {
+        /* max-height: 500px; /* Change this value to adjust the maximum height of the modal body */ */ overflow-y: auto;
+        scrollbar-width: none; /* Hide the scrollbar */
+        -ms-overflow-style: none; /* Hide the scrollbar in IE10+ */
+    }
+
+        .modal-body::-webkit-scrollbar {
+            display: none; /* Hide the scrollbar in webkit-based browsers */
+        }
+
+    .options-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 40px;
+        margin-top: 3px;
+        height: 100%;
+        border-radius: 5px;
+        gap: 10px;
+    }
+
+    .options-container-item {
+        margin: 0; /* remove any default margin on the checkbox input element */
+    }
+
+    .labels-container {
+        align-items: center;
+        justify-content: center;
+        justify-items: center;
+        height 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .labels-container-item {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .form-select {
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+    }
+
+    .model-footer {
+        padding: 5px 5px;
+    }
+
+    /*for the attachment section and preview*/
+    /* Styling for the attachment section */
+    #attachment-button {
+        margin-right: 10px;
+    }
+
+    .file-details {
+        margin-bottom: 10px;
+        margin-left: 10px;
+        position: relative;
+    }
+
+    /* Styling for the file details container */
+    #file-details-container {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .file-details p {
+        margin: 0;
+    }
+
+    .file-details img,
+    .file-details canvas {
+        max-width: auto;
+        height: 110px;
+        border: dashed 1px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        font-size: 18px;
+        opacity: 0.8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .remainder-container {
+        align-items: center;
+        justify-content: center;
+        justify-items: center;
+        height 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border: solid 1px;
+        border-radius: 20px;
+    }
+
+    .remainder-container-item {
+        padding: 5px 10px;
+        border-radius: 10px;
+        margin-left: 20px;
+        border-color: blue;
+    }
+
+    .no-box-shadow {
+        border: none;
+        box-shadow: none;
+        outline: none; /* Remove the default focus outline */
+    }
+
+    .underline {
+        height: 2px;
+        background-color: #808090;
+        transition: width 0.3s ease-in-out;
+        display: none;
+    }
+
+    .no-box-shadow:focus + .underline {
+        width: inherit;
+        margin-left: 10px;
+        display: block;
+    }
+
+    .no-pointer-cursor {
+        cursor: default;
+    }
+
+    .display-none-element {
+        display: none;
+    }
+
+    .display-block-element {
+        display: block;
+    }
+
+    .collaborator-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    .collaborator-container-item {
+        flex: 1;
+    }
+
+    .search-result {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        transition: box-shadow 0.3s;
+    }
+
+        .search-result:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+    .profile-picture {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .email {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+
+    .buttons-container {
+        display: flex;
+    }
+
+    .viewer-button,
+    .writer-button {
+        margin-left: 10px;
+        padding: 5px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .viewer-button i,
+        .writer-button i {
+            margin-right: 5px;
+        }
+
+        .viewer-button:hover,
+        .writer-button:hover {
+            color: #007bff;
+        }
+
+    .viewer-writer-text {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .cross-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: red;
+    }
+
+        .cross-button:hover {
+            color: darkred;
+        }
+
+</style>
+
+<div class="modal-header" id="modal-header-element">
+    <h4 class="modal-title" id="modal-title-text">Note Details</h4>
+    <div class="options-container" id="modal-options-container">
+        <div class="options-container-item">
+            <input class="form-check-input" type="checkbox" value="" id="myCheckbox">
+            <label class="form-check-label" for="myCheckbox" id="toggle-todo">Todo</label>
+        </div>
+        <div class="options-container-item">
+            <select class="form-select" id="labelsSelect">
+                <option selected>Labels</option>
+                @foreach (var label in ViewBag.Labels)
+                {
+                    <option value="@label.Content">@label.Content</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="ramainder-container">
+        <input class="remainder-container-item" type="datetime-local" id="reminder-datepicker" style="display: none;">
+    </div>
+
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div id="update-modal-body">
+        <div class="labels-container" id="labelsContainer">
+            <!--labels container-->
+        </div>
+        <div class="form-group">
+            <label for="note-title">Title</label>
+            <input disabled type="text" class="form-control" id="note-title" placeholder="Enter note title">
+        </div>
+        <div class="form-group">
+            <label for="note-description">Description</label>
+            <textarea disabled class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
+        </div>
+        <!--for the todo sections-->
+        <div class="form-group" id="todo-section" style="display:none">
+            <label for="note-todos">Todos</label>
+            <div id="todo-container">
+                <div id="added-todos">
+                    <!-- dynamically created todos will be added here -->
+                </div>
+                <input type="text" class="form-control no-box-shadow" id="todo-input">
+                <div class="underline"></div>
+            </div>
+        </div>
+        <!--for the attachment sections-->
+        <div id="file-details-container"></div>
+        <input type="file" id="file-input" style="display: none">
+    </div>
+    <div id="collaborator-modal-body" style="display:none">
+        <h4>Add Collaborators</h4><p style="color:red;font:italic;">Be carefull about giving permissions.</p>
+        <div style="display:flex" id="selected-collaborators-container"></div>
+        <div class="container-search-create mx-auto">
+            <input class="form-control" type="search" placeholder="Search Collaborators by Email" aria-label="Search" id="collaborator-search">
+        </div>
+        <div class="collaborator-container" id="collaborator-container">
+            <p style="text-align:center">Nothing to show</p>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <div id="update-modal-footer">
+        <button type="button"  class="btn btn-outline-primary" id="write-button">
+            <i class="fas fa-users fa-lg"></i> Write
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="remainder-button">
+            <i class="fas fa-clock"></i> Remainder
+        </button>
+
+        <button type="button" class="btn btn-outline-primary" id="attachment-button">
+            <i class="fas fa-paperclip"></i>
+        </button>
+
+        <button type="button" class="btn btn-outline-primary" id="update-button">
+            <i class="fas fa-save"></i> Update
+        </button>
+
+    </div>
+</div>

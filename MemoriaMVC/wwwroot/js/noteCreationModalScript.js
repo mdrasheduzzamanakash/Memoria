@@ -133,17 +133,61 @@ $(function () {
                     
                 }
 
+                // handling the new label creation 
+                const createNewLabelOption = document.getElementById('createNewLabel');
+                const nestedInputContainer = document.getElementById('nestedInputContainer');
+                const newLabelInput = document.getElementById('newLabelInput');
+
+
                 // label selecting code
-                var labelsValues = [];
+                var labelsValues = []; // to maintain unique labels 
                 function insertANewLabel () {
                     var selectedLabel = labelSelect.value;
-                    if (!labelsValues.includes(selectedLabel)) {
+                    if (!labelsValues.includes(selectedLabel) && selectedLabel !== 'create-new') {
                         var labelElement = document.createElement('p');
                         labelElement.textContent = '#' + selectedLabel;
+                        labelElement.id = selectedLabel;
+
+                        var crossButton = document.createElement('button');
+                        crossButton.classList.add('cross-button');
+                        crossButton.innerHTML = '<i class="fas fa-times"></i>';
+                        crossButton.id = selectedLabel;
+
+                        // Add event listener to cross button
+                        crossButton.addEventListener('click', function (event) {
+                            labelElement.remove(); // Remove the label element
+                            labelsValues = labelsValues.filter(value => value !== selectedLabel); // Remove the value from the array
+                            labelsInputs = labelsInputs.filter(element => element.id !== event.target.id);
+                        });
+
+                        labelElement.appendChild(crossButton);
                         labelsContainer.appendChild(labelElement);
                         labelsInputs.push(labelElement);
+                        
+                    } else if(selectedLabel === 'create-new'){ 
+                        nestedInputContainer.style.display = 'block';
                     }
                 }
+
+
+                newLabelInput.addEventListener('keypress', function (event) {
+                    if(event.key === 'Enter') {
+                        const newLabel = newLabelInput.value;
+                        if (newLabel) {
+                            addNewLabel(newLabel, userData.id)
+                                .then(function (status) {
+                                    newLabelInput.value = '';
+                                    nestedInputContainer.style.display = 'none';
+                                    var newLabelElement = document.createElement('option');
+                                    newLabelElement.value = newLabel;
+                                    newLabelElement.innerText = newLabel;
+                                    var labelsSelect = document.getElementById('labelsSelect');
+                                    var lastOptionElement = labelSelect.lastElementChild;
+                                    labelsSelect.insertBefore(newLabelElement, lastOptionElement);
+                                });
+                        }
+                    }
+                });
 
                 function modifySaveButton (event) {
                     if (event.target.value.trim() == '') {
@@ -157,6 +201,7 @@ $(function () {
 
                 // Adding event listeners 
                 labelSelect.addEventListener('change', insertANewLabel);
+
                 todoToggle.addEventListener('change', function () {
                     if (this.checked) {
                         todoSection.style.display = 'block'; // Show the todo container
@@ -195,7 +240,6 @@ $(function () {
                     }
                 });
                 remainderButton.addEventListener('click', function () { })
-                authorizationButton.addEventListener('click', AddAuthorizer);
                 noteTitle.addEventListener('input', modifySaveButton);
 
                 // attachment related code
@@ -441,6 +485,9 @@ $(function () {
                                         if (attachments.length > 0) {
                                             showAttachmentPreviewToEachCardSingle(attachments[0]);
                                         }
+                                        if (addedNote.isRemainderAdded) {
+                                            showRemainderCountDown(addedNote);
+                                        }
                                     })
                                 var noteTitle = document.getElementById(`title-${addedNote.id}`);
                                 noteTitle.addEventListener('click', handleNoteTitleClick);
@@ -450,7 +497,53 @@ $(function () {
                     }
 
                 });
-                
+
+                authorizationButton.addEventListener('click', function () {
+                    // clear the view and add the necessary view
+                    const modalHeaderElements = document.getElementById('modal-header-element');
+                    const updateModalBody = document.getElementById('update-modal-body');
+                    const collaboratorModalBody = document.getElementById('collaborator-modal-body');
+                    const updateModalFooter = document.getElementById('update-modal-footer');
+                    const collaboratorModalFooter = document.getElementById('collaborator-modal-footer');
+
+                    //modalHeaderElements.style.display = "none";
+                    updateModalBody.style.display = "none";
+                    updateModalFooter.style.display = "none";
+                    collaboratorModalBody.style.display = "block";
+                    collaboratorModalFooter.style.display = "block";
+                    collaboratorModalFooter.style.display = "block";
+
+                    const collaboratorDoneButton = document.getElementById('collaborator-done-button');
+                    collaboratorDoneButton.addEventListener('click', function () {
+                        updateModalBody.style.display = "block";
+                        updateModalFooter.style.display = "block";
+                        collaboratorModalBody.style.display = "none";
+                        collaboratorModalFooter.style.display = "none";
+                        collaboratorModalFooter.style.display = "none";
+                    })
+
+                    // perform search and append view with click listener
+                    const collaboratorSearchBar = document.getElementById('collaborator-search');
+                    const collaboratorContainer = document.getElementById('collaborator-container');
+                    const selectedCollaboratorsContainer = document.getElementById('selected-collaborators-container');
+
+                    let timeout;
+                    collaboratorSearchBar.addEventListener('input', function (event) {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(function () {
+                            if (collaboratorSearchBar.value !== '') {
+                                fetchCollaborators(collaboratorSearchBar.value)
+                                    .then(function (fetchedCollaborators) {
+                                        renderCollaboratorSearchResults(fetchedCollaborators, collaboratorContainer);
+                                        addEventListenerToAllSearchedResult(collaboratorContainer, noteData);
+                                    });
+                            } else {
+                                collaboratorContainer.innerHTML = '<p style="text-align:center;">Nothing to show<p>';
+                            }
+
+                        }, 500); // Delay in milliseconds
+                    });
+                });
             })
             .fail(function (error) {
                 console.error("Error in nested AJAX calls");

@@ -1,0 +1,14 @@
+﻿
+<div style="align-content:center;align-items:center;text-align:center;background-color:#e8ffff;margin-top:20px;">
+    <h4>Glad To see you!</h4>
+    <p style="text-align:center; ">Thanks for Signing Up. A <b><i>confirmation email</i></b> is sent to the email address. Please activate the account.</p>
+    <p style="text-align:center; ">Please chack <b><i>Spam Folder</i></b> as well.</p>
+
+</div>
+
+<script>
+    var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+    var loggedInUserId = @Html.Raw(Json.Serialize(ViewData["loggedInUserId"]));
+    localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
+    localStorage.setItem("loggedInUserId", loggedInUserId);
+</script>

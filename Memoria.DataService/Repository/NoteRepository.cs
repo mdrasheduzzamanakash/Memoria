@@ -6,6 +6,7 @@ using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,7 @@ namespace Memoria.DataService.Repository
             return noteDto;
         }
 
+
         public async Task<List<NoteSingleOutDTO>> SearchByTitleAndDescription(string searchText, string userId)
         {
             var searchWords = searchText.ToLower().Split(' ');
@@ -139,6 +141,56 @@ namespace Memoria.DataService.Repository
         public async Task<bool> DeleteAnItem(string noteId)
         {
             return await base.Delete(noteId);
+        }
+
+        public async Task<List<NoteSingleOutDTO>> TrashedNotesOlderThan30Days()
+        {
+            var thresholdDate = DateTime.UtcNow.AddDays(-30);
+
+            var notes = await _dbSet.Where(x =>
+                x.IsTrashed == true &&
+                x.TrashingDate <= thresholdDate
+            ).ToListAsync();
+
+            var noteDtos = new List<NoteSingleOutDTO>();
+            foreach( var note in notes)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                noteDtos.Add(noteDto);
+            }
+            return noteDtos;
+        }
+
+        public async Task RemoveRange(List<NoteSingleOutDTO> notes) {
+            var noteIds = notes.Select(x => x.Id).ToList();
+            var notesToRemove = await _dbSet.Where(x => noteIds.Contains(x.Id)).ToListAsync();
+            _dbSet.RemoveRange(notesToRemove);
+        }
+
+        public async Task<List<NoteSingleOutDTO>> GetNotesWithIds(List<string> ids)
+        {
+            var notes = await _dbSet.Where(x => ids.Contains(x.Id) && x.IsTrashed == false).ToListAsync();
+            
+            var notesDto = new List<NoteSingleOutDTO>();
+            foreach ( var note in notes)
+            {
+                var noteDto = _mapper.Map<NoteSingleOutDTO>(note);
+                notesDto.Add(noteDto);
+            }
+            return notesDto;
+        }
+
+        public async Task<bool> ModifyTitleOrDescription(string noteId, string title, string description, bool isTitle)
+        {
+            var note = await _dbSet.FirstOrDefaultAsync(x => x.Id == noteId);
+            if(isTitle)
+            {
+                note.Title = title;
+            } else
+            {
+                note.Description = description;
+            }
+            return true;
         }
     }
 }

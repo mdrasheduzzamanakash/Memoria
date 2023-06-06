@@ -10,15 +10,12 @@ namespace Memoria.Entities.DbSet
 {
     public class Comment : BaseEntity
     {
-        public string Content { get; set; }
-        public DateTime EditedDateAndTime { get; set; }
-
         public string NoteId { get; set; }
-
-        [ForeignKey("User")]
-        [Required]
         public string CommenterId { get; set; }
-
-        public virtual User Commenter { get; set; }
+        public string Content { get; set; }
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Image { get; set; }
     }
 }

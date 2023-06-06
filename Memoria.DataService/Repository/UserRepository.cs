@@ -85,6 +85,81 @@ namespace Memoria.DataService.Repository
         {
             return await base.Delete(id);
         }
+
+        public async Task<UserSingleOutDTO> GetByIdentityId(Guid identityId)
+        {
+            try
+            {
+                var user = await _dbSet.Where(x => x.IdentityId == identityId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+                var userDto = _mapper.Map<UserSingleOutDTO>(user);
+
+                return userDto;
+            } 
+            catch (Exception ex) { }
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText, string userId)
+        {
+            try
+            {
+                var users = await _dbSet.Where(x => x.Email.ToLower().StartsWith(searchText.ToLower()) && x.Id != userId)
+                                       .AsNoTracking()
+                                       .ToListAsync();
+
+                var resultDtos = new List<UserCollaboratorSearchResultDto>();
+                foreach (var user in users)
+                {
+                    var userDto = _mapper.Map<UserCollaboratorSearchResultDto>(user);
+                    resultDtos.Add(userDto);
+                }
+                return resultDtos;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception or log the error
+                _logger.LogError(ex, "An error occurred while searching users by email.");
+                return Enumerable.Empty<UserCollaboratorSearchResultDto>();
+            }
+        }
+
+        public async Task<bool> AddActiveNote(string userId,string noteId)
+        {
+            try
+            {
+                var user = await _dbSet.FirstOrDefaultAsync(x => x.IdentityId.ToString() == userId);
+                user.ActiveEditingNote = noteId;
+                return true;
+            } 
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<List<UserDetailsSingleOutDTO>> GetUsersDetails(List<string> userIds)
+        {
+            var users = await _dbSet.Where(x => userIds.Contains(x.Id)).ToListAsync();
+            var usersDtos = new List<UserDetailsSingleOutDTO>();
+            foreach (var user in users)
+            {
+                var userDto = _mapper.Map<UserDetailsSingleOutDTO>(user);
+                usersDtos.Add(userDto);
+            }
+            return usersDtos;
+        }
+
+        public async Task<UserDetailsSingleOutDTO> GetSingleUserDetails(string userId)
+        {
+            var user = await _dbSet.Where(x => x.Id == userId).FirstOrDefaultAsync();
+            var userDto = _mapper.Map<UserDetailsSingleOutDTO>(user);
+            return userDto;
+        }
     }
 }
 

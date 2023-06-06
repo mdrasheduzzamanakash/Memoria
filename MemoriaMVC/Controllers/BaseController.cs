@@ -1,7 +1,10 @@
 ﻿
+using Authentication.Configuration;
 using AutoMapper;
 using Memoria.DataService.IConfiguration;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace MemoriaMVC.Controllers
 {

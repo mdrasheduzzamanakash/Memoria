@@ -83,11 +83,12 @@ namespace Memoria.DataService.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AuthorizedUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuthorizerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileFormat")
                         .HasColumnType("nvarchar(max)");
@@ -114,10 +115,6 @@ namespace Memoria.DataService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorizedUserId");
-
-                    b.HasIndex("AuthorizerId");
-
                     b.ToTable("Authorization");
                 });
 
@@ -135,16 +132,29 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<string>("CommenterId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EditedDateAndTime")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NoteId")
@@ -161,8 +171,6 @@ namespace Memoria.DataService.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CommenterId");
 
                     b.ToTable("Comments");
                 });
@@ -188,7 +196,7 @@ namespace Memoria.DataService.Migrations
 
                     b.Property<string>("LabelerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -200,8 +208,6 @@ namespace Memoria.DataService.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LabelerId");
 
                     b.ToTable("Labels");
                 });
@@ -383,6 +389,58 @@ namespace Memoria.DataService.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Memoria.Entities.DbSet.RefreshToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("AddedDateAndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileFormat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDateAndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Memoria.Entities.DbSet.Trash", b =>
                 {
                     b.Property<string>("Id")
@@ -429,6 +487,9 @@ namespace Memoria.DataService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ActiveEditingNote")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("AddedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -446,8 +507,10 @@ namespace Memoria.DataService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<byte[]>("Image")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("LastName")
@@ -670,45 +733,6 @@ namespace Memoria.DataService.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Memoria.Entities.DbSet.Authorization", b =>
-                {
-                    b.HasOne("Memoria.Entities.DbSet.User", "AuthorizedUser")
-                        .WithMany()
-                        .HasForeignKey("AuthorizedUserId");
-
-                    b.HasOne("Memoria.Entities.DbSet.User", "Authorizer")
-                        .WithMany()
-                        .HasForeignKey("AuthorizerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AuthorizedUser");
-
-                    b.Navigation("Authorizer");
-                });
-
-            modelBuilder.Entity("Memoria.Entities.DbSet.Comment", b =>
-                {
-                    b.HasOne("Memoria.Entities.DbSet.User", "Commenter")
-                        .WithMany()
-                        .HasForeignKey("CommenterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Commenter");
-                });
-
-            modelBuilder.Entity("Memoria.Entities.DbSet.Label", b =>
-                {
-                    b.HasOne("Memoria.Entities.DbSet.User", "User")
-                        .WithMany()
-                        .HasForeignKey("LabelerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Memoria.Entities.DbSet.NoteLabel", b =>
                 {
                     b.HasOne("Memoria.Entities.DbSet.User", "Assigner")
@@ -730,6 +754,17 @@ namespace Memoria.DataService.Migrations
                     b.Navigation("Label");
 
                     b.Navigation("Note");
+                });
+
+            modelBuilder.Entity("Memoria.Entities.DbSet.RefreshToken", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Memoria.Entities.DbSet.Trash", b =>

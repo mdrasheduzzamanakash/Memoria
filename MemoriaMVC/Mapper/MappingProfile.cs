@@ -1,9 +1,14 @@
-﻿using AutoMapper;
+﻿using Authentication.Models.DTO.Incomming;
+using AutoMapper;
 using Memoria.Entities.DTOs.Incomming;
 using Memoria.Entities.DTOs.Outgoing;
+using MemoriaMVC.SocketConnections.Models.Incomming;
+using MemoriaMVC.SocketConnections.Models.Outgoing;
 using MemoriaMVC.ViewModel.Attachment;
+using MemoriaMVC.ViewModel.Authentication;
 using MemoriaMVC.ViewModel.HomePageViewModel;
 using MemoriaMVC.ViewModel.UserPageViewModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace MemoriaMVC.Mapper
 {
@@ -14,6 +19,9 @@ namespace MemoriaMVC.Mapper
             CreateMap<UserCreationViewModel, UserSingleInDTO>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToByteArray(src.Image)))
                 .ForMember(dest => dest.FileFormat, opt => opt.MapFrom(src => src.Image.ContentType));
+
+            CreateMap<UserRegistrationViewModel, UserRegistrationRequestDto>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToByteArray(src.Image)));
 
             CreateMap<UserEditViewModel, UserSingleInDTO>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToByteArray(src.UpdatedImage)))
@@ -34,6 +42,19 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<AttachmentViewModel, AttachmentSingleInDTO>();
 
+            CreateMap<RefreshTokenSingleOutDTO, RefreshTokenSingleInDTO>();
+
+            CreateMap<UserLoginViewModel, UserLoginRequestDto>();
+
+            CreateMap<NoteChangeSingleInModel, NoteChangeSingleOutModel>();
+
+            CreateMap<NoteChangeSingleOutModel, NoteChangeSingleInModel>();
+
+            CreateMap<NoteCommentSingleInModel, NoteCommentSingleOutModel>();
+
+            CreateMap<NoteCommentSingleOutModel, NoteCommentSingleInModel>();
+
+            CreateMap<NoteCommentSingleInModel, CommentSingleInDTO>();
         }
 
         private static string ConvertToString(byte[] bytes)

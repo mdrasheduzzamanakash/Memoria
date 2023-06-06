@@ -16,9 +16,7 @@ namespace Memoria.Entities.DbSet
 
         public string ModeOfAuthorization { get; set; }
 
-        [ForeignKey("User")]
         public string AuthorizerId { get; set; }
-        public virtual User AuthorizedUser { get; set; }
-        public virtual User Authorizer { get; set; }
+        public string  AuthorizedUserId { get; set; }
     }
 }
