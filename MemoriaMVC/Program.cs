@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MemoriaMVC.Middleware;
 using MemoriaMVC.SocketConnections;
+using MemoriaMVC.SocketConnections.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddHostedService<TrashCleanupTask>();
 
 builder.Services.AddSignalR();
+
+builder.Services.AddSingleton<UserConnectionsService>();
 
 // Adding the automapper in the DI box
 var config = new MapperConfiguration(cfg =>
@@ -94,6 +97,8 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<NoteChangeBroadCastHub>("/noteChangeHub");
+    endpoints.MapHub<NoteCommentsBroadCastHub>("/noteCommentHub");
+    endpoints.MapHub<NotificationBroadCastHub>("/notificationHub");
 });
 
 app.MapControllerRoute(

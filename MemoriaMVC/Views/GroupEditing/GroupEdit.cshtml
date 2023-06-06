@@ -18,6 +18,7 @@
         flex-direction: column;
         justify-content: space-between;
         height: 100%;
+        padding:5px;
     }
 
     #right-section {
@@ -84,23 +85,74 @@
         border: none;
     }
 
+    /* Comment container */
+    .comment {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        border: solid 1px gray;
+        padding: 5px;
+        border-radius:10px;
+    }
+
+    /* Profile picture */
+    .profile-picture {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin-right: 10px;
+    }
+
+    /* Name and email container */
+    .name-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Name */
+    .name {
+        font-weight: bold;
+    }
+
+    /* Email */
+    .email {
+        font-size: 0.8rem;
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Comment content */
+    .comment-content {
+        margin-top: 5px;
+    }
+
+    /* Comment options */
+    .comment-options {
+        margin-left: auto;
+        cursor: pointer;
+    }
+
+    /* Triple dot icon */
+    .comment-options i {
+        font-size: 1.2rem;
+    }
+
+
 </style>
 <div id="resizable-container">
     <div id="left-section">
         <div id="options">
-            <button class="btn btn-outline-dark"><i class="fas fa-users"></i></button>
             <button class="btn btn-outline-dark"><i class="fas fa-comments"></i></button>
+            <button class="btn btn-outline-dark"><i class="fas fa-users"></i></button>
             <button class="btn btn-outline-dark"><i class="fas fa-sync"></i></button>
             <button class="btn btn-outline-dark"><i class="fas fa-cloud-upload-alt"></i></button>
 
         </div>
-        <div id="left-section-container">
-            <p>i am another comment</p>
-            <p>i am another comment</p>
-        </div>
+        <div id="left-section-container"></div> <!--comments container-->
         <div id="button-container">
-            <input type="text" id="message-input" class="form-control" placeholder="Type your message...">
-            <button id="send-button" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+            <input type="text" id="message-input" class="form-control" placeholder="Type your comment...">
+            <button id="send-button" class="btn btn-primary" disabled><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     <div id="column-seperator"></div>
@@ -117,7 +169,6 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js" integrity="sha512-vco9RAxEuv4PQ+iTQyuKElwoUOcsVdp+WgU6Lgo82ASpDfF7vI66LlWz+CZc2lMdn52tjjLOuHvy8BQJFp8a1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="~/js//_sharedScript.js"></script>
 <script>
    $(function() {
@@ -202,108 +253,5 @@
         searchBar.style.display = 'none';
     })
 </script>
-
-
-<script>
-    $(function () {
-        var noteData = null;
-        var userData = null;
-
-        const titleElement = document.getElementById('rightSectionTitle');
-        const descriptionElement = document.getElementById('right-section-description');
-
-        console.log(pageData);
-        const noteChangeConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/noteChangeHub")
-            .build();
-
-        noteChangeConnection.start()
-            .then(() => {
-                noteChangeConnection.invoke("JoinNoteGroup", pageData.noteId)
-                    .then(() => {
-                        // fetch note data
-                        fetchNoteById(pageData.noteId)
-                            .then(function (fetchedNote) {
-                                noteData = fetchedNote;
-                                if(noteData.title !== null && noteData.title !== ''){
-                                    titleElement.innerText = noteData.title;
-                                }
-                                if (noteData.description !== null && noteData.description !== '') {
-                                    descriptionElement.innerText = noteData.description;
-                                }
-                                return fetchUserById(pageData.writerId);
-                            })
-                            .then(function (fetchedUser) {
-                                userData = fetchedUser;
-                                titleElement.contentEditable = true;
-                                descriptionElement.contentEditable = true;
-                            })
-                    })
-            })
-            .catch(error => {
-                console.error("SignalR connection error: ", error);
-            });
-
-        // Receiving function
-        noteChangeConnection.on("ReceiveNoteChanges", (noteChangeReceivedString) => {
-            var noteChangePayload = JSON.parse(noteChangeReceivedString);
-
-            if (noteChangePayload.IsTitleChanged) {
-                titleElement.contentEditable = false;
-                titleElement.innerText = noteChangePayload.TitleChanges;
-                titleElement.contentEditable = true;
-            } else {
-                descriptionElement.contentEditable = false;
-                descriptionElement.innerHTML = noteChangePayload.DescriptionChanges;
-                descriptionElement.contentEditable = true;
-            }
-
-        });
-
-
-        // add change tracking to the input field
-        var noteTitleChangeTimer;
-        titleElement.addEventListener('input', function (event) {
-            clearTimeout(noteTitleChangeTimer);
-            noteTitleChangeTimer = setTimeout((function (event) {
-                if(titleElement.innerText !== '') {
-                    var currentTitle = titleElement.innerText;
-                    var noteChangesPaylaodString = JSON.stringify({
-                        noteId: pageData.noteId,
-                        writerId: pageData.writerId,
-                        titleChanges: currentTitle,
-                        descriptionChanges: '',
-                        isTitleChanged: true,
-                        isDescriptionChanged: false
-                    });
-                    noteChangeConnection.invoke("BroadCastNoteChange", noteChangesPaylaodString);
-                }
-            }), 500);
-        });
-
-        var noteDescriptionTimer;
-        descriptionElement.addEventListener('input', function (event) {
-            clearTimeout(noteDescriptionTimer);
-            noteDescriptionTimer = setTimeout((function (event) {
-                var currentDescription = descriptionElement.innerHTML;
-                var noteChangesPaylaodString = JSON.stringify({
-                    noteId: pageData.noteId,
-                    writerId: pageData.writerId,
-                    titleChanges: '',
-                    descriptionChanges: currentDescription,
-                    isTitleChanged: false,
-                    isDescriptionChanged: true
-                });
-                noteChangeConnection.invoke("BroadCastNoteChange", noteChangesPaylaodString);
-            }), 500);
-        });
-
-        // dispossable sectiton
-        window.addEventListener('beforeunload', function (event) {
-            noteChangeConnection.stop();
-            console.log('stopping the connection');
-        });
-
-    })
-
-</script>
+<script src="~/js/noteGroupEditingScript.js"></script>
+<script src="~/js/noteCommentScript.js"></script>

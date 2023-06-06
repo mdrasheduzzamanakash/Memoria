@@ -22,5 +22,9 @@ namespace Memoria.DataService.IRepository
 
         Task<bool> AddActiveNote(string userId,string noteId);
         Task<IEnumerable<UserCollaboratorSearchResultDto>> SearchByEmail(string searchText, string userId);
+
+        Task<List<UserDetailsSingleOutDTO>> GetUsersDetails(List<string> userIds);
+
+        Task<UserDetailsSingleOutDTO> GetSingleUserDetails(string userId);
     }
 }

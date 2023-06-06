@@ -50,7 +50,11 @@ namespace MemoriaMVC.Mapper
 
             CreateMap<NoteChangeSingleOutModel, NoteChangeSingleInModel>();
 
+            CreateMap<NoteCommentSingleInModel, NoteCommentSingleOutModel>();
 
+            CreateMap<NoteCommentSingleOutModel, NoteCommentSingleInModel>();
+
+            CreateMap<NoteCommentSingleInModel, CommentSingleInDTO>();
         }
 
         private static string ConvertToString(byte[] bytes)

@@ -141,6 +141,25 @@ namespace Memoria.DataService.Repository
                 return false;
             }
         }
+
+        public async Task<List<UserDetailsSingleOutDTO>> GetUsersDetails(List<string> userIds)
+        {
+            var users = await _dbSet.Where(x => userIds.Contains(x.Id)).ToListAsync();
+            var usersDtos = new List<UserDetailsSingleOutDTO>();
+            foreach (var user in users)
+            {
+                var userDto = _mapper.Map<UserDetailsSingleOutDTO>(user);
+                usersDtos.Add(userDto);
+            }
+            return usersDtos;
+        }
+
+        public async Task<UserDetailsSingleOutDTO> GetSingleUserDetails(string userId)
+        {
+            var user = await _dbSet.Where(x => x.Id == userId).FirstOrDefaultAsync();
+            var userDto = _mapper.Map<UserDetailsSingleOutDTO>(user);
+            return userDto;
+        }
     }
 }
 

@@ -275,6 +275,8 @@ function fetchUserData(dataFromPrevious) {
     return deferred.promise();
 }
 
+
+
 function fetchUserById(id) {
     var deferred = $.Deferred();
     $.ajax({
@@ -285,6 +287,23 @@ function fetchUserById(id) {
         },
         error: function () {
             alert('Error loading user data');
+        }
+    });
+    return deferred.promise();
+}
+
+function fetchCommentsOfANote(noteId) {
+    var deferred = $.Deferred();
+    $.ajax({
+        url: '/Comments/GetCommentsOfANote/',
+        data: {
+            noteId: noteId
+        },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("error in fetchNonDraftNotes");
         }
     });
     return deferred.promise();
@@ -598,6 +617,41 @@ function fetchCollaborators(searchBarText, userId) {
     return deferred.promise();
 }
 
+function fetchAllCollaborators(noteId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Authorizations/SearchCollaboratorsOfANote/",
+        data: { noteId: noteId },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in fetchCollaboratorsOfANote");
+        }
+    });
+
+    return deferred.promise();
+}
+
+
+function fetchUserDetails(userId) {
+    var deferred = $.Deferred();
+
+    $.ajax({
+        url: "/Authorizations/GetUserDetailsById/",
+        data: { userId: userId },
+        success: function (response) {
+            deferred.resolve(response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error in UserDetails");
+        }
+    });
+
+    return deferred.promise();
+}
+
 function fetchSearchedNotesTrash(searchBarText, userId) {
     var deferred = $.Deferred();
 
@@ -826,3 +880,4 @@ function replaceButtonWithText(searchResultElement, buttonText, noteId, authoriz
     searchResultElement.appendChild(newTextElement);
     searchResultElement.appendChild(crossButton);
 }
+
