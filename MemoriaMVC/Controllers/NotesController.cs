@@ -162,7 +162,15 @@ namespace MemoriaMVC.Controllers
             ViewBag.Title = "Trash Page";
             var identityId = User.FindFirst("Id")?.Value;
             var user = await _unitOfWork.Users.GetByIdentityId(new Guid(identityId));
+            if(user == null)
+            {
+                RedirectToAction("Login", "Accounts");
+            }
             var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+            if(userViewModel == null)
+            {
+                RedirectToAction("Login", "Accounts");
+            }
             return View(userViewModel);
         }
 
