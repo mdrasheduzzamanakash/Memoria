@@ -233,6 +233,15 @@
             color: darkred;
         }
 
+    .modal.fade-in {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+        .modal.fade-in.show {
+            opacity: 1;
+        }
+
 </style>
 
 <div class="modal-header" id="modal-header-element">
@@ -256,6 +265,9 @@
     <div class="ramainder-container">
         <input class="remainder-container-item" type="datetime-local" id="reminder-datepicker" style="display: none;">
     </div>
+    <button type="button" class="btn btn-link" id="remainder-button">
+        <i class="fas fa-clock"></i>
+    </button>
 
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -265,16 +277,18 @@
             <!--labels container-->
         </div>
         <div class="form-group">
-            <label for="note-title">Title</label>
-            <input disabled type="text" class="form-control" id="note-title" placeholder="Enter note title">
+            <label for="note-title"><b>Title</b></label>
+            <div id="note-title" contenteditable="true" style="outline: none; max-height: 4em; overflow-y: auto;"></div>
         </div>
+        <hr />
         <div class="form-group">
-            <label for="note-description">Description</label>
-            <textarea disabled class="form-control" id="note-description" rows="7" placeholder="Enter note description"></textarea>
+            <label for="note-description"><b>Description</b></label>
+            <div id="note-description" contenteditable="true" style="outline: none; max-height: 30em; overflow-y: auto;"></div>
         </div>
+        <hr />
         <!--for the todo sections-->
         <div class="form-group" id="todo-section" style="display:none">
-            <label for="note-todos">Todos</label>
+            <label for="note-todos"><b>Todos</b></label>
             <div id="todo-container">
                 <div id="added-todos">
                     <!-- dynamically created todos will be added here -->
@@ -301,19 +315,17 @@
 </div>
 <div class="modal-footer">
     <div id="update-modal-footer">
-        <button type="button"  class="btn btn-outline-primary" id="write-button">
-            <i class="fas fa-users fa-lg"></i> Write
+        <button type="button"  class="btn btn-link" id="write-button">
+            <i class="fas fa-users fa-lg"></i>
         </button>
-        <button type="button" class="btn btn-outline-primary" id="remainder-button">
-            <i class="fas fa-clock"></i> Remainder
-        </button>
+        
 
-        <button type="button" class="btn btn-outline-primary" id="attachment-button">
+        <button type="button" class="btn btn-link" id="attachment-button">
             <i class="fas fa-paperclip"></i>
         </button>
 
-        <button type="button" class="btn btn-outline-primary" id="update-button">
-            <i class="fas fa-save"></i> Update
+        <button type="button" class="btn btn-link" id="update-button">
+            <i class="fas fa-save"></i>
         </button>
 
     </div>

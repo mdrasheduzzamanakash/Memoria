@@ -189,8 +189,8 @@ $(function () {
                     }
                 });
 
-                function modifySaveButton (event) {
-                    if (event.target.value.trim() == '') {
+                function modifySaveButton(event) {
+                    if (event.target.innerHTML.trim() == '') {
                         statusObj.isTitleAdded = false;
                         saveButton.disabled = true;
                     } else {
@@ -399,6 +399,16 @@ $(function () {
 
                 });
 
+                noteDescription.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = `${this.scrollHeight}px`;
+                });
+
+                noteTitle.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = `${this.scrollHeight}px`;
+                });
+
                 // Handle date and time selection
                 datePicker.addEventListener("changeDate", function (event) {
                     var selectedDateTime = event.target.value;
@@ -411,8 +421,8 @@ $(function () {
                         note.Id = noteData.id;
                         note.AddedBy = noteData.authorId;
                         note.Todos = JSON.stringify(getTodoInputs());
-                        note.Title = noteTitle.value;
-                        note.Description = noteDescription.value;
+                        note.Title = noteTitle.innerHTML;
+                        note.Description = noteDescription.innerHTML;
                         note.Labels = JSON.stringify(getLabelsInputs());
                         note.Type = null;
 
@@ -464,8 +474,8 @@ $(function () {
                         note.Id = noteData.id;
                         note.AddedBy = noteData.authorId;
                         note.Todos = JSON.stringify(getTodoInputs());
-                        note.Title = noteTitle.value;
-                        note.Description = noteDescription.value;
+                        note.Title = noteTitle.innerHTML;
+                        note.Description = noteDescription.innerHTML;
                         note.Labels = JSON.stringify(getLabelsInputs());
                         note.Type = null;
                         note.IsDraft = false;

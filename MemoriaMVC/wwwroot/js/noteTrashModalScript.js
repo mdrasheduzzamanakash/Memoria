@@ -24,8 +24,10 @@
             // Set note title and description
             const noteTitle = document.getElementById('note-title');
             const noteDescription = document.getElementById('note-description');
-            noteTitle.value = noteData.title;
-            noteDescription.value = noteData.description;
+            noteTitle.innerHTML = noteData.title;
+            noteDescription.innerHTML = noteData.description;
+            noteDescription.style.height = 'auto';
+            noteDescription.style.height = `${noteDescription.scrollHeight}px`;
 
             // data containers 
             const labelsInputs = []; // Array to store the label input elements
@@ -205,6 +207,16 @@
                     var todoItem = event.target.closest('.todo-item');
                     todoItem.remove();
                 }
+            });
+
+            noteDescription.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = `${this.scrollHeight}px`;
+            });
+
+            noteTitle.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = `${this.scrollHeight}px`;
             });
 
 
