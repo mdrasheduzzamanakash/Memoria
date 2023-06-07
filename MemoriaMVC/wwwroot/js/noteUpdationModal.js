@@ -38,8 +38,11 @@
             // Set note title and description
             const noteTitle = document.getElementById('note-title');
             const noteDescription = document.getElementById('note-description');
-            noteTitle.value = noteData.title;
-            noteDescription.value = noteData.description;
+            noteTitle.innerHTML = noteData.title;
+            noteDescription.innerHTML = noteData.description;
+            noteDescription.style.height = 'auto';
+            noteDescription.style.height = `${noteDescription.scrollHeight}px`;
+            
 
             // data containers 
             const labelsInputs = []; // Array to store the label input elements
@@ -222,6 +225,16 @@
             });
 
 
+            noteDescription.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = `${this.scrollHeight}px`;
+            });
+
+            noteTitle.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = `${this.scrollHeight}px`;
+            });
+
             remainderButton.addEventListener('click', function () { })
             authorizationButton.addEventListener('click', AddAuthorizer);
             noteTitle.addEventListener('input', modifySaveButton);
@@ -387,8 +400,8 @@
                     noteData.Id = noteData.id;
                     noteData.UpdatedBy = userData.id;
                     noteData.Todos = JSON.stringify(getTodoInputs());
-                    noteData.Title = noteTitle.value;
-                    noteData.Description = noteDescription.value;
+                    noteData.Title = noteTitle.innerHTML;
+                    noteData.Description = noteDescription.innerHTML;
                     noteData.Labels = JSON.stringify(getLabelsInputs());
                     noteData.Type = null;
                     noteData.IsDraft = false;

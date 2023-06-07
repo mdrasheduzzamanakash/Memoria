@@ -20,10 +20,8 @@
 
     .flex-note-container {
         padding: 20px;
-        display: flex;
         flex-wrap: wrap;
         display: flex;
-        align-items: stretch;
         justify-content: center;
         padding: 10px;
     }
@@ -36,7 +34,6 @@
         align-self: flex-start;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease-in-out;
-        flex-grow: 1;
     }
 
         .flex-note-container-item:hover {
@@ -78,7 +75,7 @@
 <div class="flex-note-container" id="card-container"></div>
 
 <!--Note creation modal-->
-<div id="myModal" class="modal" data-bs-backdrop="static" data-bs-keyboard="false">
+<div id="myModal" class="modal fade-in" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- modal content goes here -->

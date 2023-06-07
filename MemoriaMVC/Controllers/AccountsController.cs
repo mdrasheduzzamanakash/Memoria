@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol;
@@ -58,14 +59,8 @@ namespace MemoriaMVC.Controllers
 
                 if (userExists != null)
                 {
-                    return BadRequest(new UserRegistrationResponseDto
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Email is already in use"
-                        }
-                    });
+                    ViewData["Error"] = "Email is already in use";
+                    return View();
                 }
 
                 var newUser = new IdentityUser()
@@ -79,11 +74,8 @@ namespace MemoriaMVC.Controllers
 
                 if (!isCreated.Succeeded)
                 {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = isCreated.Errors.Select(x => x.Description).ToList()
-                    });
+                    ViewData["Error"] = "Problem processing the request. Try again!";
+                    return View();
                 }
 
                 // save the user to User table
@@ -131,14 +123,8 @@ namespace MemoriaMVC.Controllers
             }
             else
             {
-                return BadRequest(new UserRegistrationResponseDto
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Invalid payload"
-                    }
-                });
+                ViewData["Error"] = "Invalid Payload";
+                return View();
             }
         }
 
@@ -160,14 +146,8 @@ namespace MemoriaMVC.Controllers
 
                 if (userExist == null)
                 {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Invalid authentication request"
-                        }
-                    });
+                    ViewData["Error"] = "Invalid authentication request";
+                    return View();
                 }
 
                 var isCorrect = await _userManager.CheckPasswordAsync(userExist, loginRequestDto.Password);
@@ -194,26 +174,14 @@ namespace MemoriaMVC.Controllers
                 }
                 else
                 {
-                    return BadRequest(new UserRegistrationResponseDto()
-                    {
-                        Success = false,
-                        Errors = new List<string>()
-                        {
-                            "Invalid authentication request"
-                        }
-                    });
+                    ViewData["Error"] = "Invalid authentication request";
+                    return View();
                 }
             }
             else
             {
-                return BadRequest(new UserLoginResponseDto()
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Invalid payload"
-                    }
-                });
+                ViewData["Error"] = "Invalid payload";
+                return View();
             }
         }
 
