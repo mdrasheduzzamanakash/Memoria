@@ -30,6 +30,9 @@ namespace MemoriaMVC.Mapper
             CreateMap<UserSingleOutDTO, UserDetailsViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
 
+            CreateMap<UserSingleOutDTO, UserProfileViewModel>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
+
             CreateMap<UserSingleOutDTO, HomeIndexViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
 

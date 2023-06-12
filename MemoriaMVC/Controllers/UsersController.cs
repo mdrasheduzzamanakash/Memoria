@@ -34,7 +34,6 @@ namespace MemoriaMVC.Controllers
             return Json(searchedCollaborators);
         }
 
-
         // GET all users 
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
@@ -42,7 +41,6 @@ namespace MemoriaMVC.Controllers
             var users = await _unitOfWork.Users.All();
             return Json(users);
         }
-
 
         // GET: Users
         public async Task<IActionResult> Index()
@@ -61,7 +59,6 @@ namespace MemoriaMVC.Controllers
             }
             return View(usersViewModel);
         }
-
 
         //GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
@@ -85,6 +82,13 @@ namespace MemoriaMVC.Controllers
             }
             var userViewModel = _mapper.Map<UserDetailsViewModel>(user);
             return View(userViewModel);
+        }
+
+        public async Task<IActionResult> Profile(string id)
+        {
+            var profileDetails = await _unitOfWork.Users.GetById(id);
+            var profileDto = _mapper.Map<UserProfileViewModel>(profileDetails);
+            return View(profileDto);
         }
 
         public async Task<IActionResult> GetById(string id)
