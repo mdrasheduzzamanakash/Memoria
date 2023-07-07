@@ -28,12 +28,22 @@
         padding: 5px;
         border-bottom: 1px solid #ccc;
     }
+
+    .profile-picture {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        object-fit:cover;
+    }
 </style>
 
 <nav id="main-nav-bar" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container-fluid">
         <!-- Navbar brand -->
-        <a class="navbar-brand text-primary" asp-controller="Home" asp-action="Index"><b>Memoria</b></a>
+        <div style="display:flex;">
+            <img src="~/Images/notas.png" style="width:30px;height:30px;align-self:center;align-items:center;" />
+            <a class="navbar-brand text-primary" asp-controller="Home" asp-action="Index"><b>Memoria</b></a>
+        </div>
 
         <!-- Navbar toggle button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -43,7 +53,7 @@
         <!-- Navbar content -->
         <div class="collapse navbar-collapse" id="navbarContent" style="left: 0;">
             <!-- Search form -->
-            <div class="container-search-create mx-auto">
+            <div class="container-search-create mx-auto" id="searchBarAndNewNoteBtn">
                 <form class="d-flex mx-auto my-2 my-lg-0 container-search-create-item">
                     <div class="input-group search-box">
                         <input class="form-control" type="search" placeholder="Search by title" aria-label="Search" id="searchBar">
@@ -58,7 +68,7 @@
                     </a>
                 </li>
                 <li id="notificationNavBarItem" class="nav-item">
-                    <a class="nav-link" href="#" id="notification-icon">
+                    <a style="display:none" class="nav-link" href="#" id="notification-icon">
                         <i class="fas fa-bell fa-lg"></i>
                     </a>
                     <div class="notification-viewer" id="notification-viewer"></div>
@@ -77,7 +87,7 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="cogDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-cog fa-lg"></i>
+                        <img id="navbar-profile-image" />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cogDropdown">
                         <li><a class="dropdown-item" id="theme-toggle-cog" style="cursor:pointer" >Toggle Theme</a></li>
@@ -89,6 +99,18 @@
         </div>
     </div>
 </nav>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            @*<img src="..." class="rounded me-2" alt="...">*@
+            <strong class="me-auto">Note Shared</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="toast-message" class="toast-body"></div>
+    </div>
+</div>
+
 <p style="text-align:center;background-color:aqua;display:none" id="inform-text"> </p>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js//navbar.js"></script>

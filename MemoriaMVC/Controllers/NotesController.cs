@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Authentication.Configuration;
 using System.Security.Claims;
+using System.IO.Compression;
 
 namespace MemoriaMVC.Controllers
 {

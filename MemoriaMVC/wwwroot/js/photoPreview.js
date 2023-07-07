@@ -6,6 +6,7 @@ function PreviewFile() {
     reader.onloadend = function () {
         preview.src = reader.result;
         preview.style.display = 'block';
+        preview.style.opacity = '1';
     }
 
     if (file) {
@@ -13,5 +14,4 @@ function PreviewFile() {
     } else {
         preview.src = "";
     }
-    console.log("-preview-done-");
 }

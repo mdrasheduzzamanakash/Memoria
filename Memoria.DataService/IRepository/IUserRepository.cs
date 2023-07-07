@@ -15,6 +15,7 @@ namespace Memoria.DataService.IRepository
         // Add an entity
         Task<bool> Add(UserSingleInDTO userCreationDTO);
         Task<UserSingleOutDTO> GetById(string id);
+        Task<UserSingleOutDTO> getByEmail(string email);
         Task<IEnumerable<UserSingleOutDTO>> All();
         Task<bool> Delete(string id);
         Task<bool> Upsert(UserSingleInDTO userCreationDTO, string userId);

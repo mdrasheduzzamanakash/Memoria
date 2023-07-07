@@ -4,6 +4,7 @@ using Memoria.DataService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Memoria.DataService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230612055050_initial-migration-12")]
+    partial class initialmigration12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -530,11 +533,11 @@ namespace Memoria.DataService.Migrations
                     b.Property<DateTime?>("UpdatedDateAndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("isEmailVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("uniqueEmailVerificationToken")
+                    b.Property<string>("emailVerificationUniqueToken")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("isEmailConfirmed")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
