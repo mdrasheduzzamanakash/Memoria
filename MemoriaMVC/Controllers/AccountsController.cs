@@ -15,10 +15,16 @@ using Microsoft.CodeAnalysis.Elfie.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Reflection.Metadata.Ecma335;
+using MemoriaMVC.Services;
+using MemoriaMVC.ViewModel.HomePageViewModel;
 
 namespace MemoriaMVC.Controllers
 {
@@ -27,6 +33,7 @@ namespace MemoriaMVC.Controllers
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
+        private readonly EmailService _emailService;
 
         public AccountsController(
             IUnitOfWork unitOfWork,
@@ -34,12 +41,65 @@ namespace MemoriaMVC.Controllers
             ILogger<AccountsController> logger, 
             TokenValidationParameters tokenValidationParameters, 
             IOptionsMonitor<JwtConfig> optionMonitor, 
-            UserManager<IdentityUser> userManager
+            UserManager<IdentityUser> userManager,
+            EmailService emailService
             ) : base(unitOfWork, mapper, logger)
         {
             _tokenValidationParameters = tokenValidationParameters;
             _userManager = userManager;
             _jwtConfig = optionMonitor.CurrentValue;
+            _emailService = emailService;
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SendEmailAgain(string email)
+        {
+            try
+            {
+                var user = await _unitOfWork.Users.getByEmail(email);
+                var userInDto = _mapper.Map<UserSingleInDTO>(user);
+                userInDto.uniqueEmailVerificationToken = RandomStringGenerator(50);
+                var status = await _unitOfWork.Users.Upsert(userInDto, userInDto.Id);
+                await _unitOfWork.CompleteAsync();
+
+                var isSent = await _emailService.SendVerificationEmail(userInDto.Email, userInDto.uniqueEmailVerificationToken, userInDto.FirstName);
+                return Json(new { isSent });
+            } catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ActivateEmail(string email, string token)
+        {
+            var user = await _unitOfWork.Users.getByEmail(email);
+            if(user.isEmailVerified == true && user.uniqueEmailVerificationToken == token)
+            {
+                return RedirectToAction("Index", "Home");
+            } 
+            
+            if(user.uniqueEmailVerificationToken == token)
+            {
+                user.isEmailVerified = true;
+                var userConfirmed = _mapper.Map<UserSingleInDTO>(user);
+                var status = await _unitOfWork.Users.Upsert(userConfirmed, user.Id);
+                await _unitOfWork.CompleteAsync();
+
+                if(status == true)
+                {
+                    return View("EmailConfirmationSuccess");
+                } 
+                else
+                {
+                    return View("EmailConfirmationFailed");
+                }
+            } 
+            else
+            {
+                return View("EmailConfirmationFailed");
+            }
         }
 
         [HttpGet]
@@ -63,63 +123,78 @@ namespace MemoriaMVC.Controllers
                     return View();
                 }
 
-                var newUser = new IdentityUser()
-                {
-                    Email = userRegistrationRequestDto.Email,
-                    UserName = userRegistrationRequestDto.Email,
-                    EmailConfirmed = true // todo to add the functionality to send the email to the user to confirm the email
-                };
+                var randomEmailVerificationString = RandomStringGenerator(50);
+                var isEmailSent = await _emailService.SendVerificationEmail(userRegistrationRequestDto.Email, randomEmailVerificationString, userRegistrationRequestDto.FirstName);
 
-                var isCreated = await _userManager.CreateAsync(newUser, userRegistrationRequestDto.Password);
-
-                if (!isCreated.Succeeded)
+                if(isEmailSent)
                 {
-                    ViewData["Error"] = "Problem processing the request. Try again!";
-                    return View();
+                    var newUser = new IdentityUser()
+                    {
+                        Email = userRegistrationRequestDto.Email,
+                        UserName = userRegistrationRequestDto.Email,
+                        EmailConfirmed = true // todo to add the functionality to send the email to the user to confirm the email
+                    };
+                    
+                    var isCreated = await _userManager.CreateAsync(newUser, userRegistrationRequestDto.Password);
+
+                    if (!isCreated.Succeeded)
+                    {
+                        ViewData["Error"] = "Problem processing the request. Try again!";
+                        return View();
+                    }
+
+                    // save the user to User table
+                    var userSingleInDto = new UserSingleInDTO
+                    {
+                        FirstName = userRegistrationRequestDto.FirstName,
+                        LastName = userRegistrationRequestDto.LastName,
+                        Email = userRegistrationRequestDto.Email,
+                        Password = userRegistrationRequestDto.Password,
+                        IdentityId = new Guid(newUser.Id),
+                        Image = userRegistrationRequestDto.Image,
+                        Status = 1,
+                        FileFormat = userRegistrationViewModel.Image.ContentType,
+                        isEmailVerified = false,
+                        uniqueEmailVerificationToken = randomEmailVerificationString
+                    };
+
+                    await _unitOfWork.Users.Add(userSingleInDto);
+                    await _unitOfWork.CompleteAsync();
+
+                    var userJustRegisterd = await _unitOfWork.Users.GetByIdentityId(new Guid(newUser.Id));
+                    await _unitOfWork.CompleteAsync();
+                    // create jwt token
+
+                    var token = await GenerateJwtToken(newUser);
+
+
+                    var jwtTokenCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = false,
+                        Expires = DateTime.UtcNow.Add(_jwtConfig.ExpiryTimeFrame)
+                    };
+                    Response.Cookies.Append("jwt", token.JwtToken, jwtTokenCookieOptions);
+
+                    var refreshTokenCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Expires = DateTime.UtcNow.AddMonths(1)
+                    };
+                    Response.Cookies.Append("refresh", token.RefreshToken, refreshTokenCookieOptions);
+
+                    // view data 
+                    ViewData["IsUserLoggedIn"] = true;
+                    ViewData["loggedInUserId"] = userJustRegisterd.Id;
+
+                    var user = await _unitOfWork.Users.GetByIdentityId(new Guid(newUser.Id));
+                    var userViewModel = _mapper.Map<HomeIndexViewModel>(user);
+                    return View("EmailConfirmation", userViewModel);
                 }
-
-                // save the user to User table
-                var userSingleInDto = new UserSingleInDTO
+                else
                 {
-                    FirstName = userRegistrationRequestDto.FirstName,
-                    LastName = userRegistrationRequestDto.LastName,
-                    Email = userRegistrationRequestDto.Email,
-                    Password = userRegistrationRequestDto.Password,
-                    IdentityId = new Guid(newUser.Id),
-                    Image = userRegistrationRequestDto.Image,
-                    Status = 1,
-                    FileFormat = userRegistrationViewModel.Image.ContentType
-                };
-
-                await _unitOfWork.Users.Add(userSingleInDto);
-                await _unitOfWork.CompleteAsync();
-
-                var userJustRegisterd = await _unitOfWork.Users.GetByIdentityId(new Guid(newUser.Id));
-                await _unitOfWork.CompleteAsync();
-                // create jwt token
-
-                var token = await GenerateJwtToken(newUser);
-
-
-                var jwtTokenCookieOptions = new CookieOptions
-                {
-                    HttpOnly = false,
-                    Expires = DateTime.UtcNow.Add(_jwtConfig.ExpiryTimeFrame)
-                };
-                Response.Cookies.Append("jwt", token.JwtToken, jwtTokenCookieOptions);
-
-                var refreshTokenCookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTime.UtcNow.AddMonths(1)
-                };
-                Response.Cookies.Append("refresh", token.RefreshToken, refreshTokenCookieOptions);
-
-                // view data 
-                ViewData["IsUserLoggedIn"] = true;
-                ViewData["loggedInUserId"] = userJustRegisterd.Id;
-
-                return View("EmailConfirmation");
+                    ViewData["Error"] = "Please check the email. Problem in sending email";
+                    return View(userRegistrationViewModel);
+                }
             }
             else
             {

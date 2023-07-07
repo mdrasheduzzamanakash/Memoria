@@ -33,8 +33,6 @@
                 })
             })
 
-
-
             // Set note title and description
             const noteTitle = document.getElementById('note-title');
             const noteDescription = document.getElementById('note-description');

@@ -26,5 +26,9 @@ namespace Memoria.Entities.DTOs.Outgoing
         public byte[] Image { get; set; }
 
         public string? ActiveEditingNote { get; set; }
+        public bool? isEmailVerified { get; set; }
+
+        public string? uniqueEmailVerificationToken { get; set; }
+
     }
 }

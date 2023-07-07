@@ -1,4 +1,16 @@
 ﻿@model MemoriaMVC.ViewModel.Authentication.UserRegistrationViewModel
+
+<style>
+    .profile-image-custom {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        display:none;
+        opacity: 0;
+        transition: opacity 1s ease;
+    }
+</style>
+
 <div class="row justify-content-center mt-lg-2">
     <div class="col-md-6">
         <div class="card registration-card">
@@ -16,7 +28,7 @@
                     }
                     <div class="form-group mt-3 d-flex justify-content-center align-items-center">
                         <!-- Preview file -->
-                        <img id="preview" src="#" alt="Preview" class="preview-image rounded-circle" style="display: none; width: 140px; height: 140px;">
+                        <img id="preview" src="#" alt="Preview" class="preview-image rounded-circle profile-image-custom">
                     </div>
                     <div class="form-group">
                         <label asp-for="FirstName" class="control-label"></label>
@@ -35,7 +47,7 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="Password" class="control-label"></label>
-                        <input asp-for="Password" class="form-control google-form-control" />
+                        <input asp-for="Password" class="form-control google-form-control" type="password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -45,10 +57,14 @@
                     </div>
                     
 
-                    <div class="form-group text-right mt-4">
-                        <input type="submit" value="Submit" class="btn btn-outline-primary" />
+                    <div style="display:flex">
+                        <div class="form-group text-right mt-4">
+                            <input id="submitButton" type="submit" value="Submit" class="btn btn-outline-primary" />
+                        </div>
+                        <div id="progressSpinner" class="spinner-border m-4" role="status"></div>
                     </div>
                 </form>
+                
                 <hr>
                 <div class="text-center">
                     <p>Already have an account? <a style="text-decoration:none" asp-controller="Accounts" asp-action="Login">Log in</a></p>
@@ -72,8 +88,17 @@
 <script>
     $(function () {
         var navBar = document.getElementById('main-nav-bar');
+        var spinner = document.getElementById('progressSpinner');
+        var errorElement = document.getElementById('error');
+        var submitButton = document.getElementById('submitButton');
+
+        spinner.style.display = 'none';
         navBar.style.display = "none";
         localStorage.setItem("IsUserLoggedIn", false);
+
+        submitButton.addEventListener('click', function() {
+            spinner.style.display = 'block';
+        });
     })
 </script>
 

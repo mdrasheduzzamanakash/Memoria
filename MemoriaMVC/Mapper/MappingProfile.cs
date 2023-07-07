@@ -27,6 +27,8 @@ namespace MemoriaMVC.Mapper
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToByteArray(src.UpdatedImage)))
                 .ForMember(dest => dest.FileFormat, opt => opt.MapFrom(src => src.UpdatedImage.ContentType));
 
+            CreateMap<UserSingleOutDTO, UserSingleInDTO>();
+
             CreateMap<UserSingleOutDTO, UserDetailsViewModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => ConvertToString(src.Image)));
 

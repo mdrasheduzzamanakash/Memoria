@@ -39,6 +39,13 @@ $(function () {
         notificationElement.innerText = notificationPayload.Content;
         notificationViewer.appendChild(notificationElement);
         notificationIcon.style.color = 'red';
+
+        // display a toast
+        const toastLiveExample = document.getElementById('liveToast');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.innerText = "New Notification for you";
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+        toastBootstrap.show();
     });
 
 

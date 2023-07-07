@@ -36,6 +36,14 @@ namespace Memoria.DataService.Repository
             return resultDto;
         }
 
+        public async Task<UserSingleOutDTO> getByEmail(string email)
+        {
+            var user = await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
+            var resultDto = _mapper.Map<UserSingleOutDTO>(user);
+            return resultDto;
+        }
+
+
         public async Task<IEnumerable<UserSingleOutDTO>> All()
         {
             List<User> users = (List<User>) await base.All();
@@ -160,6 +168,8 @@ namespace Memoria.DataService.Repository
             var userDto = _mapper.Map<UserDetailsSingleOutDTO>(user);
             return userDto;
         }
+
+       
     }
 }
 

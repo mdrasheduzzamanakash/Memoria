@@ -15,6 +15,7 @@ namespace Memoria.DataService.Mapper
                 cfg.CreateMap<Label, LabelSingleOutDTO>();
                 cfg.CreateMap<LabelSingleInDTO, Label>();
                 cfg.CreateMap<UserSingleOutDTO, User>();
+                cfg.CreateMap<UserSingleOutDTO, UserSingleInDTO>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();
                 cfg.CreateMap<NoteSingleInDTO, Note>();
                 cfg.CreateMap<Note, NoteSingleOutDTO>();

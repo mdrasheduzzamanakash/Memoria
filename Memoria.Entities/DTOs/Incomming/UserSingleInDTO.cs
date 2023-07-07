@@ -20,5 +20,9 @@
         public byte[] Image { get; set; }
 
         public string? ActiveEditingNote { get; set; }
+
+        public string? uniqueEmailVerificationToken { get; set; }
+
+        public bool? isEmailVerified { get; set; }
     }
 }

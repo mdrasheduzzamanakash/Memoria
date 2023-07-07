@@ -97,6 +97,8 @@
         var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
         localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
         localStorage.setItem("loggedInUserId", userData.id);
+        localStorage.setItem("profileImage", userData.image);
+        localStorage.setItem("profileImageFileType", userData.fileFormat);
 
         const searchBar = document.getElementById('searchBar');
         let timeout;

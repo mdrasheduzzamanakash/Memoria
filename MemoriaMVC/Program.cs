@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MemoriaMVC.Middleware;
 using MemoriaMVC.SocketConnections;
 using MemoriaMVC.SocketConnections.Services;
+using MemoriaMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,17 @@ builder.Services.AddHostedService<TrashCleanupTask>();
 builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<UserConnectionsService>();
+
+builder.Services.AddScoped<EmailService>(sp =>
+{
+    string smtpServer = "mail.smtp2go.com";
+    int smtpPort = 2525;
+    string smtpUsername = "memoria-bs23";
+    string smtpPassword = "bhYs2RRBslU0oDMM";
+    bool enableSsl = true;
+
+    return new EmailService(smtpServer, smtpPort, smtpUsername, smtpPassword, enableSsl);
+});
 
 // Adding the automapper in the DI box
 var config = new MapperConfiguration(cfg =>
