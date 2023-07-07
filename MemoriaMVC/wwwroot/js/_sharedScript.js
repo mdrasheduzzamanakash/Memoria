@@ -693,7 +693,6 @@ function fetchSearchedNotesShared(searchBarText, userId) { // TODO
 }
 
 
-
 function renderCollaboratorSearchResults(searchResults, container) {
     container.innerHTML = '';
     searchResults.forEach(function (result) {
@@ -764,7 +763,6 @@ function addAuthorization(noteId, authorizerId, authorizedUserId, authType) {
     return deferred.promise();
 }
 
-
 function RemoveAuthorization(noteId, authorizerId, authorizedUserId, authType) {
     var deferred = $.Deferred();
     var authorizationObj = {
@@ -790,7 +788,6 @@ function RemoveAuthorization(noteId, authorizerId, authorizedUserId, authType) {
 
     return deferred.promise();
 }
-
 
 function fetchAuthorizedUsersOfANote(noteId) {
     var deferred = $.Deferred();
@@ -832,16 +829,50 @@ function addEventListenerToAllSearchedResult(collaboratorContainer, noteData) {
                 } else {
                     // Add event listeners to buttons for new authorizations
                     viewerButton.addEventListener('click', function () {
+                        // add a spinner
+                        const buttonsContainer = searchResultElement.querySelector('.buttons-container');
+                        var spinner = document.createElement("div");
+                        spinner.id = searchResultId + '-' + 'spin';
+                        spinner.className = "spinner-border m-4";
+                        spinner.setAttribute("role", "status");
+                        buttonsContainer.appendChild(spinner);
+
                         addAuthorization(noteData.id, noteData.authorId, searchResultId, 'viewer')
                             .then(function (status) {
+                                // remove the spinner
+                                var spinnerElement = document.getElementById(searchResultId + '-' + 'spin');
+                                spinnerElement.remove();
                                 replaceButtonWithText(searchResultElement, 'viewer', noteData.id, noteData.authorId, searchResultId, 'viewer');
+                                // display a toast
+                                const toastLiveExample = document.getElementById('liveToast');
+                                const toastMessage = document.getElementById('toast-message');
+                                toastMessage.innerText = "Authorization added as viewer";
+                                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+                                toastBootstrap.show();
                             });
                     });
 
                     writerButton.addEventListener('click', function () {
+                        // add a spinner
+                        const buttonsContainer = searchResultElement.querySelector('.buttons-container');
+                        var spinner = document.createElement("div");
+                        spinner.id = searchResultId + '-' + 'spin';
+                        spinner.className = "spinner-border m-4";
+                        spinner.setAttribute("role", "status");
+                        buttonsContainer.appendChild(spinner);
+
                         addAuthorization(noteData.id, noteData.authorId, searchResultId, 'writer')
                             .then(function () {
+                                // remove the spinner
+                                var spinnerElement = document.getElementById(searchResultId + '-' + 'spin');
+                                spinnerElement.remove();
                                 replaceButtonWithText(searchResultElement, 'writer', noteData.id, noteData.authorId, searchResultId, 'writer');
+                                // display a toast
+                                const toastLiveExample = document.getElementById('liveToast');
+                                const toastMessage = document.getElementById('toast-message');
+                                toastMessage.innerText = "Authorization added as writer";
+                                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+                                toastBootstrap.show();
                             });
                     });
                 }
@@ -870,6 +901,13 @@ function replaceButtonWithText(searchResultElement, buttonText, noteId, authoriz
                 newTextElement.remove();
                 crossButton.remove();
                 searchResultElement.querySelector('.buttons-container').style.display = 'flex';
+
+                // display a toast
+                const toastLiveExample = document.getElementById('liveToast');
+                const toastMessage = document.getElementById('toast-message');
+                toastMessage.innerText = "Authorization removed successfully";
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+                toastBootstrap.show();
             })
         
     });

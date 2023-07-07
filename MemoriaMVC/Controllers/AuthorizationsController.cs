@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Memoria.DataService.IConfiguration;
 using Memoria.Entities.DTOs.Incomming;
+using MemoriaMVC.Services;
 using MemoriaMVC.SocketConnections;
 using MemoriaMVC.SocketConnections.Models.Incomming;
 using MemoriaMVC.SocketConnections.Services;
@@ -14,16 +15,20 @@ namespace MemoriaMVC.Controllers
     {
         private readonly UserConnectionsService _userConnectionsService;
         private readonly IHubContext<NotificationBroadCastHub> _notificationHubContext;
+        private readonly EmailService _emailService;
 
         public AuthorizationsController(
             UserConnectionsService userConnectionsService,
             IHubContext<NotificationBroadCastHub> notificationHubContext,
             IUnitOfWork unitOfWork, 
             IMapper mapper,
-            ILogger<AuthorizationsController> logger) : base(unitOfWork, mapper, logger)
+            ILogger<AuthorizationsController> logger, 
+            EmailService emailService
+        ) : base(unitOfWork, mapper, logger)
         {
             _userConnectionsService = userConnectionsService;
             _notificationHubContext = notificationHubContext;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -92,6 +97,13 @@ namespace MemoriaMVC.Controllers
                         await _notificationHubContext.Clients.Client(connectionId).SendAsync("ReceiveNotification", notificationSingleInModelString);
                     }
                 }
+
+                // send mail to the authorized user 
+                var authorizer = await _unitOfWork.Users.GetById(authorizationSingleInDTO.AuthorizerId);
+                var authorizedUser = await _unitOfWork.Users.GetById(authorizationSingleInDTO.AuthorizedUserId);
+                var authorizedNote = await _unitOfWork.Notes.GetNoteById(authorizationSingleInDTO.NoteId);
+
+                var isEmailSent = await _emailService.SendNewAuthorizationMail(authorizer, authorizedUser, authorizedNote,authorizationSingleInDTO);
 
                 return Json(status);
             }

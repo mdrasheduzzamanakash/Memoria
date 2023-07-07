@@ -1,14 +1,86 @@
-﻿
-<div style="align-content:center;align-items:center;text-align:center;background-color:#e8ffff;margin-top:20px;">
-    <h4>Glad To see you!</h4>
-    <p style="text-align:center; ">Thanks for Signing Up. A <b><i>confirmation email</i></b> is sent to the email address. Please activate the account.</p>
+﻿@model MemoriaMVC.ViewModel.HomePageViewModel.HomeIndexViewModel
+
+<div style="align-content:center;align-items:center;text-align:center;margin-top:20px;">
+    <h4>Greetings from Memoria @Model.FirstName!</h4>
+    <p style="text-align:center; ">Thanks for Signing Up. A <b><i>confirmation email</i></b> is sent to the email address(<b><i>@Model.Email</i></b>). Please activate the account.</p>
     <p style="text-align:center; ">Please chack <b><i>Spam Folder</i></b> as well.</p>
+    <button id="sendAgainButton" class="btn btn-outline-info">send again</button>
+    <p style="text-align:center;" id="sendAgainTimer">in <span id="timerSpan">60</span> seconds</p>
 
 </div>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>var userData = @Html.Raw(Json.Serialize(@Model));</script>
+
 <script>
-    var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
-    var loggedInUserId = @Html.Raw(Json.Serialize(ViewData["loggedInUserId"]));
-    localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
-    localStorage.setItem("loggedInUserId", loggedInUserId);
+    $(function() {
+        var isUserLoggedIn = @Html.Raw(Json.Serialize(ViewData["IsUserLoggedIn"]));
+        var loggedInUserId = @Html.Raw(Json.Serialize(ViewData["loggedInUserId"]));
+        localStorage.setItem("IsUserLoggedIn", isUserLoggedIn);
+        localStorage.setItem("loggedInUserId", userData.id);
+        localStorage.setItem("profileImage", userData.image);
+        localStorage.setItem("profileImageFileType", userData.fileFormat);
+
+        const searchBarAndNewNoteBtn = document.getElementById('searchBarAndNewNoteBtn');
+        searchBarAndNewNoteBtn.remove();
+
+        // Timer functionality
+        var timerInterval;
+        var timerSeconds = 60;
+        var sendAgainButton = $('#sendAgainButton');
+        var timerSpan = $('#timerSpan');
+
+        //sendAgainButton.prop('disabled', true);
+
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            timerSeconds--;
+            timerSpan.text(timerSeconds);
+
+            if (timerSeconds <= 0) {
+                clearInterval(timerInterval);
+                sendAgainButton.prop('disabled', false);
+                timerSpan.hide();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 60;
+            timerSpan.text(timerSeconds);
+            timerSpan.show();
+            sendAgainButton.prop('disabled', true);
+            startTimer();
+        }
+
+        // Attach event listener to send again button
+        sendAgainButton.click(function () {
+            sendAgainButton.prop('disabled', true);
+            resetTimer();
+            sendEmailAgain();
+        });
+
+        // AJAX call to send email again
+        function sendEmailAgain() {
+            $.ajax({
+                url: '/Accounts/SendEmailAgain/',
+                type: 'POST',
+                data: {
+                    email: userData.email
+                },
+                success: function (response) {
+                    
+                },
+                error: function (xhr, status, error) {
+                    
+                }
+            });
+        }
+
+        // Start the timer
+        startTimer();
+    })
 </script>

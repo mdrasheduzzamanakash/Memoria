@@ -55,7 +55,7 @@ namespace Memoria.DataService.Repository
 
         public async Task<List<AttachmentSingleOutDTO>> GetAllAttachmentForANote(string noteId)
         {
-            var attachments = await _dbSet.Where(x => x.NoteId == noteId).ToListAsync();
+            var attachments = await _dbSet.Where(x => x.NoteId == noteId).AsNoTracking().ToListAsync();
             var attachmentDtos = attachments.Select(_mapper.Map<AttachmentSingleOutDTO>).ToList();
             return attachmentDtos;
         }

@@ -1,0 +1,61 @@
+﻿@model MemoriaMVC.ViewModel.UserPageViewModel.UserProfileViewModel
+
+<style>
+    .user-details-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .user-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+
+    .user-field {
+        margin-bottom: 10px;
+    }
+
+        .user-field label {
+            font-weight: bold;
+        }
+</style>
+
+<div class="user-details-container">
+    <h1>User Details</h1>
+
+    <div>
+
+        <div class="user-field">
+            <label for="firstName">First Name:</label>
+            <span id="firstName">@Model.FirstName</span>
+        </div>
+
+        <div class="user-field">
+            <label for="lastName">Last Name:</label>
+            <span id="lastName">@Model.LastName</span>
+        </div>
+
+        <div class="user-field">
+            <label for="email">Email:</label>
+            <span id="email">@Model.Email</span>
+        </div>
+
+        <div class="user-field">
+            <label for="addedDate">Added Date and Time:</label>
+            <span id="addedDate">@Model.AddedDateAndTime</span>
+        </div>
+
+        <div class="user-field">
+            <label for="updatedDate">Updated Date and Time:</label>
+            <span id="updatedDate">@Model.UpdatedDateAndTime</span>
+        </div>
+
+        <!-- Add other relevant user details here -->
+    </div>
+</div>
